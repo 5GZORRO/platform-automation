@@ -6,7 +6,7 @@ tags = {
   "job-order"   = "IT001-0101362"
 }
 node_count             = 2
-ssh_public_key         = "~/Documenti/public/5gzorro.pub"
+ssh_public_key         = "5gzorro.pub"
 dns_prefix             = "project5gzorro"
 cluster_name           = "5gzorro"
 resource_group_name    = "5gzorro"
