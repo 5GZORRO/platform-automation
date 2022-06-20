@@ -27,12 +27,12 @@ output "host" {
     value = azurerm_kubernetes_cluster.k8s.kube_config.0.host
 }
 
-output "sp" {
-  value     = azuread_service_principal.k8s.id
-  sensitive = true
-}
+# output "sp" {
+#   value     = azuread_service_principal.k8s.id
+#   sensitive = true
+# }
 
-output "sp_password" {
-  value     = azuread_service_principal_password.k8s.value
-  sensitive = true
-}
+# output "sp_password" {
+#   value     = azuread_service_principal_password.k8s.value
+#   sensitive = true
+# }
