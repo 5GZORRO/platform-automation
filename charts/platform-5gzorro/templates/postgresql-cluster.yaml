@@ -1,0 +1,16 @@
+{{- if .Values.postgresOperator.enabled -}}
+---
+{{- range $k, $v := .Values.postgresOperator.postgresqlClusters }}
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: {{ $v.name }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+{{- $v.spec | toYaml | nindent 2 }}
+---
+{{- end }}
+{{- end }}
