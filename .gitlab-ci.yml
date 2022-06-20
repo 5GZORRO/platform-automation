@@ -1,5 +1,4 @@
 include:
-  - template: Terraform/Base.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Terraform/Base.gitlab-ci.yml
   - template: Security/SAST-IaC.latest.gitlab-ci.yml
 
 stages:
@@ -9,34 +8,59 @@ stages:
   - deploy
   - cleanup
 
+image: 
+  name: registry.gitlab.com/gitlab-org/terraform-images/releases/terraform:1.1.9
+
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/terraform
   TF_STATE_NAME: 5gzorro
 
+cache:
+  key: "${TF_ROOT}"
+  paths:
+    - ${TF_ROOT}/.terraform/
 
 fmt:
-  extends: .terraform:fmt
-  needs: []
+  stage: validate
+  script:
+    - cd "${TF_ROOT}"
+    - gitlab-terraform fmt
+  allow_failure: true
 
 validate:
-  extends: .terraform:validate
-  needs: []
+  stage: validate
+  script:
+    - cd "${TF_ROOT}"
+    - gitlab-terraform validate
 
 build:
-  extends: .terraform:build
+  stage: build
+  script:
+    - cd "${TF_ROOT}"
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  resource_group: ${TF_STATE_NAME}
+  artifacts:
+    paths:
+      - ${TF_ROOT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/plan.json
 
 deploy:
-  extends: .terraform:deploy
-  dependencies:
-    - build
-  environment:
-    name: $TF_STATE_NAME
+  stage: deploy
+  script:
+    - cd "${TF_ROOT}"
+    - gitlab-terraform apply -auto-approve
+  resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $DEPLOY == "true"
 
 destroy:
   extends: .terraform:destroy
   stage: cleanup
   script:
-    - cd terraform
-    - terraform destroy -var-file=testing.tfvars -auto-approve
+    - cd "${TF_ROOT}"
+    - gitlab-terraform destroy-auto-approve
+  resource_group: ${TF_STATE_NAME}
   rules:
     - if: $DESTROY == "true"
