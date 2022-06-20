@@ -24,7 +24,7 @@ fmt:
   stage: validate
   script:
     - cd "${TF_ROOT}"
-    - gitlab-terraform fmt
+    - gitlab-terraform fmt -check
   allow_failure: true
 
 validate:
