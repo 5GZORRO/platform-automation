@@ -14,23 +14,6 @@ resource "azurerm_resource_group" "k8s" {
   tags = var.tags
 }
 
-# data "azuread_client_config" "current" {}
-
-# resource "azuread_application" "k8s" {
-#   display_name = "${var.cluster_name}-sp"
-#   owners       = [data.azuread_client_config.current.object_id]
-# }
-
-# resource "azuread_service_principal" "k8s" {
-#   application_id               = azuread_application.k8s.application_id
-#   app_role_assignment_required = false
-#   owners                       = [data.azuread_client_config.current.object_id]
-# }
-
-# resource "azuread_service_principal_password" "k8s" {
-#   service_principal_id = azuread_service_principal.k8s.id
-# }
-
 resource "azurerm_kubernetes_cluster" "k8s" {
   name                = var.cluster_name
   location            = azurerm_resource_group.k8s.location
@@ -52,11 +35,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
       vm_size         = var.default_node_pool_size
       max_pods = 250
   }
-
-  # service_principal {
-  #     client_id     = azuread_application.k8s.application_id
-  #     client_secret = azuread_service_principal_password.k8s.value
-  # }
 
   identity {
     type = "SystemAssigned"
