@@ -56,7 +56,6 @@ deploy:
     - if: $DEPLOY == "true"
 
 destroy:
-  extends: .terraform:destroy
   stage: cleanup
   script:
     - cd "${TF_ROOT}"
