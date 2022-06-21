@@ -8,7 +8,7 @@ variable "tags" {
 
 variable "node_count" {
   default = 1
-  type = number
+  type    = number
 }
 
 variable "ssh_public_key" {
@@ -19,33 +19,33 @@ variable "dns_prefix" {
   type = string
 }
 
-variable cluster_name {
+variable "cluster_name" {
   type = string
 }
 
-variable resource_group_name {
+variable "resource_group_name" {
   type = string
 }
 
-variable location {
+variable "location" {
   type = string
 }
 
 variable "default_node_pool_name" {
-  type = string
-  default = "system-node-pool"  
+  type    = string
+  default = "system-node-pool"
 }
 
 variable "default_node_pool_size" {
-  type = string
-  default = "Standard_D4s_v5"  
+  type    = string
+  default = "Standard_D4s_v5"
 }
 
 variable "kubernetes_version" {
-  type = string  
+  type = string
 }
 
 variable "max_pods" {
-  type = number
-  default = 250  
+  type    = number
+  default = 250
 }

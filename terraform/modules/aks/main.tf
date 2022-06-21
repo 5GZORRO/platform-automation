@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = "~>2.0"
     }
   }
@@ -22,18 +22,18 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   kubernetes_version  = var.kubernetes_version
 
   linux_profile {
-      admin_username = "ubuntu"
+    admin_username = "ubuntu"
 
-      ssh_key {
-          key_data = file(var.ssh_public_key)
-      }
+    ssh_key {
+      key_data = file(var.ssh_public_key)
+    }
   }
 
   default_node_pool {
-      name            = var.default_node_pool_name
-      node_count      = var.node_count
-      vm_size         = var.default_node_pool_size
-      max_pods = 250
+    name       = var.default_node_pool_name
+    node_count = var.node_count
+    vm_size    = var.default_node_pool_size
+    max_pods   = 250
   }
 
   identity {
@@ -41,9 +41,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 
   network_profile {
-      load_balancer_sku = "Standard"
-      network_plugin = "azure"
-      network_policy = "calico"
+    load_balancer_sku = "Standard"
+    network_plugin    = "azure"
+    network_policy    = "calico"
   }
 
 }

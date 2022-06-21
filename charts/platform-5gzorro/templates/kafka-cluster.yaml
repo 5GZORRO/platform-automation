@@ -1,0 +1,57 @@
+{{- if and (.Values.strimzi.enabled) (.Values.strimzi.kafkaClusters) -}}
+---
+{{- range $k, $v := .Values.strimzi.kafkaClusters }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ $v.name }}
+  # annotations:
+  #   "helm.sh/hook": post-install,post-upgrade
+  #   "helm.sh/hook-weight": "-5"
+  #   "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  kafka:
+    version: {{ $v.version }}
+    replicas: {{ $v.replicas }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+{{- $v.config | toYaml | nindent 6 }}
+    storage:
+      type: {{ $v.storage.type }}
+      volumes:
+{{- $v.storage.volumes | toYaml | nindent 6 }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+  zookeeper:
+    replicas: {{ $v.zookeeper.replicas }}
+    storage:
+      type: {{ $v.zookeeper.storage.type }}
+      size: {{ $v.zookeeper.storage.size }}
+      deleteClaim: false
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: zookeeper-metrics-config.yml
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+---
+{{- end }}
+{{- end }}

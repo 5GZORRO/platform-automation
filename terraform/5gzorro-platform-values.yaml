@@ -12,9 +12,14 @@ kube-prometheus-stack:
     enabled: false
   kubeScheduler:
     enabled: false
+  # prometheusOperator:
+  #   logLevel: debug
   prometheus:
     prometheusSpec:
       serviceMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
       retention: 180d
       retentionSize: "30GB"
       storageSpec:
@@ -139,3 +144,45 @@ postgresOperator:
           test: zorro5g
         postgresql:
           version: "14"
+
+strimzi:
+  enabled: true
+  watchAnyNamespace: true
+  kafkaClusters:
+    - name: kafka-cluster
+      replicas: 3
+      version: 3.2.0
+      config:
+        offsets.topic.replication.factor: 3
+        transaction.state.log.replication.factor: 3
+        transaction.state.log.min.isr: 2
+        default.replication.factor: 3
+        min.insync.replicas: 1
+        inter.broker.protocol.version: "3.2"
+      storage:
+        type: jbod
+        volumes:
+        - id: 0
+          type: persistent-claim
+          size: 32Gi
+          deleteClaim: false
+        - id: 1
+          type: persistent-claim
+          size: 32Gi
+          deleteClaim: false
+      zookeeper:
+        replicas: 3
+        storage:
+          type: persistent-claim
+          size: 32Gi
+  kafkaTopics:
+    - name: test1
+      clusterName: kafka-cluster
+      spec:
+        partitions: 3
+        replicas: 1
+    - name: test2
+      clusterName: kafka-cluster
+      spec:
+        partitions: 3
+        replicas: 1
