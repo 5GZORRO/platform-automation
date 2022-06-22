@@ -5,7 +5,7 @@ tags = {
   "cost-centre" = "DS001"
   "job-order"   = "IT001-0101362"
 }
-node_count             = 2
+node_count             = 3
 ssh_public_key         = "5gzorro.pub"
 dns_prefix             = "project5gzorro"
 cluster_name           = "5gzorro"

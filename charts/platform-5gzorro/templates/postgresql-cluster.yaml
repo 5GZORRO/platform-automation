@@ -1,6 +1,6 @@
-{{- if .Values.postgresOperator.enabled -}}
+{{- if (index .Values "postgres-operator" "enabled") -}}
 ---
-{{- range $k, $v := .Values.postgresOperator.postgresqlClusters }}
+{{- range $k, $v := (index .Values "postgres-operator" "postgresqlClusters") }}
 apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:

@@ -110,10 +110,10 @@ minio:
     serviceMonitor:
       enabled: true
 
-postgresOperator:
+postgres-operator:
   enabled: true
   postgresqlClusters:
-    - name: zorro5g-global-db
+    - name: zorro5g-global-psqldb
       spec:
         teamId: zorro5g
         volume:
@@ -129,7 +129,7 @@ postgresOperator:
         postgresql:
           version: "14"
           
-    - name: zorro5g-test-db
+    - name: zorro5g-test-psqldb
       spec:
         teamId: zorro5g
         volume:
@@ -186,3 +186,29 @@ strimzi:
       spec:
         partitions: 3
         replicas: 1
+  
+community-operator:
+  enabled: true
+  community-operator-crds:
+    enabled: true
+  mongodbClusters:
+    - name: mongo-test
+      replicas: 3
+      version: "4.2.6"
+      users:
+        - name: test-user
+          db: admin
+          passwordSecretRef: 
+            name: test-user-password
+          roles:
+            - name: readWrite
+              db: test-db
+          scramCredentialsSecretName: my-scram
+        - name: test-user2
+          db: admin
+          passwordSecretRef: 
+            name: test-user2-password
+          roles:
+            - name: readWrite
+              db: test-db
+          scramCredentialsSecretName: my-scram2
