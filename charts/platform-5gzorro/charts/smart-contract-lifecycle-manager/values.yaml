@@ -1,0 +1,65 @@
+kafkaTopics:
+  productOffer: dlt-product-offerings
+  productOrder: dlt-product-order
+kafkaBootstrap: 172.28.3.196:9092
+
+fullnameOverride: "sclm-app"
+
+corda:
+  port: "10003"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: 
+
+replicaCount: 1
+service:
+    name: sclm-app
+    type: ClusterIP
+    appPort: 8087
+    extAppPort: 80
+
+image:
+    pullPolicy: Always
+
+resources:
+    limits:
+        cpu: 1
+        memory: 1.5G
+    requests:
+        cpu: 1
+        memory: 1.5G
+
+podSecurityContext: {}
+securityContext: {}
+
+imagePullSecrets:
+    [name: regcred]
+
+postgres:
+    host: postgres.postgres-fix.svc.cluster.local
+    port: 5432
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+
+probePath: /actuator/health
+
+spring:
+    profiles: staging
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120

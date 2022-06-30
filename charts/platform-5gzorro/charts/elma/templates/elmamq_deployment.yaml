@@ -1,0 +1,37 @@
+{{- $imageValues := .Values.image }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elmamq
+  namespace: "{{ $imageValues.namespace }}"
+  labels:
+    app: "{{ $imageValues.app }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elmamq
+  template:
+    metadata:
+      labels:
+        app: elmamq
+    spec:
+      containers:
+        - envFrom:
+          - configMapRef:
+              name: elma-deployment-configmap
+          - secretRef:
+              name: elma-deployment-secret
+          image: {{ $imageValues.image }}:{{ $imageValues.tag }}
+          command: ["elma_mq", "start"]
+          imagePullPolicy: "{{ $imageValues.pullPolicy }}"
+          name: elmamq
+          ports:
+          resources: {}
+      {{- if $imageValues.pullSecrets }}
+      imagePullSecrets:
+        - name: {{ $imageValues.pullSecrets }}
+      {{- end }}
+      restartPolicy: Always
+

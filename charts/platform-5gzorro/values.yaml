@@ -184,3 +184,95 @@ community-operator:
             - name: readWrite
               db: test-db
           scramCredentialsSecretName: my-scram
+
+redis:
+  enabled: true
+  architecture: standalone
+  replica:
+    replicaCount: 1
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+argo-workflows:
+  enabled: true
+  controller:
+    metricsConfig:
+      enabled: true
+    telemetryConfig:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+governance-manager-api:
+  enabled: true
+  service:
+    prefix: /zorro/governance
+  postgres:
+    username: postgres
+    password: postgres
+    name: postgres
+    host: postgres
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+  identityBaseUrl: http://10.4.2.214:6800
+  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
+  callbacks:
+    updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
+  dockerTag: v0.1.23
+
+legal-prose-repository:
+  enabled: true
+  service:
+    prefix: /zorro/legal-prose-repository
+  postgres:
+    username: postgres
+    password: postgres
+    name: postgres
+    host: postgres
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+  identityBaseUrl: http://10.4.2.214:6800
+  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
+  callbacks:
+     updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
+  dockerTag: v0.1.23
+
+smart-contract-lifecycle-manager:
+  enabled: true
+  hostname: "172.28.3.6:31080/smart-contract-lifecycle-manager"
+  dockerTag: "5gzorro-core-1.23-rc"
+  postgres:
+    username: postgres             
+    password: postgres             
+    name: operator_a_sclm
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+  identityBaseUrl: "http://172.28.3.153:6200"
+  callbacks:
+    updateSlaIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
+  corda:
+    username: operatoraoperations
+    password: usera
+    host: operatora.operatora-ns.svc.cluster.local
+  operatorName: opa
+
+elma:
+  image:
+    tag: gitlab-ci
+    namespace: domain-operator-a
+    app: elma
+    image: ghcr.io/5gzorro/elicensing-manager-agent/elma
+    pullPolicy: Always
+    pullSecrets: elmaregsecret
+  elmarest:
+    nodePort: 30880
+  elmadb:
+    nodePort: 30881
+  rabbitmq:
+    nodePort: 30882

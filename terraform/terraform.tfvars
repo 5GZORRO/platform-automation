@@ -13,7 +13,7 @@ resource_group_name    = "5gzorro"
 location               = "germanywestcentral"
 default_node_pool_name = "system"
 default_node_pool_size = "Standard_D4s_v5"
-kubernetes_version     = "1.23.5"
+kubernetes_version     = "1.21.9"
 max_pods               = 250
 
 values-file-path = "5gzorro-platform-values.yaml"

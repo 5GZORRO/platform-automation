@@ -1,0 +1,38 @@
+{{- $imageValues := .Values.image }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elma-deployment-configmap
+  namespace: "{{ $imageValues.namespace }}"
+data:
+  RABBITMQ_URL: "rabbitmq-service"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_PREFETCH_COUNT: "20"
+  RABBITMQ_V_HOST: "/"
+  LOG_LEVEL: "DEBUG"
+  DRY_RUN: "False"
+  MANO: "OSM"
+  MANO_VERSION: "ZORRO"
+  MANO_TZ: "Europe/Madrid"
+  OSM_URL: "172.28.3.15"
+  OSM_PORT: "31081"
+  DOMAIN_ID: "domain1"
+  ELMA_REST_URL: "elmarest-service"
+  ELMA_REST_PORT: "8000"
+  ELMA_REST_URL_1: "172.28.3.15"
+  ELMA_REST_PORT_1: "31880"
+  ELMA_DB_URL: "elmadb-service"
+  ELMA_DB_PORT: "27017"
+  DB_RESTART: "False"
+  ME_CONFIG_MONGODB_URL: "mongodb://elmadb-service:27017/"
+  CATALOG_URL: "172.28.3.15"
+  CATALOG_PORT: "31080"
+  CATALOG_RESOURCES: "None"
+  NET_SLICE_ORCHESTRATOR_URL: "172.28.3.15"
+  NET_SLICE_ORCHESTRATOR_PORT: "31082"
+  NET_SLICE_ORCHESTRATOR_ENDPOINT: "portal/elicensing/"
+  ELMA_RESPONSE_TIMEOUT: "30"
+  DATA_LAKE_URL: "http://172.28.3.15:32579/datalake/v1/catalog/instance/{instance_id}"
+  DATA_LAKE_AUTH: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
+  DATA_LAKE_KAFKA: "172.28.3.196:9092"

@@ -1,0 +1,57 @@
+fullnameOverride: "legal-prose-app"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: 
+
+replicaCount: 1
+service:
+    name: legal-prose-app
+    type: NodePort
+    appPort: 8080
+    extAppPort: 31084
+
+image:
+    pullPolicy: IfNotPresent
+
+resources:
+    limits:
+        cpu: 500m
+        memory: 1G
+    requests:
+        cpu: 500m
+        memory: 1G
+
+podSecurityContext: {}
+securityContext: {}
+
+imagePullSecrets:
+    [name: regcred-sclcm]
+
+postgres:
+    host: postgres.postgres.svc.cluster.local
+    port: 5432
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+
+spring:
+    profiles: staging
+
+probePath: /legal-prose-repository/actuator/health
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120

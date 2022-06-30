@@ -1,0 +1,12 @@
+apiVersion: v2
+name: elma
+version: "3.1.0"
+description: eLicensing Manager for a 5G deployment
+type: application
+keywords:
+  - licensing
+  - elicense
+  - smart contracts
+maintainers:
+  - name: guillermo.gomez
+    email: guillermo.gomezchavez@atos.net

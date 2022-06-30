@@ -1,0 +1,53 @@
+{{- $imageValues := .Values.image }}
+{{- $elmarest := .Values.elmarest }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elmarest
+  namespace: "{{ $imageValues.namespace }}"
+  labels:
+    app: "{{ $imageValues.app }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elmarest
+  template:
+    metadata:
+      labels:
+        app: elmarest
+    spec:
+      containers:
+        - envFrom:
+          - configMapRef:
+              name: elma-deployment-configmap
+          - secretRef:
+              name: elma-deployment-secret
+          image: {{ $imageValues.image }}:{{ $imageValues.tag }}
+          command: ["elma_rest", "start"]
+          imagePullPolicy: "{{ $imageValues.pullPolicy }}"
+          name: elmarest
+          ports:
+            - containerPort: 8000
+          resources: {}
+      {{- if $imageValues.pullSecrets }}
+      imagePullSecrets:
+        - name: {{ $imageValues.pullSecrets }}
+      {{- end }}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elmarest-service
+  namespace: "{{ $imageValues.namespace }}"
+spec:
+  selector:
+    app: elmarest
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: {{ $elmarest.nodePort }}
