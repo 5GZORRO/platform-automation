@@ -82,24 +82,24 @@ spec:
           value: {{ .Values.kafka.port }}
         - name: OSM_KEY
           value: {{ .Values.osmKey }}
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.probePath }}
-            port: {{ .Values.service.appPort }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          successThreshold: {{ .Values.livenessProbe.successThreshold }}
-          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-          failureThreshold:  {{ .Values.livenessProbe.failureThreshold }}
-        readinessProbe:
-          httpGet:
-            path: {{ .Values.probePath }}
-            port: {{ .Values.service.appPort }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-          successThreshold: {{ .Values.readinessProbe.successThreshold }}
-          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-          failureThreshold:  {{ .Values.livenessProbe.failureThreshold }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: {{ .Values.probePath }}
+        #     port: {{ .Values.service.appPort }}
+        #   initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+        #   periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+        #   successThreshold: {{ .Values.livenessProbe.successThreshold }}
+        #   timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        #   failureThreshold:  {{ .Values.livenessProbe.failureThreshold }}
+        # readinessProbe:
+        #   httpGet:
+        #     path: {{ .Values.probePath }}
+        #     port: {{ .Values.service.appPort }}
+        #   initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+        #   periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+        #   successThreshold: {{ .Values.readinessProbe.successThreshold }}
+        #   timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        #   failureThreshold:  {{ .Values.livenessProbe.failureThreshold }}
         volumeMounts:
           - mountPath: /logs
             name: mda-claim0

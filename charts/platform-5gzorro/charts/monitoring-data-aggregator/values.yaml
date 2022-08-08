@@ -26,20 +26,19 @@ imagePullSecrets:
 podSecurityContext: {}
 securityContext: {}
 
-probePath: /actuator/health
-        
-livenessProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 5
-  successThreshold: 1
-  timeoutSeconds: 20
-  failureThreshold: 120
-readinessProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 5
-  successThreshold: 1
-  timeoutSeconds: 20
-  failureThreshold: 120
+# probePath: /actuator/health      
+# livenessProbe:
+#   initialDelaySeconds: 30
+#   periodSeconds: 5
+#   successThreshold: 1
+#   timeoutSeconds: 20
+#   failureThreshold: 120
+# readinessProbe:
+#   initialDelaySeconds: 30
+#   periodSeconds: 5
+#   successThreshold: 1
+#   timeoutSeconds: 20
+#   failureThreshold: 120
 
 postgres:
     host: postgres.postgres-fix.svc.cluster.local
