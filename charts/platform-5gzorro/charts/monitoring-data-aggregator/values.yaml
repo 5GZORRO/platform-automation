@@ -1,0 +1,56 @@
+fullnameOverride: "mda"
+
+replicaCount: 1
+service:
+    name: mda
+    type: ClusterIP
+    appPort: 4000
+    extAppPort: 4000
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: 
+
+image:
+    pullPolicy: Always
+
+resources: {}
+
+dockerTag: latest
+imagePullSecrets:
+    [name: regcred-mda]
+
+podSecurityContext: {}
+securityContext: {}
+
+probePath: /actuator/health
+        
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 20
+  failureThreshold: 120
+
+postgres:
+    host: postgres.postgres-fix.svc.cluster.local
+    port: 5432
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+
+
+kafka:
+  host: 172.28.3.196
+  port: 9092
+
+osmKey: 
