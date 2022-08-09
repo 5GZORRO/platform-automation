@@ -1,0 +1,72 @@
+fullnameOverride: "catalogue"
+
+namespace: domain-operator-a
+domain: operator-a
+operatorName: operatora
+
+replicaCount: 1
+service:
+    app: catalogue
+    name: catalogue-svc
+    type: ClusterIP
+    appPort: 8080
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: 
+
+image:
+    pullPolicy: Always
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+
+dockerTag: latest
+imagePullSecrets:
+    [name: operator-a-regcred]
+
+podSecurityContext: {}
+securityContext: {}
+
+hostname: localhost
+
+postgres:
+    url: postgres.postgres-fix.svc.cluster.local:5432
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+    mode: create
+
+
+kafka:
+  bootstrap: 172.28.3.196:9092
+  topic: dlt-product-offerings
+
+did:
+  host: 172.28.3.153
+  port: 6200
+  requestPath: /holder/create_did
+
+lcm:  
+  host: 172.28.3.111/operatora/smart-contract-lifecycle-manager
+  port: 8082
+  offerPath: /product-offer/
+  orderPath: /product-order/
+  issuePath: /spectoken/derivative/issue
+  slaPath: /api/v1/service-level-agreement/
+  skipPost: false
+
+srsd:
+  host: smart-resource-discovery.default.svc.cluster.local
+  port: 8083
+  requestPath: /classifyOffer
+  skipPost: false

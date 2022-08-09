@@ -9,6 +9,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    domain: {{ .Values.domain}} 
+    app: {{ .Values.service.app }}
 {{- if .Values.service.annotations }}
   annotations:
 {{ toYaml .Values.service.annotations | indent 4 }}
@@ -16,13 +18,9 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - name: app
-    port: {{ .Values.service.extAppPort }}
-    targetPort: {{ .Values.service.appPort }}
-    protocol: TCP
   - name: http
     port: {{ .Values.service.appPort }}
     protocol: TCP
     targetPort: {{ .Values.service.appPort }}
   selector:
-    app: {{ include "mda-api.fullname" . }}
+    app: {{ include "rsoc-api.fullname" . }}

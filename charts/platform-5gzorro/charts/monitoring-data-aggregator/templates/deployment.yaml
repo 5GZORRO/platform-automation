@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "mda-api.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "mda-api.labels" . | nindent 4 }}
 spec:
@@ -113,4 +114,4 @@ spec:
         accessModes:
         - ReadWriteOnce
         hostPath:
-          path: "/mnt/mda/logs"
+          path: "/mnt/mda/{{ .Values.namespace }}/logs"

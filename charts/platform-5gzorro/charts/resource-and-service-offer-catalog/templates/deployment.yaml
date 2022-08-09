@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "catalogue-api.fullname" . }}
+  labels:
+    app: {{ .Values.service.app }}
+    domain: {{ .Values.domain }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.service.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.app }}
+        domain: {{ .Values.domain }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "catalogue-api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "docker.pkg.github.com/5gzorro/resource-and-service-offer-catalog/resource-and-service-offer-catalog:{{ .Values.dockerTag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort:  {{ .Values.service.appPort }}
+            protocol: TCP
+        env:
+          - name: OFFER_CATALOG_HOSTNAME
+            value: {{ .Values.hostname }}
+          - name: SERVER_PORT
+            value: {{ .Values.service.appPort }}
+          - name: SPRING_DATASOURCE_URL
+            value: "{{ .Values.postgres.url }}"
+          - name: POSTGRES_MODE
+            value: {{ .Values.postgres.mode }}
+          - name: POSTGRES_USER
+            valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgres.existingSecret -}}
+                    name: {{ .Values.postgres.existingSecret }}
+                    key: {{ .Values.postgres.userKey }}
+                {{- else }}
+                    name: mda-api-db-credentials
+                    key: username
+                {{- end }}
+          - name: POSTGRES_PSW
+            valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgres.existingSecret -}}
+                    name: {{ .Values.postgres.existingSecret }}
+                    key: {{ .Values.postgres.passwordKey }}
+                {{- else }}
+                    name: mda-api-db-credentials
+                    key: password
+                {{- end }}
+          - name: KAFKA_BOOTSTRAP_ADDRESS
+            value: {{ .Values.kafka.bootstrap }} 
+          - name: KAFKA_TOPIC
+            value: "{{ .Values.operatorName }}-{{ .Values.kafka.topic }}"
+          - name: DID_SERVICE_HOSTNAME
+            value: {{ .Values.did.host }}
+          - name: DID_SERVICE_PORT
+            value: {{ .Values.did.port }}
+          - name: DID_SERVICE_REQUEST_PATH
+            value: {{ .Values.did.requestPath }}
+          - name: SC_LCM_HOSTNAME
+            value: {{ .Values.lcm.host }}
+          - name: SC_LCM_PORT
+            value: {{ .Values.lcm.port }}
+          - name: SC_LCM_PRODUCT_OFFER_REQUEST_PATH
+            value: {{ .Values.lcm.offerPath }}
+          - name: SC_LCM_PRODUCT_ORDER_REQUEST_PATH
+            value: {{ .Values.lcm.orderPath }}
+          - name: SC_LCM_DERIVATIVE_ISSUE_REQUEST_PATH
+            value: {{ .Values.lcm.issuePath }}
+          - name: SC_LCM_SLA_REQUEST_PATH
+            value: {{ .Values.lcm.slaPath }}
+          - name: SKIP_SC_LCM_POST
+            value: {{ .Values.lcm.skipPost }}
+          - name: SRSD_HOSTNAME
+            value: {{ .Values.srsd.host }}
+          - name: SRSD_PORT
+            value: {{ .Values.srsd.port }}
+          - name: SRSD_REQUEST_PATH
+            value: {{ .Values.srsd.requestPath }}
+          - name: SKIP_SRSD_POST
+            value: {{ .Values.srsd.skipPost }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
