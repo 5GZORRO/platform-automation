@@ -1,0 +1,5 @@
+{{- $imageValues := .Values.image }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "{{ $imageValues.namespace }}"

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "identity-and-permissions-manager.fullname" . }}
+data:
+  WHITELIST: {{ .Values.idp.whitelist | quote }}
+  DATABASE_PORT: "27017"
+  HOLDER_AGENT: {{ .Values.idp.holderAgent }}
+  TRADING_PROVIDER_AGENT_CONTROLLER_URL: {{ .Values.idp.tradingProviderAgentControllerUrl }}
+  OTHER_IDP_CONTROLLERS: {{ .Values.idp.otherIdpControllers | quote }}
+  {{- if or (eq .Values.idp.type "admin") (eq .Values.idp.type "regulator") }}
+  ISSUER_AGENT_URL: {{ .Values.idp.issuerAgentUrl }}
+  {{- end }}
+  {{- if or (eq .Values.idp.type "admin") (eq .Values.idp.type "trader") }}
+  REGULATOR_AGENT_CONTROLLER_URL: {{ .Values.idp.regulatorAgentControllerUrl }}
+  {{- end }}
+  {{- if or (eq .Values.idp.type "regulator") (eq .Values.idp.type "trader") }}
+  ADMIN_AGENT_CONTROLLER_URL: {{ .Values.idp.adminAgentControllerUrl }}
+  {{- end }}
+  {{- if (eq .Values.idp.type "admin") }}
+  ADMIN_CATALOGUE_URL: {{ .Values.idp.adminCatalogueUrl }}
+  {{- end }}
+  # KEY: {{ .Values.idp.key }}
+  # VPNAAS_KEY: {{ .Values.idp.vpnaasKey }}

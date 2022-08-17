@@ -1,0 +1,6 @@
+apiVersion: v2
+name: aries-cloudagent
+description: Hyperledger Aries Cloud Agent Python (ACA-Py) is a foundation for building Verifiable Credential (VC) ecosystems. It operates in the second and third layers of the Trust Over IP framework (PDF) using DIDComm messaging and Hyperledger Aries protocols. The "cloud" in the name means that ACA-Py runs on servers (cloud, enterprise, IoT devices, and so forth), but is not designed to run on mobile devices.
+type: application
+version: 0.1.0
+appVersion: "0.6.0"

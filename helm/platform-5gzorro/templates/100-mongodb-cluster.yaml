@@ -1,0 +1,25 @@
+{{- if (index .Values "community-operator" "enabled") -}}
+---
+{{- range $k, $v := (index .Values "community-operator" "mongodbClusters") }}
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: {{ $v.name }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  members: {{ $v.replicas }}
+  type: ReplicaSet
+  version: {{ $v.version }}
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+{{- $v.users | toYaml | nindent 4 }}
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+---
+{{- end }}
+{{- end }}

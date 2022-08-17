@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "identity-and-permissions-manager.fullname" . }}
+  labels:
+    {{- include "identity-and-permissions-manager.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "identity-and-permissions-manager.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aries-cloudagent.fullname" . }}
+  labels:
+    {{- include "aries-cloudagent.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "aries-cloudagent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "aries-cloudagent.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "aries-cloudagent.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: {{ include "aries-cloudagent.fullname" . }}-registration
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+          args:
+            - -c 
+            - "curl -H \"Content-Type: application/json\" -d '{\"role\": \"ENDORSER\", \"alias\": null, \"did\": null, \"seed\": \"{{ .Values.agent.seed }}\"}' -X POST {{ .Values.vonUrl }}/register"
+          env:
+            - name: AGENT_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "aries-cloudagent.fullname" . }}-agent-seed
+                  key: seed
+                  optional: false
+      containers:
+        - name: {{ include "aries-cloudagent.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - start 
+            - --inbound-transport 
+            - http 
+            - 0.0.0.0 
+            - {{ .Values.agent.port | quote }}
+            - --outbound-transport
+            - http
+            - --endpoint 
+            - http://0.0.0.0:{{ .Values.agent.port }}
+            - --label 
+            - {{ .Values.agent.label }}
+            - --seed 
+            - {{ .Values.agent.seed }}
+            - --admin 
+            - 0.0.0.0 
+            - {{ add1 .Values.agent.port | quote }}
+            - --admin-insecure-mode 
+            - --auto-ping-connection 
+            - --auto-accept-invites 
+            - --auto-accept-requests 
+            {{- if not (eq .Values.agent.type "verifier")  }}
+            - --auto-respond-credential-offer 
+            - --auto-store-credential 
+            - --auto-respond-presentation-request 
+            {{- end }}
+            {{- if or (eq .Values.agent.type "admin") (eq .Values.agent.type "regulator") }}
+            - --auto-respond-credential-proposal 
+            - --auto-respond-credential-request 
+            {{- end }}
+            {{- if not (eq .Values.agent.type "holder")  }}
+            - --auto-verify-presentation 
+            {{- end }}
+            - --wallet-key 
+            - {{ .Values.agent.walletKey }}
+            - --wallet-name 
+            - {{ .Values.agent.walletName }} 
+            - --wallet-type 
+            - indy
+            - --auto-provision
+            - --genesis-url
+            - {{ .Values.vonUrl }}/genesis
+          ports:
+            - name: http-in
+              containerPort: {{ .Values.agent.port }}
+              protocol: TCP
+            - name: http-admin
+              containerPort: {{ add1 .Values.agent.port }}
+              protocol: TCP
+          env:
+            - name: WALLET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "aries-cloudagent.fullname" . }}-walley-key
+                  key: key
+                  optional: false
+            - name: AGENT_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "aries-cloudagent.fullname" . }}-agent-seed
+                  key: seed
+                  optional: false
+          {{- if .Values.livenessProbe }}    
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}  
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.startupProbe }}  
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{ if .Values.persistence.enabled -}}
+          volumeMounts:
+            - mountPath: "/home/indy/wallet"
+              name: {{ include "aries-cloudagent.fullname" . }}
+          {{- end -}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{ if .Values.persistence.enabled -}}
+      volumes:
+        - name: {{ include "aries-cloudagent.fullname" . }}
+          persistentVolumeClaim:
+            claimName: {{ include "aries-cloudagent.fullname" . }}
+      {{- end -}}

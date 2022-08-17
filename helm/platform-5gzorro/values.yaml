@@ -1,9 +1,8 @@
 global:
-  imagePullSecrets: 
-    - name: registry-credentials
-
+  imagePullSecrets: []
+  
 kube-prometheus-stack:
-  enabled: true
+  enabled: false
   defaultRules:
     etcd: false
     kubeScheduler: false
@@ -16,14 +15,9 @@ kube-prometheus-stack:
     enabled: false
   kubeScheduler:
     enabled: false
-  # prometheusOperator:
-  #   logLevel: debug
   prometheus:
     prometheusSpec:
       serviceMonitorSelectorNilUsesHelmValues: false
-      ruleSelectorNilUsesHelmValues: false
-      podMonitorSelectorNilUsesHelmValues: false
-      probeSelectorNilUsesHelmValues: false
       retention: 180d
       retentionSize: "30GB"
       storageSpec:
@@ -36,7 +30,7 @@ kube-prometheus-stack:
                 storage: 32Gi
 
 loki-stack:
-  enabled: true
+  enabled: false
   loki:
     enabled: true
     isDefault: true
@@ -49,9 +43,10 @@ loki-stack:
       subPath: "loki"
       storageClassName: managed-premium
     serviceMonitor:
-      enabled: true
+      enabled: false
       prometheusRule:
-        enabled: true
+        enabled: false
+        additionalLabels: {}
         rules: 
         #  Some examples from https://awesome-prometheus-alerts.grep.to/rules.html#loki
         - alert: LokiProcessTooManyRestarts
@@ -91,17 +86,17 @@ loki-stack:
     config:
       lokiAddress: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push
     serviceMonitor:
-      enabled: true
+      enabled: false
 
 minio:
-  enabled: false
+  enabled: true
   fullnameOverride: "minio"
   mode: standalone
   replicas: 1
   DeploymentUpdate:
     type: Recreate
-  # rootUser: "zorro5g"
-  # rootPassword: "zorro5g"
+  rootUser: ""
+  rootPassword: ""
   resources:
     requests:
       memory: 2Gi
@@ -112,17 +107,17 @@ minio:
     size: 32Gi
   metrics:
     serviceMonitor:
-      enabled: true
+      enabled: false
 
 postgres-operator:
-  enabled: false
+  enabled: true
   postgresqlClusters:
-    - name: zorro5g-global-psqldb
+    - name: zorro5g-global-db
       spec:
-        teamId: zorro5g
+        teamId: 5gzorro
         volume:
           size: 1Gi
-          storageClass: "managed-premium"
+          storageClass: ""
         numberOfInstances: 1
         users:
           zorro5g:
@@ -132,25 +127,9 @@ postgres-operator:
           global: zorro5g
         postgresql:
           version: "14"
-          
-    - name: zorro5g-test-psqldb
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 1Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          zorro5g:
-            - superuser
-            - createdb
-        databases:
-          test: zorro5g
-        postgresql:
-          version: "14"
 
 strimzi:
-  enabled: false
+  enabled: true
   watchAnyNamespace: true
   kafkaClusters:
     - name: kafka-cluster
@@ -190,70 +169,27 @@ strimzi:
       spec:
         partitions: 3
         replicas: 1
-        
-community-operator-crds:
-  enable: true
-
+  
 community-operator:
   enabled: true
   community-operator-crds:
-    enabled: false
+    enabled: true
   mongodbClusters:
-    - name: admin-operator
-      replicas: 1
+    - name: mongo-test
+      replicas: 3
       version: "4.2.6"
       users:
-        - name: admin
+        - name: test-user
           db: admin
           passwordSecretRef: 
-            name: admin-password
+            name: test-password
           roles:
             - name: readWrite
-              db: administrator
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: admin-scram
-    - name: trader-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: trader
-          db: admin
-          passwordSecretRef: 
-            name: trader-operator-password
-          roles:
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: trader-scram
-    - name: regulator-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: regulator
-          db: admin
-          passwordSecretRef: 
-            name: regulator-operator-password
-          roles:
-            - name: readWrite
-              db: regulator
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: regulator-scram
-    - name: consumer-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: consumer
-          db: admin
-          passwordSecretRef: 
-            name: consumer-operator-password
-          roles:
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: consumer-scram
+              db: test-db
+          scramCredentialsSecretName: my-scram
 
 redis:
-  enabled: false
+  enabled: true
   architecture: standalone
   replica:
     replicaCount: 1
@@ -263,7 +199,7 @@ redis:
       enabled: true
 
 argo-workflows:
-  enabled: false
+  enabled: true
   controller:
     metricsConfig:
       enabled: true
@@ -273,7 +209,7 @@ argo-workflows:
       enabled: true
 
 governance-manager-api:
-  enabled: false
+  enabled: true
   service:
     prefix: /zorro/governance
   postgres:
@@ -291,7 +227,7 @@ governance-manager-api:
   dockerTag: v0.1.23
 
 legal-prose-repository:
-  enabled: false
+  enabled: true
   service:
     prefix: /zorro/legal-prose-repository
   postgres:
@@ -309,7 +245,7 @@ legal-prose-repository:
   dockerTag: v0.1.23
 
 smart-contract-lifecycle-manager:
-  enabled: false
+  enabled: true
   hostname: "172.28.3.6:31080/smart-contract-lifecycle-manager"
   dockerTag: "5gzorro-core-1.23-rc"
   postgres:
@@ -330,7 +266,6 @@ smart-contract-lifecycle-manager:
   operatorName: opa
 
 elma:
-  enabled: false
   image:
     tag: gitlab-ci
     namespace: domain-operator-a
@@ -354,12 +289,14 @@ resource-and-service-offer-catalog:
 aries-cloudagent-admin:
   enable: true
   agent:
-    type: "admin"  # Admin, Regulator, Holder, Verifier
-    label: "AgentAdmin" # AgentRegulator
-    seed: "AgentAdmin0000000000000000000000" # AgentRegulator00000000000000000
-    walletName: "AgentAdmin" # AgentRegulator
-    walletKey: "AgentAdminKey" # secret
-  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
+    type: ""  # Admin, Regulator, Holder, Verifier
+    label: "" # AgentRegulator
+    seed: "" # AgentRegulator00000000000000000
+    walletName: "" # AgentRegulator
+    walletKey: "" # secret
+
+  vonUrl: "" # http://10.241.0.4:9000
+
   persistence:
     enabled: false
     # storageClassName: default
@@ -367,126 +304,22 @@ aries-cloudagent-admin:
       - ReadWriteOnce
     size: 10Gi
 
-aries-cloudagent-regulator:
-  enable: true
-  agent:
-    type: "regulator"  # Admin, Regulator, Holder, Verifier
-    label: "AgentRegualtor" # AgentRegulator
-    seed: "AgentRegulator000000000000000000" # AgentRegulator00000000000000000
-    walletName: "AgentRegualtor" # AgentRegulator
-    walletKey: "AgentRegulatorKey" # secret
-  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
-  persistence:
-    enabled: false
-    # storageClassName: default
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
+identity-and-permissions-manager:
+  enabled: false
 
-aries-cloudagent-holder:
-  enable: true
-  agent:
-    type: "holder"  # Admin, Regulator, Holder, Verifier
-    label: "AgentHolder" # AgentRegulator
-    seed: "AgentHolder000000000000000000000" # AgentRegulator00000000000000000
-    walletName: "AgentHolder" # AgentRegulator
-    walletKey: "AgentHolderKey" # secret
-  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
-  persistence:
-    enabled: false
-    # storageClassName: default
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
-
-aries-cloudagent-verifier:
-  enable: true
-  agent:
-    type: "varifier"  # Admin, Regulator, Holder, Verifier
-    label: "AgentVerifier" # AgentRegulator
-    seed: "AgentVerifier0000000000000000000" # AgentRegulator00000000000000000
-    walletName: "AgentVerifier" # AgentRegulator
-    walletKey: "AgentVerifierKey" # secret
-  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
-  persistence:
-    enabled: false
-    # storageClassName: default
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
-
-
-identity-and-permissions-manager-admin:
-  enabled: true
   database:
-    connectionString: "admin-operator-admin-admin"
-    port: "27017"
-  idp:
-    type: "admin"
-    whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-trader:8000", "http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-consumer:8000"]'
-    adminCatalogueUrl: "http://172.51.40.23:34080/tmf-api/adminOnboardHandler"
-    key: ""
-    vpnaasKey: ""
-
-identity-and-permissions-manager-regulator:
-  enabled: true
-  database:
-    connectionString: "regulator-operator-admin-regulator"
+    connectionString: ""
     port: ""
+
   idp:
-    type: "regulator"
-    whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-regulator:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-regulator:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-trader:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
+    type: ""
+    whitelist: ""
+    holderAgent: ""
+    issuerAgentUrl: ""
+    tradingProviderAgentControllerUrl: ""
+    otherIdpControllers: ""
+    regulatorAgentControllerUrl: ""
+    adminAgentControllerUrl: ""
+    adminCatalogueUrl: ""
     key: ""
     vpnaasKey: ""
-
-identity-and-permissions-manager-trader:
-  enabled: true
-  database:
-    connectionString: "trader-operator-admin-trader"
-    port: ""
-  idp:
-    type: "trader"
-    whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-holder:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-holder:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
-    key: ""
-    vpnaasKey: ""
-
-identity-and-permissions-manager-consumer:
-  enabled: true
-  database:
-    connectionString: "consumer-operator-admin-consumer"
-    port: ""
-  idp:
-    type: "trader"
-    whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-verifier:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-verifier:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
-    key: ""
-    vpnaasKey: ""
-
-tags:
-  base: false
-  admin: false 
-  aries: true
-  trader: false
-  regulator: false
-  monitoring: false

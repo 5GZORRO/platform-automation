@@ -49,3 +49,20 @@ variable "max_pods" {
   type    = number
   default = 250
 }
+
+variable "aks_default_id" {
+  type = string
+}
+
+
+variable "identity_id" {
+  type = string
+}
+
+variable "client_id" {
+  type = string
+}
+
+variable "object_id" {
+  type = string
+}

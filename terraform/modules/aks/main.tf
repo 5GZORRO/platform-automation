@@ -1,23 +1,8 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~>2.0"
-    }
-  }
-}
-
-resource "azurerm_resource_group" "k8s" {
-  name     = var.resource_group_name
-  location = var.location
-
-  tags = var.tags
-}
-
 resource "azurerm_kubernetes_cluster" "k8s" {
   name                = var.cluster_name
-  location            = azurerm_resource_group.k8s.location
-  resource_group_name = azurerm_resource_group.k8s.name
+  resource_group_name = var.resource_group_name
+  tags = var.tags
+  location            = var.location
   dns_prefix          = var.dns_prefix
   kubernetes_version  = var.kubernetes_version
 
@@ -34,24 +19,31 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     node_count = var.node_count
     vm_size    = var.default_node_pool_size
     max_pods   = 250
+    vnet_subnet_id        = var.aks_default_id
   }
 
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [var.identity_id]
+  }
+ 
+  kubelet_identity {
+    user_assigned_identity_id = var.identity_id
+    client_id = var.client_id
+    object_id = var.object_id
   }
 
   network_profile {
-    load_balancer_sku = "Standard"
+    load_balancer_sku = "standard"
     network_plugin    = "azure"
     network_policy    = "calico"
   }
 
+  lifecycle {
+    ignore_changes = [
+      kubelet_identity,
+    ]
+  }
 }
 
-resource "azurerm_role_assignment" "k8s" {
-  scope                = azurerm_resource_group.k8s.id
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_kubernetes_cluster.k8s.identity[0].principal_id
 
-  depends_on = [azurerm_kubernetes_cluster.k8s]
-}

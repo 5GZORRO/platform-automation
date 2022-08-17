@@ -1,0 +1,6 @@
+apiVersion: v2
+name: identity-and-permissions-manager
+description: The Identity and Permissions Manager (Id&P) module is responsible for facilitating and coordinating marketplace governance in a decentralized fashion.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

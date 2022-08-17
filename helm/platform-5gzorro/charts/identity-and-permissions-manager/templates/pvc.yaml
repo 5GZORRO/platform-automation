@@ -1,0 +1,18 @@
+{{- if .Values.persistence.enabled -}}
+{{- $fullName := include "identity-and-permissions-manager.fullname.fullname" . -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}
+spec:
+  {{- if .Values.persistence.storageClassName -}}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  {{- end }}
+  accessModes:
+    {{- range .Values.persistence.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storage }}
+{{- end }}

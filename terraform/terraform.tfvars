@@ -13,7 +13,19 @@ resource_group_name    = "5gzorro"
 location               = "germanywestcentral"
 default_node_pool_name = "system"
 default_node_pool_size = "Standard_D4s_v5"
-kubernetes_version     = "1.21.9"
+kubernetes_version     = "1.22.11"
 max_pods               = 250
 
+# VMS
+public_ip_name  = "publicIpVonNetwork"
+nsg_name        = "nsgVonNetwork"
+username        = "zorro"
+computer_name   = "von"
+vm_name         = "vmVonNetwork"
+vm_size         = "Standard_D2s_v5"
+nic_name        = "nicVonNetwork"
+ansible_script  = "install-von-network.yaml"
+ssh_private_key = "/home/ffais/Documenti/users/5gzorro"
+
+# HELM
 values-file-path = "5gzorro-platform-values.yaml"

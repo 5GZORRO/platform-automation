@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aries-cloudagent.fullname" . }}
+  labels:
+    {{- include "aries-cloudagent.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http-in
+      protocol: TCP
+      name: http-in
+    - port: {{ add1 .Values.service.port }}
+      targetPort: http-admin
+      protocol: TCP
+      name: http-admin
+  selector:
+    {{- include "aries-cloudagent.selectorLabels" . | nindent 4 }}
