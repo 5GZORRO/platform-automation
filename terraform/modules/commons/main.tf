@@ -2,15 +2,21 @@
 resource "azurerm_resource_group" "k8s" {
   name     = var.resource_group_name
   location = var.location
-  tags = var.tags
+  tags     = var.tags
 }
 
 # Create AKS Managed Identity
 resource "azurerm_user_assigned_identity" "aks_identity" {
-  name = "aks-identity"
+  name                = "aks-identity"
   resource_group_name = azurerm_resource_group.k8s.name
   location            = var.location
-  tags = var.tags
+  tags                = var.tags
+}
+
+resource "azurerm_dns_zone" "default" {
+  name                = var.domain_name
+  resource_group_name = azurerm_resource_group.k8s.name
+  tags                = var.tags
 }
 
 # Assign role Contributor to AKS Managed Identity on Resource Group
@@ -27,7 +33,7 @@ resource "azurerm_virtual_network" "aksvnet" {
   name                = "aks-network"
   resource_group_name = azurerm_resource_group.k8s.name
   location            = azurerm_resource_group.k8s.location
-  tags = var.tags
+  tags                = var.tags
   address_space       = ["10.0.0.0/8"]
 }
 

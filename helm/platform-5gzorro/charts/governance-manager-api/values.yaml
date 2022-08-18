@@ -1,4 +1,4 @@
-fullnameOverride: "governance-manager-app"
+fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -9,13 +9,16 @@ serviceAccount:
 
 replicaCount: 1
 service:
-    name: governance-manager-app
     type: ClusterIP
     appPort: 8080
     extAppPort: 80
 
 image:
-    pullPolicy: IfNotPresent
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/governance-manager-api
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v0.1.23"
+
 
 resources:
     limits:
@@ -28,15 +31,21 @@ resources:
 podSecurityContext: {}
 securityContext: {}
 
-imagePullSecrets:
-    [name: regcred-zorro]
+imagePullSecrets: []
 
 postgres:
     host: postgresql.postgres.svc.cluster.local
     port: 5432
+    name: ""
     existingSecret: ""
     userKey: ""
     passwordKey: ""
+
+identityBaseUrl: ""
+legalProseRepositoryBaseUrl: ""
+callbacks:
+  updateProposal: ""
+role: ""
 
 probePath: /actuator/health
 

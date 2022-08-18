@@ -1,4 +1,4 @@
-fullnameOverride: "legal-prose-app"
+fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -9,34 +9,43 @@ serviceAccount:
 
 replicaCount: 1
 service:
-    name: legal-prose-app
-    type: NodePort
-    appPort: 8080
-    extAppPort: 31084
+  type: ClusterIP
+  appPort: 8080
+  extAppPort: 31084
 
 image:
-    pullPolicy: IfNotPresent
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/legal-prose-repository-api
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "5gzorro-full-1.0-pre-final"
+
 
 resources:
-    limits:
-        cpu: 500m
-        memory: 1G
-    requests:
-        cpu: 500m
-        memory: 1G
+  limits:
+    cpu: 500m
+    memory: 1G
+  requests:
+    cpu: 500m
+    memory: 1G
 
 podSecurityContext: {}
 securityContext: {}
 
-imagePullSecrets:
-    [name: regcred-sclcm]
+imagePullSecrets: []
 
 postgres:
-    host: postgres.postgres.svc.cluster.local
-    port: 5432
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
+  host: postgres.postgres.svc.cluster.local
+  port: 5432
+  name: ""
+  existingSecret: ""
+  userKey: ""
+  passwordKey: ""
+
+governanceBaseUrl: ""
+identityBaseUrl: ""
+callbacks:
+  updateTemplateIdentity: ""
+role: ""
 
 spring:
     profiles: staging

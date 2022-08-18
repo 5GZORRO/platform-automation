@@ -21,10 +21,11 @@ podSecurityContext: {}
 securityContext: {}
 
 agent:
-  type: ""  # Admin, Regulator, Holder, Verifier
+  role: ""  # Admin, Regulator, Holder, Verifier
   port: "8000"  # 8010, 8020, 8030, 8040
   label: "" # AgentRegulator
   seed: "" # AgentRegulator00000000000000000
+  did: "" 
   walletName: "" # AgentRegulator
   walletKey: "" # secret
 

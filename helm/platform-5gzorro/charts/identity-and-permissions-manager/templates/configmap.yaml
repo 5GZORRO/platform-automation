@@ -8,16 +8,16 @@ data:
   HOLDER_AGENT: {{ .Values.idp.holderAgent }}
   TRADING_PROVIDER_AGENT_CONTROLLER_URL: {{ .Values.idp.tradingProviderAgentControllerUrl }}
   OTHER_IDP_CONTROLLERS: {{ .Values.idp.otherIdpControllers | quote }}
-  {{- if or (eq .Values.idp.type "admin") (eq .Values.idp.type "regulator") }}
+  {{- if or (eq .Values.idp.role "admin") (eq .Values.idp.role "regulator") }}
   ISSUER_AGENT_URL: {{ .Values.idp.issuerAgentUrl }}
   {{- end }}
-  {{- if or (eq .Values.idp.type "admin") (eq .Values.idp.type "trader") }}
+  {{- if or (eq .Values.idp.role "admin") (eq .Values.idp.role "trader") }}
   REGULATOR_AGENT_CONTROLLER_URL: {{ .Values.idp.regulatorAgentControllerUrl }}
   {{- end }}
-  {{- if or (eq .Values.idp.type "regulator") (eq .Values.idp.type "trader") }}
+  {{- if or (eq .Values.idp.role "regulator") (eq .Values.idp.role "trader") }}
   ADMIN_AGENT_CONTROLLER_URL: {{ .Values.idp.adminAgentControllerUrl }}
   {{- end }}
-  {{- if (eq .Values.idp.type "admin") }}
+  {{- if (eq .Values.idp.role "admin") }}
   ADMIN_CATALOGUE_URL: {{ .Values.idp.adminCatalogueUrl }}
   {{- end }}
   # KEY: {{ .Values.idp.key }}

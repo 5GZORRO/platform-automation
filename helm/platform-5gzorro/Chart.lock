@@ -1,4 +1,10 @@
 dependencies:
+- name: external-dns
+  repository: https://charts.bitnami.com/bitnami
+  version: 6.7.5
+- name: vault
+  repository: https://helm.releases.hashicorp.com
+  version: 0.13.0
 - name: community-operator-crds
   repository: https://mongodb.github.io/helm-charts
   version: 0.7.5
@@ -26,12 +32,6 @@ dependencies:
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.16.9
-- name: governance-manager-api
-  repository: ""
-  version: 0.1.*
-- name: legal-prose-repository
-  repository: ""
-  version: 0.1.*
 - name: smart-contract-lifecycle-manager
   repository: ""
   version: 0.1.*
@@ -56,5 +56,29 @@ dependencies:
 - name: aries-cloudagent
   repository: ""
   version: 0.1.*
-digest: sha256:b10a9956538584288e15a808e670300a63226af64829bedb170ee07bb085f24c
-generated: "2022-08-16T13:22:44.729431178+02:00"
+- name: identity-and-permissions-manager
+  repository: ""
+  version: 0.1.*
+- name: identity-and-permissions-manager
+  repository: ""
+  version: 0.1.*
+- name: identity-and-permissions-manager
+  repository: ""
+  version: 0.1.*
+- name: identity-and-permissions-manager
+  repository: ""
+  version: 0.1.*
+- name: governance-manager-api
+  repository: ""
+  version: 0.1.*
+- name: governance-manager-api
+  repository: ""
+  version: 0.1.*
+- name: legal-prose-repository
+  repository: ""
+  version: 0.1.*
+- name: legal-prose-repository
+  repository: ""
+  version: 0.1.*
+digest: sha256:d6b71478f42481a62f35df2d7cf8730ddafba1b1a798c63dda8930e6fa25bdfb
+generated: "2022-08-18T13:20:57.989401482+02:00"

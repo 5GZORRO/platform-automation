@@ -1,6 +1,17 @@
 global:
   imagePullSecrets: []
-  
+
+external-dns:  
+  enabled: true
+  provider: azure
+  azure:
+    resourceGroup: ""
+    tenantId: ""
+    subscriptionId: ""
+    useManagedIdentityExtension: true
+  txtOwnerId: ""
+  domainFilters: []
+
 kube-prometheus-stack:
   enabled: false
   defaultRules:
@@ -289,9 +300,10 @@ resource-and-service-offer-catalog:
 aries-cloudagent-admin:
   enable: true
   agent:
-    type: ""  # Admin, Regulator, Holder, Verifier
+    role: ""  # Admin, Regulator, Holder, Verifier
     label: "" # AgentRegulator
     seed: "" # AgentRegulator00000000000000000
+    did: ""
     walletName: "" # AgentRegulator
     walletKey: "" # secret
 
@@ -312,7 +324,7 @@ identity-and-permissions-manager:
     port: ""
 
   idp:
-    type: ""
+    role: ""
     whitelist: ""
     holderAgent: ""
     issuerAgentUrl: ""

@@ -3,7 +3,7 @@ resource "azurerm_public_ip" "publicip" {
   name                = var.public_ip_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  tags = var.tags
+  tags                = var.tags
   allocation_method   = "Static"
 }
 
@@ -12,7 +12,7 @@ resource "azurerm_network_security_group" "nsg" {
   name                = var.nsg_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  tags = var.tags
+  tags                = var.tags
 
   security_rule {
     name                       = "SSH"
@@ -44,7 +44,7 @@ resource "azurerm_network_interface" "nic" {
   name                = var.nic_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  tags = var.tags
+  tags                = var.tags
 
   ip_configuration {
     name                          = "myNicConfiguration"
@@ -66,7 +66,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                  = var.vm_name
   resource_group_name   = var.resource_group_name
   location              = var.location
-  tags = var.tags
+  tags                  = var.tags
   network_interface_ids = [azurerm_network_interface.nic.id]
   size                  = var.vm_size
 

@@ -13,8 +13,9 @@ resource_group_name    = "5gzorro"
 location               = "germanywestcentral"
 default_node_pool_name = "system"
 default_node_pool_size = "Standard_D4s_v5"
-kubernetes_version     = "1.22.11"
+kubernetes_version     = "1.21.14"
 max_pods               = 250
+domain_name            = "5gzorro.platform.smartcommunitylab.it"
 
 # VMS
 public_ip_name  = "publicIpVonNetwork"

@@ -1,9 +1,41 @@
+tags:
+  base: true
+  admin: false 
+  aries: true
+  trader: false
+  regulator: false
+  monitoring: false
+
 global:
   imagePullSecrets: 
     - name: registry-credentials
 
-kube-prometheus-stack:
+external-dns:
   enabled: true
+  provider: azure
+  azure:
+    resourceGroup: "5gzorro"
+    tenantId: "11d1b7a3-5e92-4744-83dc-831a43e1f967"
+    subscriptionId: "f8948095-f2ff-4dbd-aa56-d319a3c81cf1"
+    useManagedIdentityExtension: true
+  txtOwnerId: "external-dns"
+  domainFilters: ["5gzorro.smartcommunitylab.it"]
+
+vault:
+  enabled: true
+  ui:
+    enabled: true
+    serviceType: "LoadBalancer"
+    serviceNodePort: null
+    externalPort: 8200
+  server:
+    standalone:
+      enabled: true
+  injector:
+    enabled: false
+
+kube-prometheus-stack:
+  enabled: false
   defaultRules:
     etcd: false
     kubeScheduler: false
@@ -115,37 +147,66 @@ minio:
       enabled: true
 
 postgres-operator:
-  enabled: false
+  enabled: true
   postgresqlClusters:
-    - name: zorro5g-global-psqldb
+    - name: zorro5g-psqldb-legalprose-admin
       spec:
         teamId: zorro5g
         volume:
-          size: 1Gi
+          size: 16Gi
           storageClass: "managed-premium"
         numberOfInstances: 1
         users:
-          zorro5g:
+          legalproseadmin:
             - superuser
             - createdb
         databases:
-          global: zorro5g
+          legalproseadmin: legalproseadmin
         postgresql:
           version: "14"
-          
-    - name: zorro5g-test-psqldb
+    - name: zorro5g-psqldb-legalprose-regulator
       spec:
         teamId: zorro5g
         volume:
-          size: 1Gi
+          size: 16Gi
           storageClass: "managed-premium"
         numberOfInstances: 1
         users:
-          zorro5g:
+          legalproseregulator:
             - superuser
             - createdb
         databases:
-          test: zorro5g
+          legalproseregulator: legalproseregulator
+        postgresql:
+          version: "14"
+    - name: zorro5g-psqldb-governancemanager-admin
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          governancemanageradmin:
+            - superuser
+            - createdb
+        databases:
+          governancemanageradmin: governancemanageradmin
+        postgresql:
+          version: "14"
+    - name: zorro5g-psqldb-governancemanager-regulator
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          governancemanagerregulator:
+            - superuser
+            - createdb
+        databases:
+          governancemanagerregulator: governancemanagerregulator
         postgresql:
           version: "14"
 
@@ -354,9 +415,10 @@ resource-and-service-offer-catalog:
 aries-cloudagent-admin:
   enable: true
   agent:
-    type: "admin"  # Admin, Regulator, Holder, Verifier
+    role: "admin"  # Admin, Regulator, Holder, Verifier
     label: "AgentAdmin" # AgentRegulator
     seed: "AgentAdmin0000000000000000000000" # AgentRegulator00000000000000000
+    did: "RGQ8DpoASL9rZZp69i7wJ8"
     walletName: "AgentAdmin" # AgentRegulator
     walletKey: "AgentAdminKey" # secret
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
@@ -370,9 +432,10 @@ aries-cloudagent-admin:
 aries-cloudagent-regulator:
   enable: true
   agent:
-    type: "regulator"  # Admin, Regulator, Holder, Verifier
+    role: "regulator"  # Admin, Regulator, Holder, Verifier
     label: "AgentRegualtor" # AgentRegulator
     seed: "AgentRegulator000000000000000000" # AgentRegulator00000000000000000
+    did: "KhgK8deVdK93xbTqkVMzVs"
     walletName: "AgentRegualtor" # AgentRegulator
     walletKey: "AgentRegulatorKey" # secret
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
@@ -386,9 +449,10 @@ aries-cloudagent-regulator:
 aries-cloudagent-holder:
   enable: true
   agent:
-    type: "holder"  # Admin, Regulator, Holder, Verifier
+    role: "holder"  # Admin, Regulator, Holder, Verifier
     label: "AgentHolder" # AgentRegulator
     seed: "AgentHolder000000000000000000000" # AgentRegulator00000000000000000
+    did: "5YhRzG3iwWi195vHuxMJPy"
     walletName: "AgentHolder" # AgentRegulator
     walletKey: "AgentHolderKey" # secret
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
@@ -402,9 +466,10 @@ aries-cloudagent-holder:
 aries-cloudagent-verifier:
   enable: true
   agent:
-    type: "varifier"  # Admin, Regulator, Holder, Verifier
+    role: "varifier"  # Admin, Regulator, Holder, Verifier
     label: "AgentVerifier" # AgentRegulator
     seed: "AgentVerifier0000000000000000000" # AgentRegulator00000000000000000
+    did: "2ramRjDFUSwWnn4JJ5MDpC"
     walletName: "AgentVerifier" # AgentRegulator
     walletKey: "AgentVerifierKey" # secret
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
@@ -422,7 +487,7 @@ identity-and-permissions-manager-admin:
     connectionString: "admin-operator-admin-admin"
     port: "27017"
   idp:
-    type: "admin"
+    role: "admin"
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
@@ -439,7 +504,7 @@ identity-and-permissions-manager-regulator:
     connectionString: "regulator-operator-admin-regulator"
     port: ""
   idp:
-    type: "regulator"
+    role: "regulator"
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-regulator:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-regulator:8001"
@@ -455,7 +520,7 @@ identity-and-permissions-manager-trader:
     connectionString: "trader-operator-admin-trader"
     port: ""
   idp:
-    type: "trader"
+    role: "trader"
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-holder:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-holder:8001"
@@ -472,7 +537,7 @@ identity-and-permissions-manager-consumer:
     connectionString: "consumer-operator-admin-consumer"
     port: ""
   idp:
-    type: "trader"
+    role: "trader"
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-verifier:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-verifier:8001"
@@ -483,10 +548,62 @@ identity-and-permissions-manager-consumer:
     key: ""
     vpnaasKey: ""
 
-tags:
-  base: false
-  admin: false 
-  aries: true
-  trader: false
-  regulator: false
-  monitoring: false
+governance-manager-api-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-governancemanager-admin
+    port: 5432
+    name: governancemanageradmin
+    existingSecret: "governancemanageradmin.zorro5g-psqldb-governancemanager-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"
+  callbacks:
+    updateProposal: "http://governance-manager-api-admin:8080/api/v1/governance-actions/%s/identity"
+
+governance-manager-api-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-governancemanager-regulator
+    port: 5432
+    name: governancemanagerregulator
+    existingSecret: "governancemanagerregulator.zorro5g-psqldb-governancemanager-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-regulator:8080/legal-prose-repository/api/v1"
+  callbacks:
+    updateProposal: "http://governance-manager-api-regulator:8080/api/v1/governance-actions/%s/identity"
+
+legal-prose-repository-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-legalprose-admin
+    port: 5432
+    name: legalproseadmin
+    existingSecret: "legalproseadmin.zorro5g-psqldb-legalprose-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  callbacks:
+    updateTemplateIdentity: "http://legal-prose-repository-admin:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+
+legal-prose-repository-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-legalprose-regulator
+    port: 5432
+    name: legalproseregulator
+    existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+  callbacks:
+    updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"

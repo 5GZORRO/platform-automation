@@ -11,29 +11,33 @@
       become: true
 
   tasks:
-  - name: Checkout Von git repository
-    ansible.builtin.git:
-      repo: https://github.com/bcgov/von-network.git
-      dest: /home/zorro/von-network
+    - name: Checkout Von git repository
+      ansible.builtin.git:
+        repo: https://github.com/bcgov/von-network.git
+        dest: /home/zorro/von-network
+        version: main
 
-  - name: Build VON-Network
-    command: "./manage build"
-    args:
-      chdir: "/home/zorro/von-network"
-    register: result
+    - name: Reset ssh connection fix for docker permsission error
+      ansible.builtin.meta: reset_connection
 
-  - name: Print return information from the previous task
-    ansible.builtin.debug:
-      var: result
-      verbosity: 2
+    - name: Build VON-Network
+      ansible.builtin.command: "/bin/bash manage build"
+      args:
+        chdir: "/home/zorro/von-network"
+      register: result
+      changed_when: result.rc != 0
 
-  - name: Run VON-Network
-    command: "./manage start"
-    args:
-      chdir: "/home/zorro/von-network"
-    register: result
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result
 
-  - name: Print return information from the previous task
-    ansible.builtin.debug:
-      var: result
-      verbosity: 2
+    - name: Run VON-Network
+      ansible.builtin.command: "/bin/bash manage start"
+      args:
+        chdir: "/home/zorro/von-network"
+      register: result
+      changed_when: result.rc != 0
+
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result

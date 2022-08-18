@@ -89,3 +89,7 @@ variable "ansible_script" {
 variable "ssh_private_key" {
   type = string
 }
+
+variable "domain_name" {
+  type = string
+}

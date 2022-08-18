@@ -48,7 +48,7 @@ Selector labels
 {{- define "identity-and-permissions-manager.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "identity-and-permissions-manager.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-identity-and-permissions-manager/type: {{ .Values.idp.type }}
+identity-and-permissions-manager/role: {{ .Values.idp.role }}
 {{- end }}
 
 {{/*

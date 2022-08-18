@@ -36,7 +36,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["uvicorn"]
-          args: [{{ if (eq .Values.idp.type "admin")  }}"app.main_admin:app",{{ else if (eq .Values.idp.type "trader") }}"app.main_trading_provider:app",{{ else if (eq .Values.idp.type "regulator") }}"app.main_regulator:app",{{ end }} "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8000", "--log-level", "error"]
+          args: [{{ if (eq .Values.idp.role "admin")  }}"app.main_admin:app",{{ else if (eq .Values.idp.role "trader") }}"app.main_trading_provider:app",{{ else if (eq .Values.idp.role "regulator") }}"app.main_regulator:app",{{ end }} "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8000", "--log-level", "error"]
           ports:
             - name: http
               containerPort: 8000

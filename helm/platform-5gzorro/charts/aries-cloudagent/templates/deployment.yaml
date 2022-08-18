@@ -34,7 +34,7 @@ spec:
             - /bin/sh
           args:
             - -c 
-            - "curl -H \"Content-Type: application/json\" -d '{\"role\": \"ENDORSER\", \"alias\": null, \"did\": null, \"seed\": \"{{ .Values.agent.seed }}\"}' -X POST {{ .Values.vonUrl }}/register"
+            - "curl -H \"Content-Type: application/json\" -d '{\"role\": \"ENDORSER\", \"alias\": null, \"did\": \"{{ .Values.agent.did }}\", \"seed\": \"{{ .Values.agent.seed }}\"}' -X POST {{ .Values.vonUrl }}/register"
           env:
             - name: AGENT_SEED
               valueFrom:
@@ -69,16 +69,16 @@ spec:
             - --auto-ping-connection 
             - --auto-accept-invites 
             - --auto-accept-requests 
-            {{- if not (eq .Values.agent.type "verifier")  }}
+            {{- if not (eq .Values.agent.role "verifier")  }}
             - --auto-respond-credential-offer 
             - --auto-store-credential 
             - --auto-respond-presentation-request 
             {{- end }}
-            {{- if or (eq .Values.agent.type "admin") (eq .Values.agent.type "regulator") }}
+            {{- if or (eq .Values.agent.role "admin") (eq .Values.agent.role "regulator") }}
             - --auto-respond-credential-proposal 
             - --auto-respond-credential-request 
             {{- end }}
-            {{- if not (eq .Values.agent.type "holder")  }}
+            {{- if not (eq .Values.agent.role "holder")  }}
             - --auto-verify-presentation 
             {{- end }}
             - --wallet-key 

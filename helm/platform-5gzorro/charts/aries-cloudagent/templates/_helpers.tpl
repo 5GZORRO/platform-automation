@@ -48,7 +48,7 @@ Selector labels
 {{- define "aries-cloudagent.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "aries-cloudagent.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-aries-cloud-agent/type: {{ .Values.agent.type }}
+aries-cloud-agent/role: {{ .Values.agent.role }}
 {{- end }}
 
 {{/*

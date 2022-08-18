@@ -49,6 +49,8 @@ Selector labels
 {{- define "governance-manager-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "governance-manager-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+governance-manager-api/role: {{ .Values.role }}
+
 {{- end -}}
 
 {{/*

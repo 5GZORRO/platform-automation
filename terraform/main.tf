@@ -16,6 +16,7 @@ module "commons" {
   tags                = var.tags
   resource_group_name = var.resource_group_name
   location            = var.location
+  domain_name         = var.domain_name
 
 }
 

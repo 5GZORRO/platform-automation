@@ -24,10 +24,24 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
+  - name: external-dns
+    version: "6.7.*"
+    repository: https://charts.bitnami.com/bitnami
+    condition: external-dns.enabled
+    tags:
+      - base
+  - name: vault
+    version: "0.13.0"
+    repository: https://helm.releases.hashicorp.com
+    condition: vault.enabled
+    tags:
+      - base
   - name: community-operator-crds
     version: "0.7.*"
     repository: https://mongodb.github.io/helm-charts
     condition: community-operator-crds.enabled
+    tags:
+      - base
   - name: community-operator
     version: "0.7.*"
     repository: https://mongodb.github.io/helm-charts
@@ -76,16 +90,6 @@ dependencies:
     condition: argo-workflows.enabled
     tags:
       - base
-  - name: governance-manager-api
-    version: "0.1.*"
-    condition: governance-manager-api.enabled
-    tags:
-      - admin
-  - name: legal-prose-repository
-    version: "0.1.*"
-    condition: legal-prose-repository.enabled
-    tags:
-      - admin
   - name: smart-contract-lifecycle-manager
     version: "0.1.*"
     condition: smart-contract-lifecycle-manager.enabled
@@ -170,7 +174,30 @@ dependencies:
     tags:
       - regulator
       - idp
-
+  - name: governance-manager-api
+    alias: governance-manager-api-admin
+    version: "0.1.*"
+    condition: governance-manager-api-admin.enabled
+    tags:
+      - admin
+  - name: governance-manager-api
+    alias: governance-manager-api-regulator
+    version: "0.1.*"
+    condition: governance-manager-api-regulator.enabled
+    tags:
+      - regulator
+  - name: legal-prose-repository
+    alias: legal-prose-repository-admin
+    version: "0.1.*"
+    condition: legal-prose-repository-admin.enabled
+    tags:
+      - admin
+  - name: legal-prose-repository
+    alias: legal-prose-repository-regulator
+    version: "0.1.*"
+    condition: legal-prose-repository-regulator.enabled
+    tags:
+      - regulator
   # - name: resource-and-service-offer-catalog
   #   version: "0.1.*"
   #   condition: resource-and-service-offer-catalog.enabled

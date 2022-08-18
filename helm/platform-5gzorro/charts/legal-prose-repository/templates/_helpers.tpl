@@ -49,6 +49,7 @@ Selector labels
 {{- define "legal-prose-repository-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "legal-prose-repository-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+legal-prose-repository/role: {{ .Values.role }}
 {{- end -}}
 
 {{/*
