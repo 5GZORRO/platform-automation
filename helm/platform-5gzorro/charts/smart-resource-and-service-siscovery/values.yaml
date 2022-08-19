@@ -1,0 +1,30 @@
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: 
+
+replicaCount: 1
+service:
+  type: ClusterIP
+  appPort: 5000
+  extAppPort: 5000
+
+image:
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/srd-api
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+podSecurityContext: {}
+securityContext: {}
+
+imagePullSecrets: []
+
+mongo:
+  uri: ""
+
+resources: {}
