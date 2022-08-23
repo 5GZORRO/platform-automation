@@ -19,7 +19,7 @@ spec:
         app: {{ include "smart-contract-lifecycle-mgr-api.fullname" . }}
         {{- include "smart-contract-lifecycle-mgr-api.selectorLabels" . | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -30,7 +30,7 @@ spec:
       - name: {{ .Chart.Name }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "docker.pkg.github.com/5gzorro/smart-contract-lifecycle-manager/lifecycle-manager-api:{{ .Values.dockerTag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - containerPort: 8087
@@ -46,9 +46,9 @@ spec:
         - name: POSTGRES_DB_USER
           valueFrom:
               secretKeyRef:
-              {{- if .Values.postgres.existingSecret -}}
-                  name: {{ .Values.postgres.existingSecret }}
-                  key: {{ .Values.postgres.userKey }}
+              {{- if .Values.postgres.existingSecret }}
+                name: {{ .Values.postgres.existingSecret }}
+                key: {{ .Values.postgres.userKey }}
               {{- else }}
                   name: smart-contract-lifecycle-mgr-api-db-credentials
                   key: username
@@ -56,16 +56,16 @@ spec:
         - name: POSTGRES_DB_PASSWORD
           valueFrom:
               secretKeyRef:
-              {{- if .Values.postgres.existingSecret -}}
-                  name: {{ .Values.postgres.existingSecret }}
-                  key: {{ .Values.postgres.passwordKey }}
+              {{- if .Values.postgres.existingSecret }}
+                name: {{ .Values.postgres.existingSecret }}
+                key: {{ .Values.postgres.passwordKey }}
               {{- else }}
                   name: smart-contract-lifecycle-mgr-api-db-credentials
                   key: password
               {{- end }}
         - name: POSTGRES_DB_NAME
-          {{- if .Values.postgres.existingSecret -}}
-            value: {{ .Values.postgres.name }}
+          {{- if .Values.postgres.existingSecret }}
+          value: {{ .Values.postgres.name }}
           {{- else }}
           valueFrom:
               secretKeyRef:
@@ -74,6 +74,11 @@ spec:
           {{- end }}
         - name: IDENTITY_BASE_URL
           value: {{ .Values.identityBaseUrl }}
+        - name: IDENTITY_DID
+          valueFrom:
+              secretKeyRef:
+                  name: {{ .Values.role }}-identity-did
+                  key: did
         - name: UPDATE_SLA_CALLBACK_URL
           value: {{ .Values.callbacks.updateSlaIdentity }}
         - name: UPDATE_AGREEMENT_CALLBACK_URL
@@ -98,9 +103,9 @@ spec:
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: {{ .Values.kafkaBootstrap }}
         - name: PRODUCT_OFFER_TOPIC
-          value: "{{ .Values.operatorName }}-{{ .Values.kafkaTopics.productOffer }}"
+          value: {{ .Values.operatorName }}-{{ .Values.kafkaTopics.productOffer }}
         - name: PRODUCT_ORDER_TOPIC
-          value: "{{ .Values.operatorName }}-{{ .Values.kafkaTopics.productOrder }}"
+          value: {{ .Values.operatorName }}-{{ .Values.kafkaTopics.productOrder }}
         livenessProbe:
           httpGet:
             path: {{ .Values.probePath }}

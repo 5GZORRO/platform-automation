@@ -51,6 +51,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "k8s" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
   vm_size               = var.scale_node_pool_size
   node_count            = var.scale_node_pool_count
+  vnet_subnet_id = var.aks_default_id
   max_pods       = 250
   tags = var.tags
 }

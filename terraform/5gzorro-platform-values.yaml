@@ -4,7 +4,7 @@ tags:
   aries: true
   trader: false
   regulator: false
-  monitoring: false
+  monitoring: true
 
 global:
   imagePullSecrets: 
@@ -41,7 +41,7 @@ vault:
     enabled: false
 
 kube-prometheus-stack:
-  enabled: false
+  enabled: true
   defaultRules:
     etcd: false
     kubeScheduler: false
@@ -215,9 +215,69 @@ postgres-operator:
           governancemanagerregulator: governancemanagerregulator
         postgresql:
           version: "14"
+    - name: zorro5g-psqldb-srsd-admin
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          srsdadmin:
+            - superuser
+            - createdb
+        databases:
+          srsdadmin: srsdadmin
+        postgresql:
+          version: "14"
+    - name: zorro5g-psqldb-srsd-regulator
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          srsdregulator:
+            - superuser
+            - createdb
+        databases:
+          srsdregulator: srsdregulator
+        postgresql:
+          version: "14"
+    - name: zorro5g-psqldb-srsd-consumer
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          srsdconsumer:
+            - superuser
+            - createdb
+        databases:
+          srsdconsumer: srsdconsumer
+        postgresql:
+          version: "14"
+    - name: zorro5g-psqldb-srsd-trader
+      spec:
+        teamId: zorro5g
+        volume:
+          size: 16Gi
+          storageClass: "managed-premium"
+        numberOfInstances: 1
+        users:
+          srsdtrader:
+            - superuser
+            - createdb
+        databases:
+          srsdtrader: srsdtrader
+        postgresql:
+          version: "14"
 
 strimzi:
-  enabled: false
+  enabled: true
   watchAnyNamespace: true
   kafkaClusters:
     - name: kafka-cluster
@@ -338,63 +398,6 @@ argo-workflows:
       enabled: true
     serviceMonitor:
       enabled: true
-
-governance-manager-api:
-  enabled: false
-  service:
-    prefix: /zorro/governance
-  postgres:
-    username: postgres
-    password: postgres
-    name: postgres
-    host: postgres
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: http://10.4.2.214:6800
-  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
-  callbacks:
-    updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
-  dockerTag: v0.1.23
-
-legal-prose-repository:
-  enabled: false
-  service:
-    prefix: /zorro/legal-prose-repository
-  postgres:
-    username: postgres
-    password: postgres
-    name: postgres
-    host: postgres
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: http://10.4.2.214:6800
-  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
-  callbacks:
-     updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
-  dockerTag: v0.1.23
-
-smart-contract-lifecycle-manager:
-  enabled: false
-  hostname: "172.28.3.6:31080/smart-contract-lifecycle-manager"
-  dockerTag: "5gzorro-core-1.23-rc"
-  postgres:
-    username: postgres             
-    password: postgres             
-    name: operator_a_sclm
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: "http://172.28.3.153:6200"
-  callbacks:
-    updateSlaIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
-  corda:
-    username: operatoraoperations
-    password: usera
-    host: operatora.operatora-ns.svc.cluster.local
-  operatorName: opa
 
 elma:
   enabled: false
@@ -600,17 +603,40 @@ legal-prose-repository-admin:
   callbacks:
     updateTemplateIdentity: "http://legal-prose-repository-admin:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
-# legal-prose-repository-regulator:
-#   enabled: true
-#   postgres:
-#     host: zorro5g-psqldb-legalprose-regulator
-#     port: 5432
-#     name: legalproseregulator
-#     existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
-#     userKey: "username"
-#     passwordKey: "password"
-#   role: "regulator"
-#   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
-#   governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
-#   callbacks:
-#     updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+legal-prose-repository-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-legalprose-regulator
+    port: 5432
+    name: legalproseregulator
+    existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+  callbacks:
+    updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+
+
+smart-contract-lifecycle-manager-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-srsd-admin
+    port: 5432
+    name: srsdadmin
+    existingSecret: "srsdadmin.zorro5g-psqldb-srsd-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/agreement/%s/identity"
+  corda:
+    username: operatoraoperations             
+    password: usera             
+    host: operatora.operatora-ns.svc.cluster.local
+  operatorName: opa
+  hostname: "smart-contract-lifecycle-manager-admin:8087"

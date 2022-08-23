@@ -1,9 +1,16 @@
 kafkaTopics:
   productOffer: dlt-product-offerings
-  productOrder: dlt-product-order
+  productOrder: dlt-product-orders
 kafkaBootstrap: 172.28.3.196:9092
 
-fullnameOverride: "sclm-app"
+image:
+  repository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/lifecycle-manager-api"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "5gzorro-full-1.3-pre-final"
+  pullPolicy: Always
+  
+fullnameOverride: ""
 
 corda:
   port: "10003"
@@ -22,10 +29,7 @@ service:
     name: sclm-app
     type: ClusterIP
     appPort: 8087
-    extAppPort: 80
-
-image:
-    pullPolicy: Always
+    extAppPort: 31080
 
 resources:
     limits:
@@ -39,19 +43,16 @@ podSecurityContext: {}
 securityContext: {}
 
 imagePullSecrets:
-    [name: regcred]
+    []
 
 postgres:
-    host: postgres.postgres-fix.svc.cluster.local
+    host: postgres.postgres.svc.cluster.local
     port: 5432
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
 
-probePath: /actuator/health
+probePath: /smart-contract-lifecycle-manager/actuator/health
 
 spring:
-    profiles: staging
+    profiles: deploy
 
 livenessProbe:
   initialDelaySeconds: 30

@@ -1,4 +1,4 @@
-{{- if and (.Values.strimzi.enabled) (.Values.strimzi.kafkaClusters) -}}
+{{- if and (.Values.strimzi.enabled) (.Values.strimzi.kafkaClusters) (index .Values "kube-prometheus-stack" "enabled") -}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor

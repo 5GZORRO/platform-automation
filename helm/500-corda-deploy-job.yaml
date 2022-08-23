@@ -2,6 +2,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: deploy-corda
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
     spec:
@@ -9,12 +13,12 @@ spec:
         - name: "registry-credentials"
       containers:
         - name: baf
-          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:exp3
+          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:reset-fix
           env:
             - name: GIT_SSH_URI
               value: "https://gitlab.fbk.eu/ffais/blockchain-automation-framework-4.7.git"
             - name: GIT_REPO
-              value: "https://gitlab.fbk.eu/ffais/blockchain-automation-framework-4.7.git"
+              value: "gitlab.fbk.eu/ffais/blockchain-automation-framework-4.7.git"
             - name: GIT_PRIVATE_KEY
               value: "/home/blockchain-automation-framework/build/5gzorro"
             - name: GIT_USERNAME
@@ -68,18 +72,10 @@ spec:
                 mountPath: "/home/blockchain-automation-framework/build/config.ro"
                 subPath: "config"
                 readOnly: true
-              - name: env-file
-                mountPath: "/home/blockchain-automation-framework/build/.env"
-                subPath: ".env"
-                readOnly: true
       volumes:
         - name: kubeconfig
           secret:
             secretName: kubeconfig
-            optional: false
-        - name: env-file
-          secret:
-            secretName: env-file
             optional: false
       restartPolicy: Never
   backoffLimit: 4

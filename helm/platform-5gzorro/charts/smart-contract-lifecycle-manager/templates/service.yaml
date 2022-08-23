@@ -15,10 +15,6 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - name: app
-    port: {{ .Values.service.extAppPort }}
-    targetPort: {{ .Values.service.appPort }}
-    protocol: TCP
   - name: http
     port: {{ .Values.service.appPort }}
     protocol: TCP

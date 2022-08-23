@@ -18,6 +18,13 @@ resource "azurerm_dns_zone" "default" {
   name                = var.domain_name
   resource_group_name = azurerm_resource_group.k8s.name
   tags                = var.tags
+
+  soa_record {
+    email = "sysadmin@smartcommunitylab.it"
+    hostname = "ns1-02.azure-dns.com."
+    refresh_time = 360
+    ttl = 360
+  }
 }
 
 # Assign role Contributor to AKS Managed Identity on Resource Group

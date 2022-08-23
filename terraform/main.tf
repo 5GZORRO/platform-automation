@@ -90,7 +90,7 @@ resource "kubernetes_secret" "registry" {
     name = "registry-credentials"
   }
   data = {
-    ".dockerconfigjson" = "${file(var.registry)}"
+    ".dockerconfigjson" = "${var.registry}"
   }
 
   type = "kubernetes.io/dockerconfigjson"

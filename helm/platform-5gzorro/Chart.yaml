@@ -191,30 +191,30 @@ dependencies:
     condition: legal-prose-repository-regulator.enabled
     tags:
       - regulator
-  # - name: smart-contract-lifecycle-manager
-  #   alias: smart-contract-lifecycle-manager-admin
-  #   version: "0.1.*"
-  #   condition: smart-contract-lifecycle-manager-admin.enabled
-  #   tags:
-  #     - admin
-  #     - trader
-  #     - regulator
-  # - name: smart-contract-lifecycle-manager
-  #   alias: smart-contract-lifecycle-manager-trader
-  #   version: "0.1.*"
-  #   condition: smart-contract-lifecycle-manager-trader.enabled
-  #   tags:
-  #     - admin
-  #     - trader
-  #     - regulator
-  # - name: smart-contract-lifecycle-manager
-  #   alias: smart-contract-lifecycle-manager-regulator
-  #   version: "0.1.*"
-  #   condition: smart-contract-lifecycle-manager-regulator.enabled
-  #   tags:
-  #     - admin
-  #     - trader
-  #     - regulator
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-admin
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-admin.enabled
+    tags:
+      - admin
+      - trader
+      - regulator
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-trader
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-trader.enabled
+    tags:
+      - admin
+      - trader
+      - regulator
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-regulator
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-regulator.enabled
+    tags:
+      - admin
+      - trader
+      - regulator
   # - name: resource-and-service-offer-catalog
   #   version: "0.1.*"
   #   condition: resource-and-service-offer-catalog.enabled
