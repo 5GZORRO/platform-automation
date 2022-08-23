@@ -42,7 +42,7 @@ variable "default_node_pool_size" {
 }
 
 variable "scale_node_pool_name" {
-  type    = string
+  type = string
 }
 
 variable "scale_node_pool_size" {

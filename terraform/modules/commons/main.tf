@@ -20,10 +20,10 @@ resource "azurerm_dns_zone" "default" {
   tags                = var.tags
 
   soa_record {
-    email = "azuredns-hostmaster.microsoft.com"
-    host_name = "ns1-02.azure-dns.com."
+    email        = "azuredns-hostmaster.microsoft.com"
+    host_name    = "ns1-02.azure-dns.com."
     refresh_time = 360
-    ttl = 360
+    ttl          = 360
   }
 }
 
