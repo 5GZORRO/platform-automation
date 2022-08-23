@@ -35,12 +35,12 @@ spec:
         ports:
           - containerPort: 5000
             protocol: TCP
-          env:
-            - name: MONGO_URI
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.mongo.uri }}
-                  key: "connectionString.standard"
-                  optional: false
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongo.uri }}
+                key: "connectionString.standard"
+                optional: false
         resources:
 {{ toYaml .Values.resources | indent 10 }}

@@ -48,6 +48,14 @@ spec:
                   name: {{ .Values.database.connectionString }}
                   key: "connectionString.standard"
                   optional: false
+            {{- if (eq .Values.idp.role "admin")  }}
+            - name: ADMIN_DID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "identity-and-permissions-manager.fullname" . }}-did
+                  key: "did"
+                  optional: false
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "identity-and-permissions-manager.fullname" . }}

@@ -43,11 +43,13 @@ spec:
           value: {{ .Values.postgres.port | quote }}
         - name: IDENTITY_BASE_URL
           value: {{ .Values.identityBaseUrl }}
+        {{- if (eq .Values.role "admin")  }}
         - name: IDENTITY_DID
           valueFrom:
             secretKeyRef:
-              name: zorro5g-aries-cloudagent-{{ .Values.role }}-agent-did
+              name: zorro5g-identity-and-permissions-manager-admin-did
               key: did
+        {{- end }}
         - name: GOVERNANCE_BASE_URL
           value: {{ .Values.governanceBaseUrl }}
         - name: UPDATE_TEMPLATE_IDENTITY_CALLBACK_URL

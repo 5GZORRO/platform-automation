@@ -4,7 +4,7 @@ dependencies:
   version: 6.7.5
 - name: vault
   repository: https://helm.releases.hashicorp.com
-  version: 0.13.0
+  version: 0.18.0
 - name: community-operator-crds
   repository: https://mongodb.github.io/helm-charts
   version: 0.7.5
@@ -32,9 +32,6 @@ dependencies:
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.16.9
-- name: smart-contract-lifecycle-manager
-  repository: ""
-  version: 0.1.*
 - name: elma
   repository: ""
   version: 3.1.*
@@ -80,5 +77,5 @@ dependencies:
 - name: legal-prose-repository
   repository: ""
   version: 0.1.*
-digest: sha256:d6b71478f42481a62f35df2d7cf8730ddafba1b1a798c63dda8930e6fa25bdfb
-generated: "2022-08-18T13:20:57.989401482+02:00"
+digest: sha256:52a6999595adb6e716ea593e471147bb5bd3384e8121bf4d84fa37a03f0011e4
+generated: "2022-08-22T15:37:52.302761503+02:00"

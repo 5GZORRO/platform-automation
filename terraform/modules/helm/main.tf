@@ -1,6 +1,6 @@
 resource "helm_release" "platform-5gzorro" {
-  name       = "platform-5gzorro"
-  repository = "../charts"
+  name       = "zorro5g"
+  repository = "../helm"
   chart      = "platform-5gzorro"
 
   values = [

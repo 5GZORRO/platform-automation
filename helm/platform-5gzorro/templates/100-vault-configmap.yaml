@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-enable-v1-script
+data:
+  run.sh: |
+    #!/bin/bash
+    set -e
+    echo "Adding env variables..."
+    export PATH=/root/bin:$PATH
+    vault login root
+    vault secrets enable -version=1 -path=secret kv

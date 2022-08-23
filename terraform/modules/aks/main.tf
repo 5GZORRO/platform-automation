@@ -16,7 +16,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   default_node_pool {
     name           = var.default_node_pool_name
-    node_count     = var.node_count
+    node_count     = var.default_node_pool_count
     vm_size        = var.default_node_pool_size
     max_pods       = 250
     vnet_subnet_id = var.aks_default_id
@@ -46,4 +46,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 }
 
-
+resource "azurerm_kubernetes_cluster_node_pool" "k8s" {
+  name                  = var.scale_node_pool_name
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
+  vm_size               = var.scale_node_pool_size
+  node_count            = var.scale_node_pool_count
+  max_pods       = 250
+  tags = var.tags
+}

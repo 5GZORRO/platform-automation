@@ -6,7 +6,7 @@ variable "tags" {
   type = map(string)
 }
 
-variable "node_count" {
+variable "default_node_pool_count" {
   default = 1
   type    = number
 }
@@ -39,6 +39,20 @@ variable "default_node_pool_name" {
 variable "default_node_pool_size" {
   type    = string
   default = "Standard_D4s_v5"
+}
+
+variable "scale_node_pool_name" {
+  type    = string
+}
+
+variable "scale_node_pool_size" {
+  type    = string
+  default = "Standard_D4s_v5"
+}
+
+variable "scale_node_pool_count" {
+  type    = number
+  default = 1
 }
 
 variable "kubernetes_version" {

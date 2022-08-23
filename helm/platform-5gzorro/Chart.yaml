@@ -31,7 +31,7 @@ dependencies:
     tags:
       - base
   - name: vault
-    version: "0.13.0"
+    version: "0.18.0"
     repository: https://helm.releases.hashicorp.com
     condition: vault.enabled
     tags:
@@ -90,13 +90,6 @@ dependencies:
     condition: argo-workflows.enabled
     tags:
       - base
-  - name: smart-contract-lifecycle-manager
-    version: "0.1.*"
-    condition: smart-contract-lifecycle-manager.enabled
-    tags:
-      - admin
-      - trader
-      - regulator
   - name: elma
     alias: elma-agent
     version: "3.1.*"
@@ -198,6 +191,30 @@ dependencies:
     condition: legal-prose-repository-regulator.enabled
     tags:
       - regulator
+  # - name: smart-contract-lifecycle-manager
+  #   alias: smart-contract-lifecycle-manager-admin
+  #   version: "0.1.*"
+  #   condition: smart-contract-lifecycle-manager-admin.enabled
+  #   tags:
+  #     - admin
+  #     - trader
+  #     - regulator
+  # - name: smart-contract-lifecycle-manager
+  #   alias: smart-contract-lifecycle-manager-trader
+  #   version: "0.1.*"
+  #   condition: smart-contract-lifecycle-manager-trader.enabled
+  #   tags:
+  #     - admin
+  #     - trader
+  #     - regulator
+  # - name: smart-contract-lifecycle-manager
+  #   alias: smart-contract-lifecycle-manager-regulator
+  #   version: "0.1.*"
+  #   condition: smart-contract-lifecycle-manager-regulator.enabled
+  #   tags:
+  #     - admin
+  #     - trader
+  #     - regulator
   # - name: resource-and-service-offer-catalog
   #   version: "0.1.*"
   #   condition: resource-and-service-offer-catalog.enabled

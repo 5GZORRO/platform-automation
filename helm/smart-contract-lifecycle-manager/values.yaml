@@ -8,6 +8,8 @@ fullnameOverride: "sclm-app"
 corda:
   port: "10003"
 
+role: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

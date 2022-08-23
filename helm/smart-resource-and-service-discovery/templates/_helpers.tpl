@@ -49,7 +49,7 @@ Selector labels
 {{- define "srd-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "srd-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-srd/role: {{ .Values.role }}
+# srd/role: {{ .Values.role }}
 {{- end -}}
 
 {{/*

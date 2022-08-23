@@ -8,12 +8,12 @@ output "identity_id" {
   sensitive = false
 }
 
-output "client_id" {
+output "identity_client_id" {
   value     = azurerm_user_assigned_identity.aks_identity.client_id
   sensitive = false
 }
 
-output "object_id" {
+output "identity_object_id" {
   value     = azurerm_user_assigned_identity.aks_identity.tenant_id
   sensitive = false
 }
@@ -27,6 +27,11 @@ output "vms_default_id" {
 }
 
 
-output "name_servers" {
+output "dns_name_servers" {
   value = azurerm_dns_zone.default.name_servers
 }
+
+
+# output "key_vault_name" {
+#   value = azurerm_key_vault.vault.name
+# }

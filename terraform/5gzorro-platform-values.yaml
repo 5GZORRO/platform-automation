@@ -18,8 +18,8 @@ external-dns:
     tenantId: "11d1b7a3-5e92-4744-83dc-831a43e1f967"
     subscriptionId: "f8948095-f2ff-4dbd-aa56-d319a3c81cf1"
     useManagedIdentityExtension: true
-  txtOwnerId: "external-dns"
-  domainFilters: ["5gzorro.smartcommunitylab.it"]
+  # txtOwnerId: "external-dns"
+  # # domainFilters: ["*.5gzorro.smartcommunitylab.it"]
 
 vault:
   enabled: true
@@ -28,9 +28,15 @@ vault:
     serviceType: "LoadBalancer"
     serviceNodePort: null
     externalPort: 8200
+    annotations: 
+      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it.'
   server:
     standalone:
       enabled: true
+    extraArgs: "-dev-kv-v1"
+    dev:
+      enabled: true
+      devRootToken: "root"
   injector:
     enabled: false
 
@@ -241,12 +247,12 @@ strimzi:
           type: persistent-claim
           size: 32Gi
   kafkaTopics:
-    - name: test1
+    - name: dlt-product-offerings
       clusterName: kafka-cluster
       spec:
         partitions: 3
         replicas: 1
-    - name: test2
+    - name: dlt-product-order
       clusterName: kafka-cluster
       spec:
         partitions: 3
@@ -497,6 +503,7 @@ identity-and-permissions-manager-admin:
     adminCatalogueUrl: "http://172.51.40.23:34080/tmf-api/adminOnboardHandler"
     key: ""
     vpnaasKey: ""
+    adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
 
 identity-and-permissions-manager-regulator:
   enabled: true
@@ -593,17 +600,17 @@ legal-prose-repository-admin:
   callbacks:
     updateTemplateIdentity: "http://legal-prose-repository-admin:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
-legal-prose-repository-regulator:
-  enabled: true
-  postgres:
-    host: zorro5g-psqldb-legalprose-regulator
-    port: 5432
-    name: legalproseregulator
-    existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
-    userKey: "username"
-    passwordKey: "password"
-  role: "regulator"
-  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
-  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
-  callbacks:
-    updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+# legal-prose-repository-regulator:
+#   enabled: true
+#   postgres:
+#     host: zorro5g-psqldb-legalprose-regulator
+#     port: 5432
+#     name: legalproseregulator
+#     existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
+#     userKey: "username"
+#     passwordKey: "password"
+#   role: "regulator"
+#   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+#   governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+#   callbacks:
+#     updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"

@@ -49,6 +49,7 @@ Selector labels
 {{- define "smart-contract-lifecycle-mgr-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "smart-contract-lifecycle-mgr-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+smart-contract-lifecycle-manager/role: {{ .Values.role }}
 {{- end -}}
 
 {{/*
