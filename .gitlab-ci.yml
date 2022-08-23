@@ -68,7 +68,7 @@ scale_down:
   stage: cleanup
   script:
     - cd "${TF_ROOT}"
-    - gitlab-terraform destroy -auto-approve -target module.vms.azurerm_linux_virtual_machine.vm -target module.vms.azurerm_network_interface.nic -target module.vms.azurerm_network_interface_security_group_association.example -target module.vms.azurerm_network_security_group.nsg -target module.vms.azurerm_public_ip.publicip -target module.aks.azurerm_kubernetes_cluster_node_pool.k8s -target module.helm.helm_release.platform-5gzorro 
+    - gitlab-terraform destroy -auto-approve -target module.helm.helm_release.platform-5gzorro -target module.vms.azurerm_linux_virtual_machine.vm -target module.vms.azurerm_network_interface.nic -target module.vms.azurerm_network_interface_security_group_association.example -target module.vms.azurerm_network_security_group.nsg -target module.vms.azurerm_public_ip.publicip -target module.aks.azurerm_kubernetes_cluster_node_pool.k8s
   resource_group: ${TF_STATE_NAME}
   rules:
     - if: $SCALE_DOWN == "true"
