@@ -182,9 +182,9 @@ strimzi:
         replicas: 1
   
 community-operator:
-  enabled: true
+  enabled: false
   community-operator-crds:
-    enabled: true
+    enabled: false
   mongodbClusters:
     - name: mongo-test
       replicas: 3
@@ -293,9 +293,6 @@ elma:
 
 monitoring-data-aggregator:
   enabled: false
-
-resource-and-service-offer-catalog:
-  enable: false
 
 aries-cloudagent-admin:
   enable: true

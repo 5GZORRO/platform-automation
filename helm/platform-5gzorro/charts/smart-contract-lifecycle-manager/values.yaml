@@ -48,6 +48,9 @@ imagePullSecrets:
 postgres:
     host: postgres.postgres.svc.cluster.local
     port: 5432
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
 
 probePath: /smart-contract-lifecycle-manager/actuator/health
 

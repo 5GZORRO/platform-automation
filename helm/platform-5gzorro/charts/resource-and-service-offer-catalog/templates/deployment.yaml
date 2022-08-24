@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "catalogue-api.fullname" . }}
+  name: {{ include "rsoc-api.fullname" . }}
   labels:
     app: {{ .Values.service.app }}
     domain: {{ .Values.domain }}
@@ -13,25 +13,25 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: {{ .Values.service.app }}
+      {{- include "rsoc-api.labels" . | nindent 6}}
   template:
     metadata:
       labels:
-        app: {{ .Values.service.app }}
-        domain: {{ .Values.domain }}
+        app: {{ include "rsoc-api.fullname" . }}
+        {{- include "rsoc-api.selectorLabels" . | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "catalogue-api.serviceAccountName" . }}
+      serviceAccountName: {{ include "rsoc-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
       - name: {{ .Chart.Name }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "docker.pkg.github.com/5gzorro/resource-and-service-offer-catalog/resource-and-service-offer-catalog:{{ .Values.dockerTag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - containerPort:  {{ .Values.service.appPort }}
@@ -41,14 +41,16 @@ spec:
             value: {{ .Values.hostname }}
           - name: SERVER_PORT
             value: {{ .Values.service.appPort }}
-          - name: SPRING_DATASOURCE_URL
-            value: "{{ .Values.postgres.url }}"
+          - name: POSTGRES_HOSTNAME
+            value: "{{ .Values.postgres.host }}"
+          - name: POSTGRES_PORT
+            value: "{{ .Values.postgres.port }}"
           - name: POSTGRES_MODE
             value: {{ .Values.postgres.mode }}
           - name: POSTGRES_USER
             valueFrom:
                 secretKeyRef:
-                {{- if .Values.postgres.existingSecret -}}
+                {{- if .Values.postgres.existingSecret }}
                     name: {{ .Values.postgres.existingSecret }}
                     key: {{ .Values.postgres.userKey }}
                 {{- else }}
@@ -58,7 +60,7 @@ spec:
           - name: POSTGRES_PSW
             valueFrom:
                 secretKeyRef:
-                {{- if .Values.postgres.existingSecret -}}
+                {{- if .Values.postgres.existingSecret }}
                     name: {{ .Values.postgres.existingSecret }}
                     key: {{ .Values.postgres.passwordKey }}
                 {{- else }}

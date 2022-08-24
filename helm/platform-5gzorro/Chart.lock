@@ -1,16 +1,16 @@
 dependencies:
+- name: community-operator
+  repository: https://mongodb.github.io/helm-charts
+  version: 0.7.5
+- name: custom-resource-5gzorro
+  repository: ""
+  version: 0.1.0
 - name: external-dns
   repository: https://charts.bitnami.com/bitnami
   version: 6.7.5
 - name: vault
   repository: https://helm.releases.hashicorp.com
   version: 0.18.0
-- name: community-operator-crds
-  repository: https://mongodb.github.io/helm-charts
-  version: 0.7.5
-- name: community-operator
-  repository: https://mongodb.github.io/helm-charts
-  version: 0.7.5
 - name: loki-stack
   repository: https://grafana.github.io/helm-charts
   version: 2.6.9
@@ -19,7 +19,7 @@ dependencies:
   version: 36.0.3
 - name: minio
   repository: https://charts.min.io/
-  version: 4.0.12
+  version: 4.0.13
 - name: postgres-operator
   repository: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
   version: 1.8.2
@@ -77,5 +77,14 @@ dependencies:
 - name: legal-prose-repository
   repository: ""
   version: 0.1.*
-digest: sha256:52a6999595adb6e716ea593e471147bb5bd3384e8121bf4d84fa37a03f0011e4
-generated: "2022-08-22T15:37:52.302761503+02:00"
+- name: smart-contract-lifecycle-manager
+  repository: ""
+  version: 0.1.*
+- name: smart-contract-lifecycle-manager
+  repository: ""
+  version: 0.1.*
+- name: smart-contract-lifecycle-manager
+  repository: ""
+  version: 0.1.*
+digest: sha256:34b0272006ab0776462f8cafaa29b34805ca8dd9cfe7d7ac2efa2c8840d44fc8
+generated: "2022-08-24T10:33:48.219556986+02:00"

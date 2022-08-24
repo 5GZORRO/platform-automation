@@ -1,14 +1,297 @@
 tags:
   base: true
-  admin: false 
+  admin: true 
   aries: true
-  trader: false
-  regulator: false
+  trader: true
+  regulator: true
   monitoring: true
 
 global:
   imagePullSecrets: 
     - name: registry-credentials
+
+custom-resource-5gzorro:
+  enabled: true
+  kube-prometheus-stack:
+    enabled: true
+  community-operator:
+    enabled: true
+    mongodbClusters:
+      - name: admin-operator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: admin
+            db: admin
+            passwordSecretRef: 
+              name: admin-password
+            roles:
+              - name: readWrite
+                db: administrator
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: admin-scram
+      - name: trader-operator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: trader
+            db: admin
+            passwordSecretRef: 
+              name: trader-operator-password
+            roles:
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: trader-scram
+      - name: regulator-operator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: regulator
+            db: admin
+            passwordSecretRef: 
+              name: regulator-operator-password
+            roles:
+              - name: readWrite
+                db: regulator
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: regulator-scram
+      - name: consumer-operator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: consumer
+            db: admin
+            passwordSecretRef: 
+              name: consumer-operator-password
+            roles:
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: consumer-scram
+  strimzi:
+    enabled: true
+    kafkaClusters:
+      - name: kafka-cluster
+        replicas: 3
+        version: 3.2.0
+        config:
+          offsets.topic.replication.factor: 3
+          transaction.state.log.replication.factor: 3
+          transaction.state.log.min.isr: 2
+          default.replication.factor: 3
+          min.insync.replicas: 1
+          inter.broker.protocol.version: "3.2"
+        storage:
+          type: jbod
+          volumes:
+          - id: 0
+            type: persistent-claim
+            size: 32Gi
+            deleteClaim: false
+          - id: 1
+            type: persistent-claim
+            size: 32Gi
+            deleteClaim: false
+        zookeeper:
+          replicas: 3
+          storage:
+            type: persistent-claim
+            size: 32Gi
+    kafkaTopics:
+      - name: dlt-product-offerings
+        clusterName: kafka-cluster
+        spec:
+          partitions: 3
+          replicas: 1
+      - name: dlt-product-order
+        clusterName: kafka-cluster
+        spec:
+          partitions: 3
+          replicas: 1
+  postgres-operator:
+    enabled: true
+    postgresqlClusters:
+      - name: zorro5g-psqldb-legalprose-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            legalproseadmin:
+              - superuser
+              - createdb
+          databases:
+            legalproseadmin: legalproseadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-legalprose-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            legalproseregulator:
+              - superuser
+              - createdb
+          databases:
+            legalproseregulator: legalproseregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-governancemanager-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            governancemanageradmin:
+              - superuser
+              - createdb
+          databases:
+            governancemanageradmin: governancemanageradmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-governancemanager-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            governancemanagerregulator:
+              - superuser
+              - createdb
+          databases:
+            governancemanagerregulator: governancemanagerregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-srsd-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            srsdadmin:
+              - superuser
+              - createdb
+          databases:
+            srsdadmin: srsdadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-srsd-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            srsdregulator:
+              - superuser
+              - createdb
+          databases:
+            srsdregulator: srsdregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-srsd-consumer
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            srsdconsumer:
+              - superuser
+              - createdb
+          databases:
+            srsdconsumer: srsdconsumer
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-srsd-trader
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            srsdtrader:
+              - superuser
+              - createdb
+          databases:
+            srsdtrader: srsdtrader
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-rsoc-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            rsocadmin:
+              - superuser
+              - createdb
+          databases:
+            rsocadmin: rsocadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-rsoc-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            rsocregulator:
+              - superuser
+              - createdb
+          databases:
+            rsocregulator: rsocregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-rsoc-consumer
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            rsocconsumer:
+              - superuser
+              - createdb
+          databases:
+            rsocconsumer: rsocconsumer
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-rsoc-trader
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            rsoctrader:
+              - superuser
+              - createdb
+          databases:
+            rsoctrader: rsoctrader
+          postgresql:
+            version: "14"
 
 external-dns:
   enabled: true
@@ -154,230 +437,15 @@ minio:
 
 postgres-operator:
   enabled: true
-  postgresqlClusters:
-    - name: zorro5g-psqldb-legalprose-admin
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          legalproseadmin:
-            - superuser
-            - createdb
-        databases:
-          legalproseadmin: legalproseadmin
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-legalprose-regulator
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          legalproseregulator:
-            - superuser
-            - createdb
-        databases:
-          legalproseregulator: legalproseregulator
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-governancemanager-admin
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          governancemanageradmin:
-            - superuser
-            - createdb
-        databases:
-          governancemanageradmin: governancemanageradmin
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-governancemanager-regulator
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          governancemanagerregulator:
-            - superuser
-            - createdb
-        databases:
-          governancemanagerregulator: governancemanagerregulator
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-srsd-admin
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          srsdadmin:
-            - superuser
-            - createdb
-        databases:
-          srsdadmin: srsdadmin
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-srsd-regulator
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          srsdregulator:
-            - superuser
-            - createdb
-        databases:
-          srsdregulator: srsdregulator
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-srsd-consumer
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          srsdconsumer:
-            - superuser
-            - createdb
-        databases:
-          srsdconsumer: srsdconsumer
-        postgresql:
-          version: "14"
-    - name: zorro5g-psqldb-srsd-trader
-      spec:
-        teamId: zorro5g
-        volume:
-          size: 16Gi
-          storageClass: "managed-premium"
-        numberOfInstances: 1
-        users:
-          srsdtrader:
-            - superuser
-            - createdb
-        databases:
-          srsdtrader: srsdtrader
-        postgresql:
-          version: "14"
 
 strimzi:
   enabled: true
   watchAnyNamespace: true
-  kafkaClusters:
-    - name: kafka-cluster
-      replicas: 3
-      version: 3.2.0
-      config:
-        offsets.topic.replication.factor: 3
-        transaction.state.log.replication.factor: 3
-        transaction.state.log.min.isr: 2
-        default.replication.factor: 3
-        min.insync.replicas: 1
-        inter.broker.protocol.version: "3.2"
-      storage:
-        type: jbod
-        volumes:
-        - id: 0
-          type: persistent-claim
-          size: 32Gi
-          deleteClaim: false
-        - id: 1
-          type: persistent-claim
-          size: 32Gi
-          deleteClaim: false
-      zookeeper:
-        replicas: 3
-        storage:
-          type: persistent-claim
-          size: 32Gi
-  kafkaTopics:
-    - name: dlt-product-offerings
-      clusterName: kafka-cluster
-      spec:
-        partitions: 3
-        replicas: 1
-    - name: dlt-product-order
-      clusterName: kafka-cluster
-      spec:
-        partitions: 3
-        replicas: 1
-        
-community-operator-crds:
-  enable: true
-
+          
 community-operator:
   enabled: true
   community-operator-crds:
     enabled: false
-  mongodbClusters:
-    - name: admin-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: admin
-          db: admin
-          passwordSecretRef: 
-            name: admin-password
-          roles:
-            - name: readWrite
-              db: administrator
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: admin-scram
-    - name: trader-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: trader
-          db: admin
-          passwordSecretRef: 
-            name: trader-operator-password
-          roles:
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: trader-scram
-    - name: regulator-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: regulator
-          db: admin
-          passwordSecretRef: 
-            name: regulator-operator-password
-          roles:
-            - name: readWrite
-              db: regulator
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: regulator-scram
-    - name: consumer-operator
-      replicas: 1
-      version: "4.2.6"
-      users:
-        - name: consumer
-          db: admin
-          passwordSecretRef: 
-            name: consumer-operator-password
-          roles:
-            - name: readWrite
-              db: provider
-          scramCredentialsSecretName: consumer-scram
 
 redis:
   enabled: false
@@ -417,9 +485,6 @@ elma:
 
 monitoring-data-aggregator:
   enabled: false
-
-resource-and-service-offer-catalog:
-  enable: false
 
 aries-cloudagent-admin:
   enable: true
@@ -638,5 +703,103 @@ smart-contract-lifecycle-manager-admin:
     username: operatoraoperations             
     password: usera             
     host: operatora.operatora-ns.svc.cluster.local
-  operatorName: opa
+  operatorName: operatora
   hostname: "smart-contract-lifecycle-manager-admin:8087"
+
+smart-contract-lifecycle-manager-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-srsd-regulator
+    port: 5432
+    name: srsdregulator
+    existingSecret: "srsdregulator.zorro5g-psqldb-srsd-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/agreement/%s/identity"
+  corda:
+    username: regulatoraoperations            
+    password: usera             
+    host: regulatora.regualtora-ns.svc.cluster.local
+  operatorName: regualtora
+  hostname: "smart-contract-lifecycle-manager-regulator:8087"
+
+smart-contract-lifecycle-manager-consumer:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-srsd-consumer
+    port: 5432
+    name: srsdconsumer
+    existingSecret: "srsdconsumer.zorro5g-psqldb-srsd-consumer.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "consumer"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-consumer:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/agreement/%s/identity"
+  corda:
+    username: operatorcoperations          
+    password: usera             
+    host: operatorc.operatorc-ns.svc.cluster.local
+  operatorName: operatorc
+  hostname: "smart-contract-lifecycle-manager-consumer:8087"
+
+smart-contract-lifecycle-manager-trader:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-srsd-trader
+    port: 5432
+    name: srsdtrader
+    existingSecret: "srsdtrader.zorro5g-psqldb-srsd-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  role: "trader"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-trader:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/agreement/%s/identity"
+  corda:
+    username: operatorboperations          
+    password: usera             
+    host: operatorb.operatorb-ns.svc.cluster.local
+  operatorName: operatorb
+  hostname: "smart-contract-lifecycle-manager-trader:8087"
+
+resource-and-service-offer-catalog-admin:
+  enable: true
+  operatorName: operatora
+  postgres:
+    host: zorro5g-psqldb-rsoc-admin
+    port: 5432
+    name: rsocadmin
+    existingSecret: "rsocadmin.zorro5g-psqldb-rsoc-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    topic: dlt-product-offerings
+  role: "admin"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-admin"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-admin"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "test"
+    port: "8080"
+    requestPath: "test"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-admin"

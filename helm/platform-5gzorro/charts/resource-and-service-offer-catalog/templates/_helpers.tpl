@@ -49,6 +49,7 @@ Selector labels
 {{- define "rsoc-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "rsoc-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+resource-and-service-offer-catalog/role: {{ .Values.role }}
 {{- end -}}
 
 {{/*

@@ -10,12 +10,12 @@ dns_prefix              = "project5gzorro"
 cluster_name            = "5gzorro"
 resource_group_name     = "5gzorro"
 location                = "westeurope"
-default_node_pool_count = 1
+default_node_pool_count = 6
 default_node_pool_name  = "system"
 default_node_pool_size  = "Standard_B2ms"
 scale_node_pool_name    = "scale"
 scale_node_pool_size    = "Standard_D4s_v5"
-scale_node_pool_count   = 3
+scale_node_pool_count   = 4
 
 kubernetes_version = "1.21.14"
 max_pods           = 250

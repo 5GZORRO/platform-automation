@@ -12,6 +12,8 @@ service:
     appPort: 8080
 
 
+role: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -32,7 +34,7 @@ resources:
 
 dockerTag: latest
 imagePullSecrets:
-    [name: operator-a-regcred]
+    []
 
 podSecurityContext: {}
 securityContext: {}
@@ -40,7 +42,8 @@ securityContext: {}
 hostname: localhost
 
 postgres:
-    url: postgres.postgres-fix.svc.cluster.local:5432
+    host: postgres.postgres.svc.cluster.local
+    port: 5432
     existingSecret: ""
     userKey: ""
     passwordKey: ""
