@@ -90,12 +90,12 @@ spec:
         - name: CORDA_RPC_USERNAME
           valueFrom:
               secretKeyRef:
-                  name: smart-contract-lifecycle-mgr-api-corda-credentials
+                  name: {{ include "smart-contract-lifecycle-mgr-api.fullname" . }}-corda-credentials
                   key: username
         - name: CORDA_RPC_PASSWORD
           valueFrom:
               secretKeyRef:
-                  name: smart-contract-lifecycle-mgr-api-corda-credentials
+                  name: {{ include "smart-contract-lifecycle-mgr-api.fullname" . }}-corda-credentials
                   key: password
         # [Application Environment Variables]
         - name: SPRING_PROFILES_ACTIVE

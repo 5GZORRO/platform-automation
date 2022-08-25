@@ -276,10 +276,25 @@ smart-contract-lifecycle-manager:
     host: operatora.operatora-ns.svc.cluster.local
   operatorName: opa
 
-elma:
+elma-core:
+  enabled: false
   image:
     tag: gitlab-ci
-    namespace: domain-operator-a
+    app: elma
+    image: ghcr.io/5gzorro/elicensing-manager-agent/elma
+    pullPolicy: Always
+    pullSecrets: elmaregsecret
+  elmarest:
+    nodePort: 30880
+  elmadb:
+    nodePort: 30881
+  rabbitmq:
+    nodePort: 30882
+
+elma-agent:
+  enabled: false
+  image:
+    tag: gitlab-ci
     app: elma
     image: ghcr.io/5gzorro/elicensing-manager-agent/elma
     pullPolicy: Always

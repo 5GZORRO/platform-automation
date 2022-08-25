@@ -1,6 +1,5 @@
 image:
   tag: gitlab-ci
-  namespace: domain-operator-a
   app: elma
   image: ghcr.io/5gzorro/elicensing-manager-agent/elma
   pullPolicy: Always

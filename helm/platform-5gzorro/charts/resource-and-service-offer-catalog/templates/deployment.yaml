@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "rsoc-api.fullname" . }}
   labels:
-    app: {{ .Values.service.app }}
-    domain: {{ .Values.domain }}
+    {{- include "rsoc-api.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -13,7 +12,7 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      {{- include "rsoc-api.labels" . | nindent 6}}
+      {{- include "rsoc-api.selectorLabels" . | nindent 6}}
   template:
     metadata:
       labels:
@@ -40,7 +39,7 @@ spec:
           - name: OFFER_CATALOG_HOSTNAME
             value: {{ .Values.hostname }}
           - name: SERVER_PORT
-            value: {{ .Values.service.appPort }}
+            value: {{ .Values.service.appPort | quote }}
           - name: POSTGRES_HOSTNAME
             value: "{{ .Values.postgres.host }}"
           - name: POSTGRES_PORT
@@ -74,13 +73,13 @@ spec:
           - name: DID_SERVICE_HOSTNAME
             value: {{ .Values.did.host }}
           - name: DID_SERVICE_PORT
-            value: {{ .Values.did.port }}
+            value: {{ .Values.did.port | quote }}
           - name: DID_SERVICE_REQUEST_PATH
             value: {{ .Values.did.requestPath }}
           - name: SC_LCM_HOSTNAME
             value: {{ .Values.lcm.host }}
           - name: SC_LCM_PORT
-            value: {{ .Values.lcm.port }}
+            value: {{ .Values.lcm.port | quote }}
           - name: SC_LCM_PRODUCT_OFFER_REQUEST_PATH
             value: {{ .Values.lcm.offerPath }}
           - name: SC_LCM_PRODUCT_ORDER_REQUEST_PATH
@@ -90,14 +89,14 @@ spec:
           - name: SC_LCM_SLA_REQUEST_PATH
             value: {{ .Values.lcm.slaPath }}
           - name: SKIP_SC_LCM_POST
-            value: {{ .Values.lcm.skipPost }}
+            value: {{ .Values.lcm.skipPost | quote }}
           - name: SRSD_HOSTNAME
             value: {{ .Values.srsd.host }}
           - name: SRSD_PORT
-            value: {{ .Values.srsd.port }}
+            value: {{ .Values.srsd.port | quote }}
           - name: SRSD_REQUEST_PATH
             value: {{ .Values.srsd.requestPath }}
           - name: SKIP_SRSD_POST
-            value: {{ .Values.srsd.skipPost }}
+            value: {{ .Values.srsd.skipPost | quote }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}

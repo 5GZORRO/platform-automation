@@ -26,7 +26,6 @@ serviceAccount:
 
 replicaCount: 1
 service:
-    name: sclm-app
     type: ClusterIP
     appPort: 8087
     extAppPort: 31080

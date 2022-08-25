@@ -90,7 +90,7 @@ resource "kubernetes_secret" "registry" {
     name = "registry-credentials"
   }
   data = {
-    ".dockerconfigjson" = "${var.registry}"
+    ".dockerconfigjson" = file("${var.registry}")
   }
 
   type = "kubernetes.io/dockerconfigjson"
@@ -105,8 +105,8 @@ provider "helm" {
   }
 }
 
-module "helm" {
-  source = "./modules/helm"
+# module "helm" {
+#   source = "./modules/helm"
 
-  values-file-path = var.values-file-path
-}
+#   values-file-path = var.values-file-path
+# }
