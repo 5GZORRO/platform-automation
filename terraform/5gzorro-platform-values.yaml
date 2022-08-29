@@ -10,8 +10,20 @@ global:
   imagePullSecrets: 
     - name: registry-credentials
 
+ingress-nginx:
+  enabled: true
+  controller:
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: "*.5gzorro.smartcommunitylab.it"
+
+cert-manager: 
+  enabled: true
+
 custom-resource-5gzorro:
   enabled: true
+  letsencrypt:
+    email: sysadmin@smartcommunitylab.it
   kube-prometheus-stack:
     enabled: true
   community-operator:
@@ -574,6 +586,20 @@ identity-and-permissions-manager-admin:
   database:
     connectionString: "admin-operator-admin-admin"
     port: "27017"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+    hosts:
+      - host: admin-idp.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: admin-idp-letsencrypt-tls
+       hosts:
+         - admin-idp.5gzorro.smartcommunitylab.it
   idp:
     role: "admin"
     whitelist: '["*"]'
@@ -592,6 +618,20 @@ identity-and-permissions-manager-regulator:
   database:
     connectionString: "regulator-operator-admin-regulator"
     port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+    hosts:
+      - host: regulator-idp.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: regulator-idp-letsencrypt-tls
+       hosts:
+         - regulator-idp.5gzorro.smartcommunitylab.it
   idp:
     role: "regulator"
     whitelist: '["*"]'
@@ -603,11 +643,25 @@ identity-and-permissions-manager-regulator:
     key: ""
     vpnaasKey: ""
 
-identity-and-permissions-manager-trader:
+identity-and-permissions-manager-trader: # holder
   enabled: true
   database:
     connectionString: "trader-operator-admin-trader"
     port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+    hosts:
+      - host: trader-idp.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: trader-idp-letsencrypt-tls
+       hosts:
+         - trader-idp.5gzorro.smartcommunitylab.it
   idp:
     role: "trader"
     whitelist: '["*"]'
@@ -620,13 +674,27 @@ identity-and-permissions-manager-trader:
     key: ""
     vpnaasKey: ""
 
-identity-and-permissions-manager-consumer:
+identity-and-permissions-manager-consumer:  # verifier
   enabled: true
   database:
     connectionString: "consumer-operator-admin-consumer"
     port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+    hosts:
+      - host: consumer-idp.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: consumer-idp-letsencrypt-tls
+       hosts:
+         - consumer-idp.5gzorro.smartcommunitylab.it
   idp:
-    role: "trader"
+    role: "consumer"
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-verifier:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-verifier:8001"
@@ -714,9 +782,10 @@ smart-contract-lifecycle-manager-admin:
     updateSlaIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/agreement/%s/identity"
   corda:
-    username: operatoraoperations             
-    password: usera             
-    host: operatora.operatora-ns.svc.cluster.local
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10012"
   operatorName: operatora
   hostname: "smart-contract-lifecycle-manager-admin:8087"
 
@@ -736,9 +805,10 @@ smart-contract-lifecycle-manager-regulator:
     updateSlaIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/agreement/%s/identity"
   corda:
-    username: regulatoraoperations            
-    password: usera             
-    host: regulatora.regualtora-ns.svc.cluster.local
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10015"
   operatorName: regualtora
   hostname: "smart-contract-lifecycle-manager-regulator:8087"
 
@@ -758,9 +828,10 @@ smart-contract-lifecycle-manager-consumer:
     updateSlaIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/agreement/%s/identity"
   corda:
-    username: operatorcoperations          
-    password: usera             
-    host: operatorc.operatorc-ns.svc.cluster.local
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10006"
   operatorName: operatorc
   hostname: "smart-contract-lifecycle-manager-consumer:8087"
 
@@ -780,9 +851,10 @@ smart-contract-lifecycle-manager-trader:
     updateSlaIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/agreement/%s/identity"
   corda:
-    username: operatorboperations          
-    password: usera             
-    host: operatorb.operatorb-ns.svc.cluster.local
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10009"
   operatorName: operatorb
   hostname: "smart-contract-lifecycle-manager-trader:8087"
 
@@ -798,7 +870,8 @@ resource-and-service-offer-catalog-admin:
     passwordKey: "password"
   kafka:
     bootstrap: "kafka-cluster-kafka-bootstrap:9092"
-    topic: dlt-product-offerings
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
   role: "admin"
   did:
     host: "http://zorro5g-identity-and-permissions-manager-admin"
@@ -817,3 +890,21 @@ resource-and-service-offer-catalog-admin:
     requestPath: "test"
     skipPost: "false"
   hostname: "resource-and-service-offer-catalog-admin"
+
+gui-admin:
+  enabled: true
+  role: "admin"
+  marketPlaceUrl: 'http://172.28.3.15:31180/tmf-api'
+  legalProseUrl: 'http://172.28.3.6:31087'
+  governanceUrl: 'http://172.28.3.6:31085'
+  identityPermissionsUrl: 'http://172.28.3.153:6300'
+  smartContractUrl: 'http://172.28.3.6:31083/smart-contract-lifecycle-manager'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'O=RegulatorA,OU=Haifa,L=Haifa,C=IL'
+  srsdUrl: 'http://172.28.3.15:32068'
+  issmUrl: 'http://172.28.3.15:30080'
+  rappUrl: 'http://172.28.3.242:2626'

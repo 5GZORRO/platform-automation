@@ -68,8 +68,10 @@ spec:
                 {{- end }}
           - name: KAFKA_BOOTSTRAP_ADDRESS
             value: {{ .Values.kafka.bootstrap }} 
-          - name: KAFKA_TOPIC
-            value: "{{ .Values.operatorName }}-{{ .Values.kafka.topic }}"
+          - name: KAFKA_TOPIC_OFFERINGS
+            value: "{{ .Values.kafka.offeringsTopic }}"
+          - name: KAFKA_TOPIC_ORDERS
+            value: "{{ .Values.kafka.ordersTopic }}"
           - name: DID_SERVICE_HOSTNAME
             value: {{ .Values.did.host }}
           - name: DID_SERVICE_PORT

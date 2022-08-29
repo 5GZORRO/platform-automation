@@ -13,7 +13,7 @@ spec:
         - name: "registry-credentials"
       containers:
         - name: baf
-          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:git-fix-tags6
+          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:git-fix-tags10
           env:
             - name: GIT_SSH_URI
               value: "https://gitlab.fbk.eu/ffais/blockchain-automation-framework-4.7.git"

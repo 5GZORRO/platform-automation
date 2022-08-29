@@ -8,6 +8,12 @@ dependencies:
 - name: external-dns
   repository: https://charts.bitnami.com/bitnami
   version: 6.7.5
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.2.3
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.9.1
 - name: vault
   repository: https://helm.releases.hashicorp.com
   version: 0.18.0
@@ -86,5 +92,11 @@ dependencies:
 - name: smart-contract-lifecycle-manager
   repository: ""
   version: 0.1.*
-digest: sha256:34b0272006ab0776462f8cafaa29b34805ca8dd9cfe7d7ac2efa2c8840d44fc8
-generated: "2022-08-24T10:33:48.219556986+02:00"
+- name: resource-and-service-offer-catalog
+  repository: ""
+  version: 0.1.*
+- name: gui
+  repository: ""
+  version: 0.1.*
+digest: sha256:5a4f3f1df478967a59757f48b8010c08bf89fcbdea84a21786a4d963aaecf0aa
+generated: "2022-08-29T17:02:16.544163282+02:00"

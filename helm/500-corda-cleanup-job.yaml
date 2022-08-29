@@ -13,7 +13,7 @@ spec:
         - name: "registry-credentials"
       containers:
         - name: baf
-          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:reset-fix
+          image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/baf-build:git-fix-tags10
           command: ["/home/reset.sh"]
           env:
             - name: GIT_SSH_URI

@@ -109,4 +109,5 @@ provider "helm" {
 #   source = "./modules/helm"
 
 #   values-file-path = var.values-file-path
+  # depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool.k8s]
 # }

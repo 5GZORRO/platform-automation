@@ -29,7 +29,7 @@ computer_name   = "von"
 vm_name         = "vmVonNetwork"
 vm_size         = "Standard_D2s_v5"
 nic_name        = "nicVonNetwork"
-ansible_script  = "install-von-network.yaml"
+ansible_script  = "install-von-network-and-corda.yaml"
 ssh_private_key = "/home/ffais/Documenti/users/5gzorro"
 
 # HELM

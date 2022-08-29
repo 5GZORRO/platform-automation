@@ -1,0 +1,76 @@
+- name: Install-von-network-and-corda
+  hosts: all
+  vars:
+    docker_users:
+      - zorro
+    docker_install_compose_plugin: true
+    docker_packages_state: present
+
+  roles:
+    - role: geerlingguy.docker
+      become: true
+
+  tasks:
+    - name: Clone Von git repository
+      ansible.builtin.git:
+        repo: https://github.com/bcgov/von-network.git
+        dest: /home/zorro/von-network
+        version: main
+
+    - name: Reset ssh connection fix for docker permsission error
+      ansible.builtin.meta: reset_connection
+
+    - name: Build VON-Network
+      ansible.builtin.command: "/bin/bash manage build"
+      args:
+        chdir: "/home/zorro/von-network"
+      register: result
+      changed_when: result.rc != 0
+
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result
+
+    - name: Run VON-Network
+      ansible.builtin.command: "/bin/bash manage start"
+      args:
+        chdir: "/home/zorro/von-network"
+      register: result
+      changed_when: result.rc != 0
+
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result
+
+    - name: Install openjdk-8-jdk
+      ansible.builtin.apt: 
+        name: openjdk-8-jdk
+        state: present
+      become: true
+
+    - name: Clone Corda git repository
+      ansible.builtin.git:
+        repo: https://github.com/5GZORRO/smart-contract-lifecycle-manager.git
+        dest: /home/zorro/smart-contract-lifecycle-manager
+        version: master
+
+    - name: Change localhost to VM IP in corda network build file
+      ansible.builtin.command: "sed -i 's/localhost/10.241.0.10/g' corda-driver/build.gradle"
+      args:
+        chdir: "/home/zorro/smart-contract-lifecycle-manager"
+      register: result
+      changed_when: result.rc != 0
+
+    - name: Build corda network
+      ansible.builtin.command: "/bin/bash gradlew clean deployNodes"
+      args:
+        chdir: "/home/zorro/smart-contract-lifecycle-manager"
+      register: result
+      changed_when: result.rc != 0
+
+    - name: Run corda network
+      ansible.builtin.command: "/bin/bash runnodes"
+      args:
+        chdir: "/home/zorro/smart-contract-lifecycle-manager/corda-driver/build/nodes"
+      register: result
+      changed_when: result.rc != 0
