@@ -13,9 +13,9 @@ global:
 ingress-nginx:
   enabled: true
   controller:
-  service:
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: "*.5gzorro.smartcommunitylab.it"
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "*.5gzorro.smartcommunitylab.it"
 
 cert-manager: 
   enabled: true
@@ -29,7 +29,7 @@ custom-resource-5gzorro:
   community-operator:
     enabled: true
     mongodbClusters:
-      - name: admin-operator
+      - name: 5gzorro-mongodb-idp-admin
         replicas: 1
         version: "4.2.6"
         users:
@@ -42,45 +42,93 @@ custom-resource-5gzorro:
                 db: administrator
               - name: readWrite
                 db: provider
-            scramCredentialsSecretName: admin-scram
-      - name: trader-operator
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
+      - name: 5gzorro-mongodb-idp-trader
         replicas: 1
         version: "4.2.6"
         users:
           - name: trader
             db: admin
             passwordSecretRef: 
-              name: trader-operator-password
+              name: 5gzorro-mongodb-idp-trader-password
             roles:
               - name: readWrite
                 db: provider
-            scramCredentialsSecretName: trader-scram
-      - name: regulator-operator
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-trader-scram
+      - name: 5gzorro-mongodb-idp-regulator
         replicas: 1
         version: "4.2.6"
         users:
           - name: regulator
             db: admin
             passwordSecretRef: 
-              name: regulator-operator-password
+              name: 5gzorro-mongodb-idp-regulator-password
             roles:
               - name: readWrite
                 db: regulator
               - name: readWrite
                 db: provider
-            scramCredentialsSecretName: regulator-scram
-      - name: consumer-operator
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-regulator-scram
+      - name: 5gzorro-mongodb-idp-consumer
         replicas: 1
         version: "4.2.6"
         users:
           - name: consumer
             db: admin
             passwordSecretRef: 
-              name: consumer-operator-password
+              name: 5gzorro-mongodb-idp-consumer-password
             roles:
               - name: readWrite
                 db: provider
-            scramCredentialsSecretName: consumer-scram
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
+      - name: 5gzorro-mongodb-srsd-admin
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-admin-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-admin-scram
+      - name: 5gzorro-mongodb-srsd-regulator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-regulator-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-regulator-scram        
+      - name: 5gzorro-mongodb-srsd-trader
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-trader-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-trader-scram
+      - name: 5gzorro-mongodb-srsd-consumer
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-consumer-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-consumer-scram 
   strimzi:
     enabled: true
     kafkaClusters:
@@ -124,6 +172,66 @@ custom-resource-5gzorro:
   postgres-operator:
     enabled: true
     postgresqlClusters:
+      - name: zorro5g-psqldb-sclm-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmadmin:
+              - superuser
+              - createdb
+          databases:
+            sclmadmin: sclmadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-sclm-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmregulator:
+              - superuser
+              - createdb
+          databases:
+            sclmregulator: sclmregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-sclm-consumer
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmconsumer:
+              - superuser
+              - createdb
+          databases:
+            sclmconsumer: sclmconsumer
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-sclm-trader
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmtrader:
+              - superuser
+              - createdb
+          databases:
+            sclmtrader: sclmtrader
+          postgresql:
+            version: "14"
       - name: zorro5g-psqldb-legalprose-admin
         spec:
           teamId: zorro5g
@@ -317,7 +425,7 @@ external-dns:
   # # domainFilters: ["*.5gzorro.smartcommunitylab.it"]
 
 vault:
-  enabled: true
+  enabled: false
   ui:
     enabled: true
     serviceType: "LoadBalancer"
@@ -546,10 +654,10 @@ aries-cloudagent-regulator:
       - ReadWriteOnce
     size: 10Gi
 
-aries-cloudagent-holder:
+aries-cloudagent-trader:
   enable: true
   agent:
-    role: "holder"  # Admin, Regulator, Holder, Verifier
+    role: "trader"  # Admin, Regulator, Holder, Verifier
     label: "AgentHolder" # AgentRegulator
     seed: "AgentHolder000000000000000000000" # AgentRegulator00000000000000000
     did: "5YhRzG3iwWi195vHuxMJPy"
@@ -563,10 +671,10 @@ aries-cloudagent-holder:
       - ReadWriteOnce
     size: 10Gi
 
-aries-cloudagent-verifier:
+aries-cloudagent-consumer:
   enable: true
   agent:
-    role: "varifier"  # Admin, Regulator, Holder, Verifier
+    role: "consumer"  # Admin, Regulator, Holder, Verifier
     label: "AgentVerifier" # AgentRegulator
     seed: "AgentVerifier0000000000000000000" # AgentRegulator00000000000000000
     did: "2ramRjDFUSwWnn4JJ5MDpC"
@@ -584,13 +692,13 @@ aries-cloudagent-verifier:
 identity-and-permissions-manager-admin:
   enabled: true
   database:
-    connectionString: "admin-operator-admin-admin"
+    connectionString: "5gzorro-mongodb-idp-admin-admin-admin"
     port: "27017"
   ingress:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
       - host: admin-idp.5gzorro.smartcommunitylab.it
         paths:
@@ -616,13 +724,13 @@ identity-and-permissions-manager-admin:
 identity-and-permissions-manager-regulator:
   enabled: true
   database:
-    connectionString: "regulator-operator-admin-regulator"
+    connectionString: "5gzorro-mongodb-idp-regulator-admin-regulator"
     port: ""
   ingress:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
       - host: regulator-idp.5gzorro.smartcommunitylab.it
         paths:
@@ -646,13 +754,13 @@ identity-and-permissions-manager-regulator:
 identity-and-permissions-manager-trader: # holder
   enabled: true
   database:
-    connectionString: "trader-operator-admin-trader"
+    connectionString: "5gzorro-mongodb-idp-trader-admin-trader"
     port: ""
   ingress:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
       - host: trader-idp.5gzorro.smartcommunitylab.it
         paths:
@@ -677,13 +785,13 @@ identity-and-permissions-manager-trader: # holder
 identity-and-permissions-manager-consumer:  # verifier
   enabled: true
   database:
-    connectionString: "consumer-operator-admin-consumer"
+    connectionString: "5gzorro-mongodb-idp-consumer-admin-consumer"
     port: ""
   ingress:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
       - host: consumer-idp.5gzorro.smartcommunitylab.it
         paths:
@@ -714,11 +822,25 @@ governance-manager-api-admin:
     existingSecret: "governancemanageradmin.zorro5g-psqldb-governancemanager-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-gm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: admin-gm-letsencrypt-tls
+       hosts:
+         - admin-gm.5gzorro.smartcommunitylab.it
   role: "admin"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
   legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"
   callbacks:
-    updateProposal: "http://governance-manager-api-admin:8080/api/v1/governance-actions/%s/identity"
+    updateProposal: "https://admin-gm.5gzorro.smartcommunitylab.it/api/v1/governance-actions/%s/identity"
 
 governance-manager-api-regulator:
   enabled: true
@@ -729,11 +851,25 @@ governance-manager-api-regulator:
     existingSecret: "governancemanagerregulator.zorro5g-psqldb-governancemanager-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: regulator-gm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: regulator-gm-letsencrypt-tls
+       hosts:
+         - regulator-gm.5gzorro.smartcommunitylab.it
   role: "regulator"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
   legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-regulator:8080/legal-prose-repository/api/v1"
   callbacks:
-    updateProposal: "http://governance-manager-api-regulator:8080/api/v1/governance-actions/%s/identity"
+    updateProposal: "https://regulator-gm.5gzorro.smartcommunitylab.it/api/v1/governance-actions/%s/identity"
 
 legal-prose-repository-admin:
   enabled: true
@@ -744,11 +880,25 @@ legal-prose-repository-admin:
     existingSecret: "legalproseadmin.zorro5g-psqldb-legalprose-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-lpr.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: admin-lpr-letsencrypt-tls
+       hosts:
+         - admin-lpr.5gzorro.smartcommunitylab.it
   role: "admin"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
   callbacks:
-    updateTemplateIdentity: "http://legal-prose-repository-admin:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+    updateTemplateIdentity: "https://admin-lpr.5gzorro.smartcommunitylab.it/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
 legal-prose-repository-regulator:
   enabled: true
@@ -759,28 +909,56 @@ legal-prose-repository-regulator:
     existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: regulator-lpr.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: regulator-lpr-letsencrypt-tls
+       hosts:
+         - regulator-lpr.5gzorro.smartcommunitylab.it
   role: "regulator"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
   callbacks:
-    updateTemplateIdentity: "http://legal-prose-repository-regulator:8080/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+    updateTemplateIdentity: "https://regulator-lpr.5gzorro.smartcommunitylab.it/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
 
 smart-contract-lifecycle-manager-admin:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-srsd-admin
+    host: zorro5g-psqldb-sclm-admin
     port: 5432
-    name: srsdadmin
-    existingSecret: "srsdadmin.zorro5g-psqldb-srsd-admin.credentials.postgresql.acid.zalan.do"
+    name: sclmadmin
+    existingSecret: "sclmadmin.zorro5g-psqldb-sclm-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-sclm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: admin-sclm-letsencrypt-tls
+       hosts:
+         - admin-sclm.5gzorro.smartcommunitylab.it
   role: "admin"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-admin:8087/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -792,18 +970,32 @@ smart-contract-lifecycle-manager-admin:
 smart-contract-lifecycle-manager-regulator:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-srsd-regulator
+    host: zorro5g-psqldb-sclm-regulator
     port: 5432
-    name: srsdregulator
-    existingSecret: "srsdregulator.zorro5g-psqldb-srsd-regulator.credentials.postgresql.acid.zalan.do"
+    name: sclmregulator
+    existingSecret: "sclmregulator.zorro5g-psqldb-sclm-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: regulator-sclm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: regulator-sclm-letsencrypt-tls
+       hosts:
+         - regulator-sclm.5gzorro.smartcommunitylab.it
   role: "regulator"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-regulator:8087/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -815,18 +1007,32 @@ smart-contract-lifecycle-manager-regulator:
 smart-contract-lifecycle-manager-consumer:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-srsd-consumer
+    host: zorro5g-psqldb-sclm-consumer
     port: 5432
-    name: srsdconsumer
-    existingSecret: "srsdconsumer.zorro5g-psqldb-srsd-consumer.credentials.postgresql.acid.zalan.do"
+    name: sclmconsumer
+    existingSecret: "sclmconsumer.zorro5g-psqldb-sclm-consumer.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: consumer-sclm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: consumer-sclm-letsencrypt-tls
+       hosts:
+         - consumer-sclm.5gzorro.smartcommunitylab.it
   role: "consumer"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-consumer:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-consumer:8087/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -838,18 +1044,32 @@ smart-contract-lifecycle-manager-consumer:
 smart-contract-lifecycle-manager-trader:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-srsd-trader
+    host: zorro5g-psqldb-sclm-trader
     port: 5432
-    name: srsdtrader
-    existingSecret: "srsdtrader.zorro5g-psqldb-srsd-trader.credentials.postgresql.acid.zalan.do"
+    name: sclmtrader
+    existingSecret: "sclmtrader.zorro5g-psqldb-sclm-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: trader-sclm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: trader-sclm-letsencrypt-tls
+       hosts:
+         - trader-sclm.5gzorro.smartcommunitylab.it
   role: "trader"
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-trader:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://smart-contract-lifecycle-manager-trader:8087/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -872,6 +1092,20 @@ resource-and-service-offer-catalog-admin:
     bootstrap: "kafka-cluster-kafka-bootstrap:9092"
     offeringsTopic: dlt-product-offerings
     ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-rsoc.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: admin-rsoc-letsencrypt-tls
+       hosts:
+         - admin-rsoc.5gzorro.smartcommunitylab.it
   role: "admin"
   did:
     host: "http://zorro5g-identity-and-permissions-manager-admin"
@@ -885,26 +1119,200 @@ resource-and-service-offer-catalog-admin:
     slaPath: "/api/v1/service-level-agreement/"
     skipPost: "false"
   srsd:
-    host: "test"
-    port: "8080"
-    requestPath: "test"
+    host: "zorro5g-smart-resource-and-service-discovery-admin"
+    port: "5000"
+    requestPath: "/classifyOffer"
     skipPost: "false"
   hostname: "resource-and-service-offer-catalog-admin"
 
+resource-and-service-offer-catalog-regulator:
+  enable: true
+  operatorName: regulatora
+  postgres:
+    host: zorro5g-psqldb-rsoc-regulator
+    port: 5432
+    name: rsocregulator
+    existingSecret: "rsocregulator.zorro5g-psqldb-rsoc-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: regulator-rsoc.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: regulator-rsoc-letsencrypt-tls
+       hosts:
+         - regulator-rsoc.5gzorro.smartcommunitylab.it
+  role: "regulator"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-regulator"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-regulator"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-regulator"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-regulator"
+
+resource-and-service-offer-catalog-trader:
+  enable: true
+  operatorName: operatorb
+  postgres:
+    host: zorro5g-psqldb-rsoc-trader
+    port: 5432
+    name: rsoctrader
+    existingSecret: "rsoctrader.zorro5g-psqldb-rsoc-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: trader-rsoc.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: trader-rsoc-letsencrypt-tls
+       hosts:
+         - trader-rsoc.5gzorro.smartcommunitylab.it
+  role: "trader"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-trader"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-trader"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-trader"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-trader"
+
+resource-and-service-offer-catalog-consumer:
+  enable: true
+  operatorName: operatorc
+  postgres:
+    host: zorro5g-psqldb-rsoc-consumer
+    port: 5432
+    name: rsocconsumer
+    existingSecret: "rsocconsumer.zorro5g-psqldb-rsoc-consumer.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: consumer-rsoc.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: consumer-rsoc-letsencrypt-tls
+       hosts:
+         - consumer-rsoc.5gzorro.smartcommunitylab.it
+  role: "consumer"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-consumer"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-consumer"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-consumer"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-consumer"
+
 gui-admin:
   enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-gui.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: gui-letsencrypt-tls
+       hosts:
+         - gui.5gzorro.smartcommunitylab.it
   role: "admin"
-  marketPlaceUrl: 'http://172.28.3.15:31180/tmf-api'
-  legalProseUrl: 'http://172.28.3.6:31087'
-  governanceUrl: 'http://172.28.3.6:31085'
-  identityPermissionsUrl: 'http://172.28.3.153:6300'
-  smartContractUrl: 'http://172.28.3.6:31083/smart-contract-lifecycle-manager'
+  marketPlaceUrl: 'https://admin-rsoc.5gzorro.smartcommunitylab.it/tmf-api'
+  legalProseUrl: 'https://admin-lpr.5gzorro.smartcommunitylab.it'
+  governanceUrl: 'https://admin-gm.5gzorro.smartcommunitylab.it'
+  identityPermissionsUrl: 'https://admin-idp.5gzorro.smartcommunitylab.it'
+  smartContractUrl: 'https://admin-sclm.5gzorro.smartcommunitylab.it'
   resourceManagerEndpoint: 'http://172.28.3.15:31081'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
-  ledgerIdentity: 'O=RegulatorA,OU=Haifa,L=Haifa,C=IL'
-  srsdUrl: 'http://172.28.3.15:32068'
+  ledgerIdentity: 'CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB'
+  srsdUrl: 'https://admin-srsd.5gzorro.smartcommunitylab.it'
   issmUrl: 'http://172.28.3.15:30080'
   rappUrl: 'http://172.28.3.242:2626'
+
+smart-resource-and-service-discovery-admin:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: admin-srsd.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: cadmin-srsd-letsencrypt-tls
+       hosts:
+         - admin-srsd.5gzorro.smartcommunitylab.it
+  mongo:
+    uri: "5gzorro-mongodb-srsd-admin-admin-srsd"

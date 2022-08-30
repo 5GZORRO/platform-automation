@@ -9,6 +9,10 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "gui.name" . }}
@@ -19,8 +23,10 @@ spec:
         app.kubernetes.io/name: {{ include "gui.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
-        - name: {{ .Values.image.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

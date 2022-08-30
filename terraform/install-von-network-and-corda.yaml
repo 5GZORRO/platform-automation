@@ -74,3 +74,7 @@
         chdir: "/home/zorro/smart-contract-lifecycle-manager/corda-driver/build/nodes"
       register: result
       changed_when: result.rc != 0
+
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result

@@ -5,10 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: ubiwhere/5gzorro-operator-dashboard
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/gui
   tag: latest
   pullPolicy: Always
-  imagePullSecrets: cfcr
 
 nameOverride: ""
 fullnameOverride: ""

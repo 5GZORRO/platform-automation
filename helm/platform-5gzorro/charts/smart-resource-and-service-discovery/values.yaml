@@ -10,8 +10,8 @@ serviceAccount:
 replicaCount: 1
 service:
   type: ClusterIP
-  appPort: 5000
-  extAppPort: 5000
+  appPort: 5556
+  extAppPort: 5556
 
 image:
   repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/srd-api

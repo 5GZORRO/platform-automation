@@ -135,16 +135,16 @@ dependencies:
       - regulator
       - aries
   - name: aries-cloudagent
-    alias: aries-cloudagent-holder
+    alias: aries-cloudagent-trader
     version: "0.1.*"
-    condition: aries-cloudagent-holder.enabled
+    condition: aries-cloudagent-trader.enabled
     tags:
       - trader
       - aries
   - name: aries-cloudagent
-    alias: aries-cloudagent-verifier
+    alias: aries-cloudagent-consumer
     version: "0.1.*"
-    condition: aries-cloudagent-verifier.enabled
+    condition: aries-cloudagent-consumer.enabled
     tags:
       - consumer
       - aries
@@ -207,32 +207,48 @@ dependencies:
     condition: smart-contract-lifecycle-manager-admin.enabled
     tags:
       - admin
-      - trader
-      - regulator
   - name: smart-contract-lifecycle-manager
     alias: smart-contract-lifecycle-manager-trader
     version: "0.1.*"
     condition: smart-contract-lifecycle-manager-trader.enabled
     tags:
-      - admin
       - trader
-      - regulator
   - name: smart-contract-lifecycle-manager
     alias: smart-contract-lifecycle-manager-regulator
     version: "0.1.*"
     condition: smart-contract-lifecycle-manager-regulator.enabled
     tags:
-      - admin
-      - trader
       - regulator
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-consumer
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-consumer.enabled
+    tags:
+      - consumer
   - name: resource-and-service-offer-catalog
     alias: resource-and-service-offer-catalog-admin
     version: "0.1.*"
     condition: resource-and-service-offer-catalog-admin.enabled
     tags:
       - admin
-      - trader
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-regulator
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-regulator.enabled
+    tags:
       - regulator
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-trader
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-trader.enabled
+    tags:
+      - trader
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-consumer
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-consumer.enabled
+    tags:
+      - consumer
   - name: gui
     alias: gui-admin
     version: "0.1.*"
@@ -241,3 +257,9 @@ dependencies:
       - admin
       - trader
       - regulator
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-admin
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-admin.enabled
+    tags:
+      - admin

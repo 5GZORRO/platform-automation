@@ -69,7 +69,7 @@ spec:
             - --auto-ping-connection 
             - --auto-accept-invites 
             - --auto-accept-requests 
-            {{- if not (eq .Values.agent.role "verifier")  }}
+            {{- if not (eq .Values.agent.role "consumer")  }}
             - --auto-respond-credential-offer 
             - --auto-store-credential 
             - --auto-respond-presentation-request 
@@ -78,7 +78,7 @@ spec:
             - --auto-respond-credential-proposal 
             - --auto-respond-credential-request 
             {{- end }}
-            {{- if not (eq .Values.agent.role "holder")  }}
+            {{- if not (eq .Values.agent.role "trader")  }}
             - --auto-verify-presentation 
             {{- end }}
             - --wallet-key 

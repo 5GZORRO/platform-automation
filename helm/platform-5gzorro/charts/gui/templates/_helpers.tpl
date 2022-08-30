@@ -24,6 +24,29 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
+
+{{/*
+Common labels
+*/}}
+{{- define "gui.labels" -}}
+helm.sh/chart: {{ include "gui.chart" . }}
+{{ include "gui.selectorLabels" . }}
+{{- if .Values.AppVersion }}
+app.kubernetes.io/version: {{ .Values.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "gui.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "gui.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+gui/role: {{ .Values.role }}
+
+{{- end -}}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}
