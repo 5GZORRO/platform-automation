@@ -29,7 +29,7 @@ custom-resource-5gzorro:
   community-operator:
     enabled: true
     mongodbClusters:
-      - name: 5gzorro-mongodb-idp-admin
+      - name: mongodb-idp-admin
         replicas: 1
         version: "4.2.6"
         users:
@@ -43,7 +43,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
-      - name: 5gzorro-mongodb-idp-trader
+      - name: mongodb-idp-trader
         replicas: 1
         version: "4.2.6"
         users:
@@ -55,7 +55,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-trader-scram
-      - name: 5gzorro-mongodb-idp-regulator
+      - name: mongodb-idp-regulator
         replicas: 1
         version: "4.2.6"
         users:
@@ -69,7 +69,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-regulator-scram
-      - name: 5gzorro-mongodb-idp-consumer
+      - name: mongodb-idp-consumer
         replicas: 1
         version: "4.2.6"
         users:
@@ -81,7 +81,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
-      - name: 5gzorro-mongodb-srsd-admin
+      - name: mongodb-srsd-admin
         replicas: 1
         version: "4.2.6"
         users:
@@ -93,7 +93,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: srsd
             scramCredentialsSecretName: 5gzorro-mongodb-srsd-admin-scram
-      - name: 5gzorro-mongodb-srsd-regulator
+      - name: mongodb-srsd-regulator
         replicas: 1
         version: "4.2.6"
         users:
@@ -105,7 +105,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: srsd
             scramCredentialsSecretName: 5gzorro-mongodb-srsd-regulator-scram        
-      - name: 5gzorro-mongodb-srsd-trader
+      - name: mongodb-srsd-trader
         replicas: 1
         version: "4.2.6"
         users:
@@ -117,7 +117,7 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: srsd
             scramCredentialsSecretName: 5gzorro-mongodb-srsd-trader-scram
-      - name: 5gzorro-mongodb-srsd-consumer
+      - name: mongodb-srsd-consumer
         replicas: 1
         version: "4.2.6"
         users:
@@ -692,7 +692,7 @@ aries-cloudagent-consumer:
 identity-and-permissions-manager-admin:
   enabled: true
   database:
-    connectionString: "5gzorro-mongodb-idp-admin-admin-admin"
+    connectionString: "mongodb-idp-admin-admin-admin"
     port: "27017"
   ingress:
     enabled: true
@@ -724,7 +724,7 @@ identity-and-permissions-manager-admin:
 identity-and-permissions-manager-regulator:
   enabled: true
   database:
-    connectionString: "5gzorro-mongodb-idp-regulator-admin-regulator"
+    connectionString: "mongodb-idp-regulator-admin-regulator"
     port: ""
   ingress:
     enabled: true
@@ -754,7 +754,7 @@ identity-and-permissions-manager-regulator:
 identity-and-permissions-manager-trader: # holder
   enabled: true
   database:
-    connectionString: "5gzorro-mongodb-idp-trader-admin-trader"
+    connectionString: "mongodb-idp-trader-admin-trader"
     port: ""
   ingress:
     enabled: true
@@ -785,7 +785,7 @@ identity-and-permissions-manager-trader: # holder
 identity-and-permissions-manager-consumer:  # verifier
   enabled: true
   database:
-    connectionString: "5gzorro-mongodb-idp-consumer-admin-consumer"
+    connectionString: "mongodb-idp-consumer-admin-consumer"
     port: ""
   ingress:
     enabled: true
@@ -1279,9 +1279,9 @@ gui-admin:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: gui-letsencrypt-tls
+     - secretName: admin-gui-letsencrypt-tls
        hosts:
-         - gui.5gzorro.smartcommunitylab.it
+         - admin-gui.5gzorro.smartcommunitylab.it
   role: "admin"
   marketPlaceUrl: 'https://admin-rsoc.5gzorro.smartcommunitylab.it/tmf-api'
   legalProseUrl: 'https://admin-lpr.5gzorro.smartcommunitylab.it'
@@ -1315,4 +1315,4 @@ smart-resource-and-service-discovery-admin:
        hosts:
          - admin-srsd.5gzorro.smartcommunitylab.it
   mongo:
-    uri: "5gzorro-mongodb-srsd-admin-admin-srsd"
+    uri: "mongodb-srsd-admin-admin-srsd"

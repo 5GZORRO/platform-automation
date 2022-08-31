@@ -53,6 +53,7 @@
         repo: https://github.com/5GZORRO/smart-contract-lifecycle-manager.git
         dest: /home/zorro/smart-contract-lifecycle-manager
         version: master
+        force: yes
 
     - name: Change localhost to VM IP in corda network build file
       ansible.builtin.command: "sed -i 's/localhost/10.241.0.10/g' corda-driver/build.gradle"
@@ -69,11 +70,27 @@
       changed_when: result.rc != 0
 
     - name: Run corda network
-      ansible.builtin.command: "/bin/bash runnodes"
+      ansible.builtin.shell: "nohup java -jar runnodes.jar && sleep 120s"
       args:
         chdir: "/home/zorro/smart-contract-lifecycle-manager/corda-driver/build/nodes"
       register: result
       changed_when: result.rc != 0
+    
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: result
+
+    - name: Creates an entry like "@reboot /home/zorro/von-network/manage start"
+      ansible.builtin.cron:
+        name: "Von Network"
+        special_time: reboot
+        job: "/home/zorro/von-network/manage start"
+
+    - name: Creates an entry like "@reboot /home/zorro/smart-contract-lifecycle-manager/corda-driver/build/nodes/runnodes.jar"
+      ansible.builtin.cron:
+        name: "Corda Network"
+        special_time: reboot
+        job: "java -jar /home/zorro/smart-contract-lifecycle-manager/corda-driver/build/nodes/runnodes.jar"
 
     - name: Print return information from the previous task
       ansible.builtin.debug:
