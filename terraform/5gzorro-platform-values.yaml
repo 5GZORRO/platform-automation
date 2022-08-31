@@ -19,6 +19,7 @@ ingress-nginx:
 
 cert-manager: 
   enabled: true
+  namespace: cert-manager
 
 custom-resource-5gzorro:
   enabled: true

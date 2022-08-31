@@ -3,6 +3,7 @@ resource "helm_release" "platform-5gzorro" {
   repository = "../helm"
   chart      = "platform-5gzorro"
   timeout    = 600
+  wait       = false
   values = [
     file(var.values-file-path)
   ]

@@ -109,5 +109,5 @@ module "helm" {
   source = "./modules/helm"
 
   values-file-path = var.values-file-path
-  depends_on       = [module.aks.azurerm_kubernetes_cluster_node_pool]
+  depends_on       = [module.aks.azurerm_kubernetes_cluster_node_pool, kubernetes_secret.registry]
 }

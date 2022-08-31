@@ -62,7 +62,7 @@ metadata:
   name: idp-{{ .Values.idp.role }}-did-registration
   annotations:
     "helm.sh/hook": post-install
-    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
+    "helm.sh/hook-delete-policy": hook-succeeded
     "helm.sh/hook-weight": "3"
   labels:
     app.kubernetes.io/name: {{ include "identity-and-permissions-manager.name" . }}
