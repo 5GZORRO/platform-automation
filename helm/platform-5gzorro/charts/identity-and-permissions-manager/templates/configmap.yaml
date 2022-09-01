@@ -5,7 +5,7 @@ metadata:
 data:
   WHITELIST: {{ .Values.idp.whitelist | quote }}
   DATABASE_PORT: "27017"
-  HOLDER_AGENT: {{ .Values.idp.holderAgent }}
+  HOLDER_AGENT_URL: {{ .Values.idp.holderAgent }}
   TRADING_PROVIDER_AGENT_CONTROLLER_URL: {{ .Values.idp.tradingProviderAgentControllerUrl }}
   OTHER_IDP_CONTROLLERS: {{ .Values.idp.otherIdpControllers | quote }}
   {{- if or (eq .Values.idp.role "admin") (eq .Values.idp.role "regulator") }}

@@ -958,8 +958,8 @@ smart-contract-lifecycle-manager-admin:
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://admin-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -995,8 +995,8 @@ smart-contract-lifecycle-manager-regulator:
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://regulator-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -1032,8 +1032,8 @@ smart-contract-lifecycle-manager-consumer:
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-consumer:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://consumer-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -1069,8 +1069,8 @@ smart-contract-lifecycle-manager-trader:
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
   governanceBaseUrl: "http://zorro5g-governance-manager-api-trader:8080/api/v1"
   callbacks:
-    updateSlaIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/api/v1/agreement/%s/identity"
+    updateSlaIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://trader-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     username: user1           
     password: test             
@@ -1288,7 +1288,7 @@ gui-admin:
   legalProseUrl: 'https://admin-lpr.5gzorro.smartcommunitylab.it'
   governanceUrl: 'https://admin-gm.5gzorro.smartcommunitylab.it'
   identityPermissionsUrl: 'https://admin-idp.5gzorro.smartcommunitylab.it'
-  smartContractUrl: 'https://admin-sclm.5gzorro.smartcommunitylab.it'
+  smartContractUrl: 'https://admin-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/'
   resourceManagerEndpoint: 'http://172.28.3.15:31081'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
