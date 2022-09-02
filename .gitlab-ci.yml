@@ -50,7 +50,7 @@ deploy:
   stage: deploy
   script:
     - cd "${TF_ROOT}"
-    - gitlab-terraform apply -auto-approve
+    - gitlab-terraform apply -auto-approve -var="ssh_public_key=${TF_VAR_ssh_public_key}" -var="ssh_private_key=${TF_VAR_ssh_private_key}"
   resource_group: ${TF_STATE_NAME}
   rules:
     - if: $DEPLOY == "true"
