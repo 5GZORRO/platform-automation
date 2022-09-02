@@ -37,8 +37,8 @@ build:
   stage: build
   script:
     - cd "${TF_ROOT}"
-    - gitlab-terraform plan
-    - gitlab-terraform plan-json
+    - gitlab-terraform plan -var="ssh_public_key=${TF_VAR_ssh_public_key}" -var="ssh_private_key=${TF_VAR_ssh_private_key}"
+    - gitlab-terraform plan-json -var="ssh_public_key=${TF_VAR_ssh_public_key}" -var="ssh_private_key=${TF_VAR_ssh_private_key}"
   resource_group: ${TF_STATE_NAME}
   artifacts:
     paths:
