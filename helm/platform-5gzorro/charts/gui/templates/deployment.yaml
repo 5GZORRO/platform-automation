@@ -7,6 +7,8 @@ metadata:
     helm.sh/chart: {{ include "gui.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -54,7 +56,7 @@ spec:
       volumes:
         - name: operator-dashboard-frontend-config-volume
           configMap:
-            name: {{ .Release.Name }}-operator-dashboard-frontend-config
+            name: {{ .Release.Name }}-operator-dashboard-frontend-config-{{ .Values.role }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -94,5 +94,5 @@ spec:
         - name: delete-databases
           image: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/misc-tools"
           command: ["/bin/sh"]
-          args: ["-c", "kubectl delete mongodbcommunity --all && kubectl delete postgresql --all && sleep 2m"]
+          args: ["-c", "kubectl delete mongodbcommunity --all && kubectl delete postgresql --all && sleep 5m"]
       restartPolicy: OnFailure

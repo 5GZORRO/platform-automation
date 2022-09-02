@@ -699,14 +699,15 @@ identity-and-permissions-manager-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-idp.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-idp-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
        hosts:
          - admin-idp.5gzorro.smartcommunitylab.it
   idp:
@@ -714,9 +715,9 @@ identity-and-permissions-manager-admin:
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-trader:8000", "http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-consumer:8000"]'
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
     adminCatalogueUrl: "http://172.51.40.23:34080/tmf-api/adminOnboardHandler"
     key: ""
     vpnaasKey: ""
@@ -731,14 +732,15 @@ identity-and-permissions-manager-regulator:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: regulator-idp.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: regulator-idp-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #regulator-idp-letsencrypt-tls
        hosts:
          - regulator-idp.5gzorro.smartcommunitylab.it
   idp:
@@ -746,9 +748,9 @@ identity-and-permissions-manager-regulator:
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-regulator:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-regulator:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-trader:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
     key: ""
     vpnaasKey: ""
 
@@ -761,25 +763,26 @@ identity-and-permissions-manager-trader: # holder
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: trader-idp.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: trader-idp-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #trader-idp-letsencrypt-tls
        hosts:
          - trader-idp.5gzorro.smartcommunitylab.it
   idp:
     role: "trader"
     whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-holder:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-holder:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
+    holderAgent: "http://zorro5g-aries-cloudagent-trader:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-trader:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
     key: ""
     vpnaasKey: ""
 
@@ -792,25 +795,26 @@ identity-and-permissions-manager-consumer:  # verifier
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: consumer-idp.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: consumer-idp-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
        hosts:
          - consumer-idp.5gzorro.smartcommunitylab.it
   idp:
     role: "consumer"
     whitelist: '["*"]'
-    holderAgent: "http://zorro5g-aries-cloudagent-verifier:8001"
-    issuerAgentUrl: "http://zorro5g-aries-cloudagent-verifier:8001"
-    tradingProviderAgentControllerUrl: "http://identity-and-permissions-manager-trader:8000"
-    adminAgentControllerUrl: "http://identity-and-permissions-manager-admin:8000"
-    regulatorAgentControllerUrl: "http://identity-and-permissions-manager-regulator:8000"
-    otherIdpControllers: '["http://identity-and-permissions-manager-regulator:8000", "http://identity-and-permissions-manager-admin:8000", "http://identity-and-permissions-manager-consumer:8000" ]'
+    holderAgent: "http://zorro5g-aries-cloudagent-consumer:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-consumer:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
     key: ""
     vpnaasKey: ""
 
@@ -827,14 +831,15 @@ governance-manager-api-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-gm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-gm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-gm-letsencrypt-tls
        hosts:
          - admin-gm.5gzorro.smartcommunitylab.it
   role: "admin"
@@ -856,14 +861,15 @@ governance-manager-api-regulator:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: regulator-gm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: regulator-gm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #regulator-gm-letsencrypt-tls
        hosts:
          - regulator-gm.5gzorro.smartcommunitylab.it
   role: "regulator"
@@ -885,14 +891,15 @@ legal-prose-repository-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-lpr.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-lpr-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-lpr-letsencrypt-tls
        hosts:
          - admin-lpr.5gzorro.smartcommunitylab.it
   role: "admin"
@@ -914,14 +921,15 @@ legal-prose-repository-regulator:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: regulator-lpr.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: regulator-lpr-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #regulator-lpr-letsencrypt-tls
        hosts:
          - regulator-lpr.5gzorro.smartcommunitylab.it
   role: "regulator"
@@ -944,14 +952,15 @@ smart-contract-lifecycle-manager-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-sclm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-sclm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-sclm-letsencrypt-tls
        hosts:
          - admin-sclm.5gzorro.smartcommunitylab.it
   role: "admin"
@@ -981,14 +990,15 @@ smart-contract-lifecycle-manager-regulator:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: regulator-sclm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: regulator-sclm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #regulator-sclm-letsencrypt-tls
        hosts:
          - regulator-sclm.5gzorro.smartcommunitylab.it
   role: "regulator"
@@ -1018,14 +1028,15 @@ smart-contract-lifecycle-manager-consumer:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: consumer-sclm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: consumer-sclm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #consumer-sclm-letsencrypt-tls
        hosts:
          - consumer-sclm.5gzorro.smartcommunitylab.it
   role: "consumer"
@@ -1055,14 +1066,15 @@ smart-contract-lifecycle-manager-trader:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: trader-sclm.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: trader-sclm-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #trader-sclm-letsencrypt-tls
        hosts:
          - trader-sclm.5gzorro.smartcommunitylab.it
   role: "trader"
@@ -1097,14 +1109,15 @@ resource-and-service-offer-catalog-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-rsoc.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-rsoc-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-rsoc-letsencrypt-tls
        hosts:
          - admin-rsoc.5gzorro.smartcommunitylab.it
   role: "admin"
@@ -1144,14 +1157,15 @@ resource-and-service-offer-catalog-regulator:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: regulator-rsoc.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: regulator-rsoc-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #regulator-rsoc-letsencrypt-tls
        hosts:
          - regulator-rsoc.5gzorro.smartcommunitylab.it
   role: "regulator"
@@ -1191,14 +1205,15 @@ resource-and-service-offer-catalog-trader:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: trader-rsoc.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: trader-rsoc-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #trader-rsoc-letsencrypt-tls
        hosts:
          - trader-rsoc.5gzorro.smartcommunitylab.it
   role: "trader"
@@ -1238,14 +1253,15 @@ resource-and-service-offer-catalog-consumer:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: consumer-rsoc.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: consumer-rsoc-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #consumer-rsoc-letsencrypt-tls
        hosts:
          - consumer-rsoc.5gzorro.smartcommunitylab.it
   role: "consumer"
@@ -1273,14 +1289,15 @@ gui-admin:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-gui.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: admin-gui-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-gui-letsencrypt-tls
        hosts:
          - admin-gui.5gzorro.smartcommunitylab.it
   role: "admin"
@@ -1299,21 +1316,182 @@ gui-admin:
   issmUrl: 'http://172.28.3.15:30080'
   rappUrl: 'http://172.28.3.242:2626'
 
+gui-regulator:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-gui.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-gui-letsencrypt-tls
+       hosts:
+         - regulator-gui.5gzorro.smartcommunitylab.it
+  role: "regulator"
+  marketPlaceUrl: 'https://regulator-rsoc.5gzorro.smartcommunitylab.it/tmf-api'
+  legalProseUrl: 'https://regulator-lpr.5gzorro.smartcommunitylab.it'
+  governanceUrl: 'https://regulator-gm.5gzorro.smartcommunitylab.it'
+  identityPermissionsUrl: 'https://regulator-idp.5gzorro.smartcommunitylab.it'
+  smartContractUrl: 'https://regulator-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'O=Regulator,L=New York,C=US'
+  srsdUrl: 'https://regulator-srsd.5gzorro.smartcommunitylab.it'
+  issmUrl: 'http://172.28.3.15:30080'
+  rappUrl: 'http://172.28.3.242:2626'
+
+gui-consumer:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-gui.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-gui-letsencrypt-tls
+       hosts:
+         - consumer-gui.5gzorro.smartcommunitylab.it
+  role: "consumer"
+  marketPlaceUrl: 'https://consumer-rsoc.5gzorro.smartcommunitylab.it/tmf-api'
+  legalProseUrl: 'https://consumer-lpr.5gzorro.smartcommunitylab.it'
+  governanceUrl: 'https://consumer-gm.5gzorro.smartcommunitylab.it'
+  identityPermissionsUrl: 'https://consumer-idp.5gzorro.smartcommunitylab.it'
+  smartContractUrl: 'https://consumer-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'CN=OperatorB,OU=DLT,O=DLT2,L=London,C=GB'
+  srsdUrl: 'https://consumer-srsd.5gzorro.smartcommunitylab.it'
+  issmUrl: 'http://172.28.3.15:30080'
+  rappUrl: 'http://172.28.3.242:2626'
+
+
+gui-trader:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-gui.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-gui-letsencrypt-tls
+       hosts:
+         - trader-gui.5gzorro.smartcommunitylab.it
+  role: "trader"
+  marketPlaceUrl: 'https://trader-rsoc.5gzorro.smartcommunitylab.it/tmf-api'
+  legalProseUrl: 'https://trader-lpr.5gzorro.smartcommunitylab.it'
+  governanceUrl: 'https://trader-gm.5gzorro.smartcommunitylab.it'
+  identityPermissionsUrl: 'https://trader-idp.5gzorro.smartcommunitylab.it'
+  smartContractUrl: 'https://trader-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'CN=OperatorC,OU=DLT,O=DLT2,L=London,C=GB'
+  srsdUrl: 'https://trader-srsd.5gzorro.smartcommunitylab.it'
+  issmUrl: 'http://172.28.3.15:30080'
+  rappUrl: 'http://172.28.3.242:2626'
+
 smart-resource-and-service-discovery-admin:
   enabled: true
   ingress:
     enabled: true
     className: "nginx"
     annotations: 
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
     hosts:
       - host: admin-srsd.5gzorro.smartcommunitylab.it
         paths:
           - path: /
             pathType: Prefix
     tls: 
-     - secretName: cadmin-srsd-letsencrypt-tls
+     - secretName: 5gzorro-wildcard-cert #admin-srsd-letsencrypt-tls
        hosts:
          - admin-srsd.5gzorro.smartcommunitylab.it
   mongo:
     uri: "mongodb-srsd-admin-admin-srsd"
+
+smart-resource-and-service-discovery-regulator:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-srsd.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-srsd-letsencrypt-tls
+       hosts:
+         - regulator-srsd.5gzorro.smartcommunitylab.it
+  mongo:
+    uri: "mongodb-srsd-regulator-admin-srsd"
+
+smart-resource-and-service-discovery-trader:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-srsd.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-srsd-letsencrypt-tls
+       hosts:
+         - trader-srsd.5gzorro.smartcommunitylab.it
+  mongo:
+    uri: "mongodb-srsd-trader-admin-srsd"
+
+smart-resource-and-service-discovery-consumer:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-srsd.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-srsd-letsencrypt-tls
+       hosts:
+         - consumer-srsd.5gzorro.smartcommunitylab.it
+  mongo:
+    uri: "mongodb-srsd-consumer-admin-srsd"

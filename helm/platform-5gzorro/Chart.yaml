@@ -255,11 +255,45 @@ dependencies:
     condition: gui-admin.enabled
     tags:
       - admin
-      - trader
+  - name: gui
+    alias: gui-regulator
+    version: "0.1.*"
+    condition: gui-regulator.enabled
+    tags:
       - regulator
+  - name: gui
+    alias: gui-trader
+    version: "0.1.*"
+    condition: gui-trader.enabled
+    tags:
+      - trader
+  - name: gui
+    alias: gui-consumer
+    version: "0.1.*"
+    condition: gui-consumer.enabled
+    tags:
+      - consumer
   - name: smart-resource-and-service-discovery
     alias: smart-resource-and-service-discovery-admin
     version: "0.1.*"
     condition: smart-resource-and-service-discovery-admin.enabled
     tags:
       - admin
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-regulator
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-regulator.enabled
+    tags:
+      - regulator
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-trader
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-trader.enabled
+    tags:
+      - trader
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-consumer
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-consumer.enabled
+    tags:
+      - consumer
