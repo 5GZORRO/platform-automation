@@ -65,7 +65,7 @@ module "aks" {
   client_id               = module.commons.identity_client_id
   object_id               = module.commons.identity_object_id
 
-  depends_on = [module.commons.azurerm_user_assigned_identity, module.commons.azurerm_subnet]
+  depends_on = [module.commons.azurerm_user_assigned_identity, module.commons.azurerm_subnet, module.vms]
 }
 
 provider "kubernetes" {
