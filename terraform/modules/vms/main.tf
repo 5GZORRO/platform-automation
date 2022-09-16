@@ -108,10 +108,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provisioner "local-exec" {
-    command = "chmod 0600 /data/builds/kubernetes-deploy/5g-zorro.tmp/TF_VAR_ssh_private_key"
-  }
-
-  provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ${var.username} -i '${azurerm_public_ip.publicip.ip_address},' --private-key ${var.ssh_private_key} -e 'pub_key=${var.ssh_public_key}' ${var.ansible_script}"
+    command = "chmod 600 ${var.ssh_private_key} && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ${var.username} -i '${azurerm_public_ip.publicip.ip_address},' --private-key ${var.ssh_private_key} -e 'pub_key=${var.ssh_public_key}' ${var.ansible_script}"
   }
 }

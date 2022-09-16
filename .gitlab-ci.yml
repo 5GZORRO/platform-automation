@@ -48,6 +48,8 @@ build:
 
 deploy:
   stage: deploy
+  before_script:
+    - mkdir -p /root/.ssh && echo "$SSH_PRIVATE_KEY_ENCODED" | base64 -d > ${TF_VAR_ssh_private_key} && chmod 0600 ${TF_VAR_ssh_private_key}
   script:
     - cd "${TF_ROOT}"
     - gitlab-terraform apply -auto-approve 
