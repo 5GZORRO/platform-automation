@@ -82,7 +82,7 @@ resource "kubernetes_secret" "kube_config" {
   data = {
     "config" = module.aks.kube_config
   }
-  type = "Opaque"
+  type       = "Opaque"
   depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
 }
 
@@ -94,7 +94,7 @@ resource "kubernetes_secret" "registry" {
     ".dockerconfigjson" = file("${var.registry}")
   }
 
-  type = "kubernetes.io/dockerconfigjson"
+  type       = "kubernetes.io/dockerconfigjson"
   depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
 }
 
