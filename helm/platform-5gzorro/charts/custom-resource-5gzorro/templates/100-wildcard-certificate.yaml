@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: 5gzorro-wildcard-cert
+spec:
+  secretName: 5gzorro-wildcard-cert
+  issuerRef: 
+    kind: ClusterIssuer
+    name: letsencrypt-wildcard-prod
+  commonName: "*.{{ .Values.letsencrypt.azureDns.hostedZoneName }}"
+  dnsNames:
+    - "*.{{ .Values.letsencrypt.azureDns.hostedZoneName }}"
+    - "{{ .Values.letsencrypt.azureDns.hostedZoneName }}"

@@ -1,8 +1,0 @@
-provider: azure
-azure:
-  resourceGroup: "5gzorro"
-  tenantId: "11d1b7a3-5e92-4744-83dc-831a43e1f967"
-  subscriptionId: "f8948095-f2ff-4dbd-aa56-d319a3c81cf1"
-  useManagedIdentityExtension: true
-txtOwnerId: "external-dns"
-domainFilters: ["5gzorro.smartcommunitylab.it"]

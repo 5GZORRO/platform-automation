@@ -33,4 +33,4 @@ ansible_script  = "install-von-network-and-corda.yaml"
 ssh_private_key = "/home/ffais/Documenti/users/5gzorro"
 
 # HELM
-values-file-path = "5gzorro-platform-values.yaml"
+values-file-path = "5gzorro-platform-values.yaml.tftpl"

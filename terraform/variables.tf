@@ -111,3 +111,7 @@ variable "domain_name" {
 variable "registry" {
   type = string
 }
+
+variable "azure_tenant_id" {
+  type = string
+}

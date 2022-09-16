@@ -110,6 +110,11 @@ provider "helm" {
 module "helm" {
   source = "./modules/helm"
 
-  values-file-path = var.values-file-path
-  depends_on       = [module.aks.azurerm_kubernetes_cluster_node_pool, kubernetes_secret.registry]
+  values-file-path    = var.values-file-path
+  subscription_id     = var.subscription_id
+  resource_group_name = var.resource_group_name
+  domain_name         = var.domain_name
+  client_id           = module.commons.identity_client_id
+  azure_tenant_id     = var.azure_tenant_id
+  depends_on          = [module.aks.azurerm_kubernetes_cluster_node_pool, kubernetes_secret.registry]
 }
