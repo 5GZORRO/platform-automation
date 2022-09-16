@@ -83,6 +83,7 @@ resource "kubernetes_secret" "kube_config" {
     "config" = module.aks.kube_config
   }
   type = "Opaque"
+  depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
 }
 
 resource "kubernetes_secret" "registry" {
@@ -94,6 +95,7 @@ resource "kubernetes_secret" "registry" {
   }
 
   type = "kubernetes.io/dockerconfigjson"
+  depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
 }
 
 provider "helm" {

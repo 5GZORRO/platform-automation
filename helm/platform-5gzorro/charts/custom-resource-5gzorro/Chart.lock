@@ -1,0 +1,6 @@
+dependencies:
+- name: community-operator-crds
+  repository: https://mongodb.github.io/helm-charts
+  version: 0.7.5
+digest: sha256:b9b994e74d88e8366ba73106063811a3da298863b3fca19ea5947b7f97f83cd7
+generated: "2022-09-05T12:45:18.288581102+02:00"

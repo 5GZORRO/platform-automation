@@ -9,7 +9,7 @@ stages:
   - cleanup
 
 image: 
-  name: registry.gitlab.com/gitlab-org/terraform-images/releases/terraform:1.2.6
+  name: registry.gitlab.com/gitlab-org/terraform-images/releases/terraform:1.2.8
 
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/terraform

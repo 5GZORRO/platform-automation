@@ -3,7 +3,7 @@ image:
   repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/identity-and-permissions-manager
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.4"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""

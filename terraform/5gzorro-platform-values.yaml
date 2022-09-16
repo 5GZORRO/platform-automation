@@ -29,6 +29,8 @@ custom-resource-5gzorro:
     enabled: true
   community-operator:
     enabled: true
+    community-operator-crds:
+      enabled: false
     mongodbClusters:
       - name: mongodb-idp-admin
         replicas: 1
@@ -718,7 +720,7 @@ identity-and-permissions-manager-admin:
     tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
     regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
-    adminCatalogueUrl: "http://172.51.40.23:34080/tmf-api/adminOnboardHandler"
+    adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
     key: ""
     vpnaasKey: ""
     adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
