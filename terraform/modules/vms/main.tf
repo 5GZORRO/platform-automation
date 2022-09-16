@@ -104,6 +104,10 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provisioner "local-exec" {
+    command = "ansible-galaxy install -r requirements.yml"
+  }
+
+  provisioner "local-exec" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ${var.username} -i '${azurerm_public_ip.publicip.ip_address},' --private-key ${var.ssh_private_key} -e 'pub_key=${var.ssh_public_key}' ${var.ansible_script}"
   }
 }
