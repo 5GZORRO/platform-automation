@@ -1,9 +1,14 @@
+# Default values for datalake.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 replicaCount: 1
+
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/identity-and-permissions-manager
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/datalake
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "logs"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -23,6 +28,29 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
+datalake:
+  imageVersion: "1.1"
+
+postgres:
+  host: ""
+  port: ""
+  name: ""
+  table: ""
+  existingSecret: ""
+  userKey: ""
+  passwordKey: ""
+
+kafka:
+  host: ""
+  port: ""
+
+minio:
+  host: ""
+  port: ""
+  existingSecret: ""
+  userKey: ""
+  passwordKey: ""
+
 securityContext: {}
   # capabilities:
   #   drop:
@@ -31,33 +59,9 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-database:
-  connectionString: ""
-  port: ""
-
-idp:
-  role: ""
-  whitelist: ""
-  holderAgent: ""
-  issuerAgentUrl: ""
-  tradingProviderAgentControllerUrl: ""
-  otherIdpControllers: ""
-  regulatorAgentControllerUrl: ""
-  adminAgentControllerUrl: ""
-  adminCatalogueUrl: ""
-  key: ""
-  vpnaasKey: ""
-  adminDid: ""
-persistence:
-  enabled: false
-  # storageClassName: default
-  accessModes:
-    - ReadWriteOnce
-  size: 10Gi
-
 service:
   type: ClusterIP
-  port: 8000
+  port: 8080
 
 ingress:
   enabled: false
@@ -93,12 +97,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-livenessProbe: {}
-
-readinessProbe: {}
-
-startupProbe: {}
 
 nodeSelector: {}
 

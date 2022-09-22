@@ -35,6 +35,11 @@ dependencies:
     condition: custom-resource-5gzorro.enabled
     tags:
       - base
+  - name: datalake
+    version: "0.1.0"
+    condition: datalake.enabled
+    tags:
+      - base
   - name: external-dns
     version: "6.7.*"
     repository: https://charts.bitnami.com/bitnami
@@ -95,9 +100,15 @@ dependencies:
     tags:
       - base
   - name: argo-workflows
-    version: "0.16.*"
+    version: "0.19.*"
     repository: https://argoproj.github.io/argo-helm
     condition: argo-workflows.enabled
+    tags:
+      - base
+  - name: argo-events
+    version: "2.0.*"
+    repository: https://argoproj.github.io/argo-helm
+    condition: argo-events.enabled
     tags:
       - base
   - name: elma
@@ -295,5 +306,29 @@ dependencies:
     alias: smart-resource-and-service-discovery-consumer
     version: "0.1.*"
     condition: smart-resource-and-service-discovery-consumer.enabled
+    tags:
+      - consumer
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-admin
+    version: "0.1.*"
+    condition: monitoring-data-aggregator--admin.enabled
+    tags:
+      - admin
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-regulator
+    version: "0.1.*"
+    condition: monitoring-data-aggregator--regulator.enabled
+    tags:
+      - regulator
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-trader
+    version: "0.1.*"
+    condition: monitoring-data-aggregator--trader.enabled
+    tags:
+      - trader
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-consumer
+    version: "0.1.*"
+    condition: monitoring-data-aggregator--consumer.enabled
     tags:
       - consumer

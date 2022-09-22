@@ -10,7 +10,7 @@ dependencies:
   version: 6.7.5
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.2.3
+  version: 4.2.5
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v1.9.1
@@ -25,7 +25,7 @@ dependencies:
   version: 36.0.3
 - name: minio
   repository: https://charts.min.io/
-  version: 4.0.13
+  version: 4.0.14
 - name: postgres-operator
   repository: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
   version: 1.8.2
@@ -38,6 +38,9 @@ dependencies:
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.16.9
+- name: argo-events
+  repository: https://argoproj.github.io/argo-helm
+  version: 2.0.5
 - name: elma
   repository: ""
   version: 3.1.*
@@ -92,11 +95,56 @@ dependencies:
 - name: smart-contract-lifecycle-manager
   repository: ""
   version: 0.1.*
+- name: smart-contract-lifecycle-manager
+  repository: ""
+  version: 0.1.*
+- name: resource-and-service-offer-catalog
+  repository: ""
+  version: 0.1.*
+- name: resource-and-service-offer-catalog
+  repository: ""
+  version: 0.1.*
+- name: resource-and-service-offer-catalog
+  repository: ""
+  version: 0.1.*
 - name: resource-and-service-offer-catalog
   repository: ""
   version: 0.1.*
 - name: gui
   repository: ""
   version: 0.1.*
-digest: sha256:5a4f3f1df478967a59757f48b8010c08bf89fcbdea84a21786a4d963aaecf0aa
-generated: "2022-08-29T17:02:16.544163282+02:00"
+- name: gui
+  repository: ""
+  version: 0.1.*
+- name: gui
+  repository: ""
+  version: 0.1.*
+- name: gui
+  repository: ""
+  version: 0.1.*
+- name: smart-resource-and-service-discovery
+  repository: ""
+  version: 0.1.*
+- name: smart-resource-and-service-discovery
+  repository: ""
+  version: 0.1.*
+- name: smart-resource-and-service-discovery
+  repository: ""
+  version: 0.1.*
+- name: smart-resource-and-service-discovery
+  repository: ""
+  version: 0.1.*
+- name: monitoring-data-aggregator
+  repository: ""
+  version: 0.1.*
+- name: monitoring-data-aggregator
+  repository: ""
+  version: 0.1.*
+- name: monitoring-data-aggregator
+  repository: ""
+  version: 0.1.*
+- name: monitoring-data-aggregator
+  repository: ""
+  version: 0.1.*
+digest: sha256:acc63ec7395f5a063a068f0fff631d2c412cd15a4b82eb8d65960a87890145b4
+generated: "2022-09-21T12:02:19.171760221+02:00"

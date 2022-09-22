@@ -52,10 +52,10 @@ custom-resource-5gzorro:
   letsencrypt:
     email: sysadmin@smartcommunitylab.it
     azureDns:
-      subscriptionID: ${SUBSCRIPTION_ID} 
-      resourceGroupName: ${RESOURCE_GROUP_NAME} 
-      hostedZoneName: ${HOSTED_ZONE_NAME} 
-      clientID: ${MANAGEND_IDENTITY_CLIENT_ID} 
+      subscriptionID: f8948095-f2ff-4dbd-aa56-d319a3c81cf1 
+      resourceGroupName: 5gzorro 
+      hostedZoneName: 5gzorro.smartcommunitylab.it 
+      clientID: 94b8deab-db20-4fed-b69f-3d723cbd032d 
   kube-prometheus-stack:
     enabled: true
   community-operator:
@@ -526,12 +526,12 @@ external-dns:
   enabled: true
   provider: azure
   azure:
-    resourceGroup: ${RESOURCE_GROUP_NAME} 
-    tenantId: ${AZURE_TENANT_ID}
-    subscriptionId: ${SUBSCRIPTION_ID} 
+    resourceGroup: 5gzorro 
+    tenantId: 11d1b7a3-5e92-4744-83dc-831a43e1f967
+    subscriptionId: f8948095-f2ff-4dbd-aa56-d319a3c81cf1 
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
-  domainFilters: ["*.${HOSTED_ZONE_NAME} "]
+  domainFilters: ["*.5gzorro.smartcommunitylab.it "]
 
 vault:
   enabled: false

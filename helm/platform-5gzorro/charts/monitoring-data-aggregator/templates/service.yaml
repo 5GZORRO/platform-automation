@@ -1,28 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-{{- if .Values.service.name }}
-  name: {{ .Values.service.name }}
-{{- else }}
-  name: {{ template "fullname" . }}
-{{- end }}
-  namespace: {{ .Values.namespace }}
+  name: {{ include "monitoring-data-aggregator.fullname" . }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-{{- if .Values.service.annotations }}
-  annotations:
-{{ toYaml .Values.service.annotations | indent 4 }}
-{{- end }}
+    {{- include "monitoring-data-aggregator.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - name: app
-    port: {{ .Values.service.extAppPort }}
-    targetPort: {{ .Values.service.appPort }}
-    protocol: TCP
-  - name: http
-    port: {{ .Values.service.appPort }}
-    protocol: TCP
-    targetPort: {{ .Values.service.appPort }}
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
-    app: {{ include "mda-api.fullname" . }}
+    {{- include "monitoring-data-aggregator.selectorLabels" . | nindent 4 }}

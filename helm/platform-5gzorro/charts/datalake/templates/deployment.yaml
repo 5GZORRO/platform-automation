@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "monitoring-data-aggregator.fullname" . }}
+  name: {{ include "datalake.fullname" . }}
   labels:
-    {{- include "monitoring-data-aggregator.labels" . | nindent 4 }}
+    {{- include "datalake.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "monitoring-data-aggregator.selectorLabels" . | nindent 6 }}
+      {{- include "datalake.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +19,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "monitoring-data-aggregator.selectorLabels" . | nindent 8 }}
+        {{- include "datalake.selectorLabels" . | nindent 8 }}
     spec:
     {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "monitoring-data-aggregator.serviceAccountName" . }}
+      serviceAccountName: {{ include "datalake.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,54 +36,71 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 4000
+              containerPort: 8080
               protocol: TCP
           env:
-            - name: RESET_DB
-              value: "false"
-            - name: OSM_KEY
-              value: ""
-            - name: NUM_READING_THREADS
-              value: "20"
-            - name: NUM_AGGREGATION_THREADS
-              value: "20"
-            - name: KAFKA_HOST
-              value: {{ .Values.kafka.host }}
-            - name: KAFKA_PORT
-              value: {{ .Values.kafka.port | quote }}
+            - name: KAFKA_URL
+              value: {{ .Values.kafka.host }}:{{ .Values.kafka.port }}
             - name: POSTGRES_HOST
               value: {{ .Values.postgres.host }}
             - name: POSTGRES_PORT
-              value: "{{ .Values.postgres.port }}"
-            - name: POSTGRES_USER
+              value: {{ .Values.postgres.port | quote }}
+            - name: DATALAKE_DB_USER
               valueFrom:
                   secretKeyRef:
                   {{- if .Values.postgres.existingSecret }}
                     name: {{ .Values.postgres.existingSecret }}
                     key: {{ .Values.postgres.userKey }}
                   {{- else }}
-                      name: monitoring-data-aggregator-db-credentials
+                      name: datalake-db-credentials
                       key: username
                   {{- end }}
-            - name: POSTGRES_PASSWORD
+            - name: DATALAKE_DB_USER_PW
               valueFrom:
                   secretKeyRef:
                   {{- if .Values.postgres.existingSecret }}
                     name: {{ .Values.postgres.existingSecret }}
                     key: {{ .Values.postgres.passwordKey }}
                   {{- else }}
-                      name: monitoring-data-aggregator-db-credentials
+                      name: datalake-db-credentials
                       key: password
                   {{- end }}
-            - name: POSTGRES_DB
-              {{- if .Values.postgres.existingSecret }}
+            - name: DATALAKE_IMAGES_VERSION
+              value: {{ .Values.datalake.imageVersion | quote }}
+            - name: DATALAKE_DB
               value: {{ .Values.postgres.name }}
-              {{- else }}
+            - name: DATALAKE_DB_TABLE
+              value: {{ .Values.postgres.table }}
+            - name: S3_URL
+              value: {{ .Values.minio.host }}
+            - name: S3_ACCESS_KEY
               valueFrom:
                   secretKeyRef:
-                      name: monitoring-data-aggregator-db-credentials
-                      key: name
-              {{- end }}
+                  {{- if .Values.minio.existingSecret }}
+                    name: {{ .Values.minio.existingSecret }}
+                    key: {{ .Values.minio.passwordKey }}
+                  {{- else }}
+                    name: datalake-minio-credentials
+                    key: password
+                  {{- end }}
+            - name: S3_SECRET_KEY
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.minio.existingSecret }}
+                    name: {{ .Values.minio.existingSecret }}
+                    key: {{ .Values.minio.passwordKey }}
+                  {{- else }}
+                    name: datalake-minio-credentials
+                    key: password
+                  {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

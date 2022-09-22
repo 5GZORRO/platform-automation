@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "datalake.fullname" . }}
+  labels:
+    {{- include "datalake.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["service"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments" ]
+    verbs: ["get", "list", "watch", "create", "delete"]

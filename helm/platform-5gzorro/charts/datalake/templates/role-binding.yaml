@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "datalake.fullname" . }}
+  labels:
+    {{- include "datalake.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "datalake.fullname" . }}
+subjects:
+  - name: {{ include "datalake.serviceAccountName" . }}
+    namespace: {{ .Values.namespace | default .Release.Namespace }}
+    kind: ServiceAccount

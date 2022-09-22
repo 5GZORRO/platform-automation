@@ -723,7 +723,7 @@ identity-and-permissions-manager-admin:
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
-    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
     regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
     adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
@@ -756,7 +756,7 @@ identity-and-permissions-manager-regulator:
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-regulator:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-regulator:8001"
-    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
     adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
     key: ""
@@ -819,7 +819,7 @@ identity-and-permissions-manager-consumer:  # verifier
     whitelist: '["*"]'
     holderAgent: "http://zorro5g-aries-cloudagent-consumer:8001"
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-consumer:8001"
-    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
     adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
     regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
