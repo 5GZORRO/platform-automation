@@ -7,8 +7,11 @@ metadata:
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 rules:
   - apiGroups: [""]
-    resources: ["service"]
+    resources: ["services"]
     verbs: ["get", "list", "watch", "create", "delete"]
   - apiGroups: ["apps"]
     resources: ["deployments" ]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflows" ]
     verbs: ["get", "list", "watch", "create", "delete"]

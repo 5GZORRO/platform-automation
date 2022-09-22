@@ -24,7 +24,7 @@ cert-manager:
 
 datalake:
   enabled: true
-  
+  namespace: default
   postgres:
     host: "zorro5g-psqldb-datalake"
     port: 5432
@@ -33,11 +33,9 @@ datalake:
     existingSecret: "datalake.zorro5g-psqldb-datalake.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
-
   kafka:
     host: "kafka-cluster-kafka-bootstrap"
     port: "9092"
-
   minio:
     host: "minio"
     port: "8080"
@@ -46,6 +44,9 @@ datalake:
     existingSecret: ""
     userKey: ""
     passwordKey: ""
+  datalake:
+    imageVersion: "latest"
+    imageRepository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro"
 
 custom-resource-5gzorro:
   enabled: true

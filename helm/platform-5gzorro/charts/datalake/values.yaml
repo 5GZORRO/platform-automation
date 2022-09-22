@@ -8,7 +8,7 @@ image:
   repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/datalake
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "fix-psql1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -29,7 +29,8 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 datalake:
-  imageVersion: "1.1"
+  imageVersion: "latest"
+  imageRepository: ""
 
 postgres:
   host: ""

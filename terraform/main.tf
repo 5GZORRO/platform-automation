@@ -65,7 +65,7 @@ module "aks" {
   client_id               = module.commons.identity_client_id
   object_id               = module.commons.identity_object_id
 
-  depends_on = [module.commons.azurerm_user_assigned_identity, module.commons.azurerm_subnet, module.vms]
+  depends_on = [module.commons, module.commons, module.vms]
 }
 
 provider "kubernetes" {
@@ -83,7 +83,7 @@ resource "kubernetes_secret" "kube_config" {
     "config" = module.aks.kube_config
   }
   type       = "Opaque"
-  depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
+  depends_on = [module.aks]
 }
 
 resource "kubernetes_secret" "registry" {
@@ -95,7 +95,7 @@ resource "kubernetes_secret" "registry" {
   }
 
   type       = "kubernetes.io/dockerconfigjson"
-  depends_on = [module.aks.azurerm_kubernetes_cluster_node_pool]
+  depends_on = [module.aks]
 }
 
 provider "helm" {
@@ -116,5 +116,5 @@ module "helm" {
   domain_name         = var.domain_name
   client_id           = module.commons.identity_client_id
   azure_tenant_id     = var.azure_tenant_id
-  depends_on          = [module.aks.azurerm_kubernetes_cluster_node_pool, kubernetes_secret.registry, kubernetes_secret.kube_config]
+  depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config]
 }
