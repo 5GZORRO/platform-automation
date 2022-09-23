@@ -24,6 +24,27 @@ spec:
               name: elma-deployment-configmap
           - secretRef:
               name: elma-deployment-secret
+          env:
+            - name: RABBITMQ_USER
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.rabbitmq.existingSecret }}
+                    name: {{ .Values.rabbitmq.existingSecret }}
+                    key: {{ .Values.rabbitmq.userKey }}
+                  {{- else }}
+                      name: rabbitmq-elma-default-user
+                      key: username
+                  {{- end }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.rabbitmq.existingSecret }}
+                    name: {{ .Values.rabbitmq.existingSecret }}
+                    key: {{ .Values.rabbitmq.userKey }}
+                  {{- else }}
+                      name: rabbitmq-elma-default-user
+                      key: password
+                  {{- end }}
           image: {{ $imageValues.image }}:{{ $imageValues.tag }}
           command: ["elma_rest", "start"]
           imagePullPolicy: "{{ $imageValues.pullPolicy }}"
@@ -45,9 +66,9 @@ metadata:
 spec:
   selector:
     app: elmarest
-  type: NodePort
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: {{ $elmarest.nodePort }}
+      # nodePort: {{ $elmarest.nodePort }}

@@ -433,24 +433,8 @@ external-dns:
   txtOwnerId: "external-dns"
   domainFilters: ["*.5gzorro.smartcommunitylab.it"]
 
-vault:
-  enabled: false
-  ui:
-    enabled: true
-    serviceType: "LoadBalancer"
-    serviceNodePort: null
-    externalPort: 8200
-    annotations: 
-      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it.'
-  server:
-    standalone:
-      enabled: true
-    extraArgs: "-dev-kv-v1"
-    dev:
-      enabled: true
-      devRootToken: "root"
-  injector:
-    enabled: false
+rabbitmq-cluster-operator:
+  enabled: true
 
 kube-prometheus-stack:
   enabled: true

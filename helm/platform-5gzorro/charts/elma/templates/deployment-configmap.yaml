@@ -6,7 +6,7 @@ metadata:
   name: elma-deployment-configmap
   namespace: "{{ $imageValues.namespace }}"
 data:
-  RABBITMQ_URL: "rabbitmq-service"
+  RABBITMQ_URL: "rabbitmq-elma"
   RABBITMQ_PORT: "5672"
   RABBITMQ_PREFETCH_COUNT: "20"
   RABBITMQ_V_HOST: "/"
@@ -33,6 +33,6 @@ data:
   NET_SLICE_ORCHESTRATOR_PORT: "31082"
   NET_SLICE_ORCHESTRATOR_ENDPOINT: "portal/elicensing/"
   ELMA_RESPONSE_TIMEOUT: "30"
-  DATA_LAKE_URL: "http://172.28.3.15:32579/datalake/v1/catalog/instance/{instance_id}"
+  DATA_LAKE_URL: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
   DATA_LAKE_AUTH: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
-  DATA_LAKE_KAFKA: "172.28.3.196:9092"
+  DATA_LAKE_KAFKA: "kafka-cluster-kafka-bootstrap:9092"

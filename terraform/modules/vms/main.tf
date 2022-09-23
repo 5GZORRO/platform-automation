@@ -93,7 +93,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provisioner "remote-exec" {
-    inline = ["sudo apt update", "sudo apt install python3 -y", "echo Done!"]
+    inline = ["sudo apt update", "sudo DEBIAN_FRONTEND=noninteractive apt install python3 -y", "echo Done!"]
 
     connection {
       host        = azurerm_public_ip.publicip.ip_address

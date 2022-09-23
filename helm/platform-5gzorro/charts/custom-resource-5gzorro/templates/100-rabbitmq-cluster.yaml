@@ -1,0 +1,20 @@
+{{- if (index .Values "rabbitmq-cluster-operator" "enabled") -}}
+---
+{{- range $k, $v := (index .Values "rabbitmq-cluster-operator" "rabbitmqClusters") }}
+
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: {{ $v.name }}
+spec:
+  replicas: {{ $v.replicas }}
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 800m
+      memory: 1Gi
+---
+{{- end }}
+{{- end }}

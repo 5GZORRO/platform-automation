@@ -30,6 +30,12 @@ dependencies:
     condition: community-operator.enabled
     tags:
       - base
+  - name: rabbitmq-cluster-operator
+    version: "2.7.*"
+    repository: https://charts.bitnami.com/bitnami
+    condition: rabbitmq-cluster-operator.enabled
+    tags:
+      - base
   - name: custom-resource-5gzorro
     version: "0.1.0"
     condition: custom-resource-5gzorro.enabled
@@ -117,12 +123,6 @@ dependencies:
     tags:
       - trader
     condition: elma-agent.enabled
-  - name: elma
-    alias: elma-core
-    version: "3.1.*"
-    tags:
-      - base
-    condition: elma-core.enabled
   - name: monitoring-data-aggregator
     version: "0.1.*"
     condition: monitoring-data-aggregator.enabled
