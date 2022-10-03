@@ -130,7 +130,7 @@ module "helm" {
   client_id           = module.commons.identity_client_id
   azure_tenant_id     = var.azure_tenant_id
   zerossl_kid         = var.zerossl_kid
-  depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config]
+  depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config, null_resource.install_osm]
 }
 
 resource "null_resource" "upload-kube-config" {
@@ -145,7 +145,7 @@ resource "null_resource" "upload-kube-config" {
     private_key = file(var.ssh_private_key)
     agent       = "false"
   }
-  depends_on = [module.aks, module.vms, module.helm]
+  depends_on = [module.aks, module.vms]
 }
 
 resource "null_resource" "install_osm" {
@@ -177,5 +177,5 @@ resource "null_resource" "patch-ingress" {
     private_key = file(var.ssh_private_key)
     agent       = "false"
   }
-  depends_on = [null_resource.install_osm]
+  depends_on = [module.helm]
 }

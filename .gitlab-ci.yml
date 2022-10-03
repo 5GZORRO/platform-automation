@@ -28,6 +28,7 @@ fmt:
   allow_failure: true
   rules:
     - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
     
 validate:
   stage: validate
@@ -36,6 +37,7 @@ validate:
     - gitlab-terraform validate
   rules:
     - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
 
 build:
   stage: build
