@@ -7,8 +7,8 @@ metadata:
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: {{ include "datalake.fullname" . }}
+  kind: ClusterRole
+  name: admin
 subjects:
   - name: {{ include "datalake.serviceAccountName" . }}
     namespace: {{ .Values.namespace | default .Release.Namespace }}

@@ -115,3 +115,13 @@ variable "registry" {
 variable "azure_tenant_id" {
   type = string
 }
+
+variable "zerossl_hmac" {
+  type    = string
+  default = ""
+}
+
+variable "zerossl_kid" {
+  type    = string
+  default = ""
+}

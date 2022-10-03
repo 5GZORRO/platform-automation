@@ -86,6 +86,19 @@ resource "kubernetes_secret" "kube_config" {
   depends_on = [module.aks]
 }
 
+resource "kubernetes_secret" "zerossl-secret" {
+  count = var.zerossl_hmac != "" ? 1 : 0
+  metadata {
+    name      = "zerossl-eabsecret"
+    namespace = "cert-manager"
+  }
+  data = {
+    "secret" = var.zerossl_hmac
+  }
+  type       = "Opaque"
+  depends_on = [module.aks, module.helm]
+}
+
 resource "kubernetes_secret" "registry" {
   metadata {
     name = "registry-credentials"
@@ -116,5 +129,53 @@ module "helm" {
   domain_name         = var.domain_name
   client_id           = module.commons.identity_client_id
   azure_tenant_id     = var.azure_tenant_id
+  zerossl_kid         = var.zerossl_kid
   depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config]
+}
+
+resource "null_resource" "upload-kube-config" {
+  provisioner "file" {
+    content     = module.aks.kube_config
+    destination = "/home/zorro/config"
+  }
+  connection {
+    host        = module.vms.vmIp
+    type        = "ssh"
+    user        = var.username
+    private_key = file(var.ssh_private_key)
+    agent       = "false"
+  }
+  depends_on = [module.aks, module.vms, module.helm]
+}
+
+resource "null_resource" "install_osm" {
+  provisioner "remote-exec" {
+    inline = [
+      "wget https://osm-download.etsi.org/ftp/osm-10.0-ten/install_osm.sh",
+      "chmod +x install_osm.sh",
+      "./install_osm.sh --charmed --k8s /home/zorro/config --nohostclient"
+    ]
+  }
+  connection {
+    host        = module.vms.vmIp
+    type        = "ssh"
+    user        = var.username
+    private_key = file(var.ssh_private_key)
+    agent       = "false"
+  }
+  depends_on = [null_resource.upload-kube-config]
+}
+
+resource "null_resource" "patch-ingress" {
+  provisioner "remote-exec" {
+    script = "./kubernetes-patch.sh"
+  }
+  connection {
+    host        = module.vms.vmIp
+    type        = "ssh"
+    user        = var.username
+    private_key = file(var.ssh_private_key)
+    agent       = "false"
+  }
+  depends_on = [null_resource.install_osm]
 }

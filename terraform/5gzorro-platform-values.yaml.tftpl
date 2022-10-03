@@ -58,8 +58,16 @@ custom-resource-5gzorro:
     rabbitmqClusters:
       - name: rabbitmq-elma
         replicas: 1
-  letsencrypt:
+  certmanager:
     email: sysadmin@smartcommunitylab.it
+    zerossl:
+      enabled: true
+      eabKid: ${EAB_KID} 
+      eabHmac:
+        secretName: "zerossl-eabsecret"
+        secretKey: "secret"
+    letsencrypt:
+      enabled: false
     azureDns:
       subscriptionID: ${SUBSCRIPTION_ID} 
       resourceGroupName: ${RESOURCE_GROUP_NAME} 
@@ -85,7 +93,7 @@ custom-resource-5gzorro:
                 db: administrator
               - name: readWrite
                 db: provider
-            scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
+            scramCredentialsSecretName: 5gzorro-mongodb-elma-scram
       - name: mongodb-idp-admin
         replicas: 1
         version: "4.2.6"

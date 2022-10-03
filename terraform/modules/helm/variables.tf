@@ -21,3 +21,8 @@ variable "client_id" {
 variable "azure_tenant_id" {
   type = string
 }
+
+variable "zerossl_kid" {
+  type    = string
+  default = ""
+}

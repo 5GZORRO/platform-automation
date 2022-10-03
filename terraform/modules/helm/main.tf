@@ -6,6 +6,7 @@ data "template_file" "valuesfile" {
     HOSTED_ZONE_NAME            = var.domain_name
     MANAGEND_IDENTITY_CLIENT_ID = var.client_id
     AZURE_TENANT_ID             = var.azure_tenant_id
+    EAB_KID                     = var.zerossl_kid
   }
 }
 

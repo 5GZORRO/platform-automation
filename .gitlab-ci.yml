@@ -26,12 +26,16 @@ fmt:
     - cd "${TF_ROOT}"
     - gitlab-terraform fmt -check
   allow_failure: true
-
+  rules:
+    - if: $DEPLOY != "true"
+    
 validate:
   stage: validate
   script:
     - cd "${TF_ROOT}"
     - gitlab-terraform validate
+  rules:
+    - if: $DEPLOY != "true"
 
 build:
   stage: build

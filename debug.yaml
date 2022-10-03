@@ -40,6 +40,8 @@ wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-consumer/template
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-regulator/templates/serviceaccount.yaml
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-trader/templates/serviceaccount.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/serviceaccount.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/service-account.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/service-account.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-admin/templates/serviceaccount.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-consumer/templates/serviceaccount.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-regulator/templates/serviceaccount.yaml
@@ -73,6 +75,7 @@ wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/alertmanager
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/loki/templates/secret.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/promtail/templates/secret.yaml
 wrote yaml//platform-5gzorro/charts/minio/templates/secrets.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/validating-webhook-configuration.yaml
 wrote yaml//platform-5gzorro/charts/smart-contract-lifecycle-manager-admin/templates/corda-secrets.yaml
 wrote yaml//platform-5gzorro/charts/smart-contract-lifecycle-manager-consumer/templates/corda-secrets.yaml
 wrote yaml//platform-5gzorro/charts/smart-contract-lifecycle-manager-regulator/templates/corda-secrets.yaml
@@ -125,6 +128,14 @@ wrote yaml//platform-5gzorro/charts/minio/templates/pvc.yaml
 wrote yaml//platform-5gzorro/charts/argo-events/templates/crds/eventbus-crd.yml
 wrote yaml//platform-5gzorro/charts/argo-events/templates/crds/eventsource-crd.yml
 wrote yaml//platform-5gzorro/charts/argo-events/templates/crds/sensor-crd.yml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_clusterworkflowtemplates.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_cronworkflows.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workflowartifactgctasks.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workfloweventbindings.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workflows.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workflowtaskresults.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workflowtasksets.yaml
+wrote yaml//platform-5gzorro/charts/argo-workflows/templates/crds/argoproj.io_workflowtemplates.yaml
 wrote yaml//platform-5gzorro/charts/argo-events/templates/argo-events-controller/rbac.yaml
 wrote yaml//platform-5gzorro/charts/argo-workflows/templates/controller/workflow-aggregate-roles.yaml
 wrote yaml//platform-5gzorro/charts/argo-workflows/templates/controller/workflow-aggregate-roles.yaml
@@ -154,6 +165,8 @@ wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/c
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/promtail/templates/clusterrole.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/clusterrole-postgres-pod.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/clusterrole.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/clusterrole.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/clusterrole.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/020-ClusterRole-strimzi-cluster-operator-role.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/021-ClusterRole-strimzi-cluster-operator-role.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/030-ClusterRole-strimzi-kafka-broker.yaml
@@ -182,6 +195,8 @@ wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus-o
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/clusterrolebinding.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/promtail/templates/clusterrolebinding.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/clusterrolebinding.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/clusterrolebinding.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/clusterrolebinding.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/021-ClusterRoleBinding-strimzi-cluster-operator.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/030-ClusterRoleBinding-strimzi-cluster-operator-kafka-broker-delegation.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/033-ClusterRoleBinding-strimzi-cluster-operator-kafka-client-delegation.yaml
@@ -196,6 +211,8 @@ wrote yaml//platform-5gzorro/charts/datalake/templates/role.yaml
 wrote yaml//platform-5gzorro/charts/ingress-nginx/templates/controller-role.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/charts/grafana/templates/role.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/loki/templates/role.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/role.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/role.yaml
 wrote yaml//platform-5gzorro/charts/argo-workflows/templates/controller/workflow-rb.yaml
 wrote yaml//platform-5gzorro/charts/cert-manager/templates/cainjector-rbac.yaml
 wrote yaml//platform-5gzorro/charts/cert-manager/templates/rbac.yaml
@@ -207,6 +224,8 @@ wrote yaml//platform-5gzorro/charts/datalake/templates/role-binding.yaml
 wrote yaml//platform-5gzorro/charts/ingress-nginx/templates/controller-rolebinding.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/charts/grafana/templates/rolebinding.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/loki/templates/rolebinding.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/rolebinding.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/rolebinding.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/020-RoleBinding-strimzi-cluster-operator.yaml
 wrote yaml//platform-5gzorro/charts/strimzi-kafka-operator/templates/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml
 wrote yaml//platform-5gzorro/charts/argo-workflows/templates/controller/workflow-controller-service.yaml
@@ -252,6 +271,7 @@ wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-consumer/template
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-regulator/templates/service.yaml
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-trader/templates/service.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/service.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/webhook-service.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-admin/templates/service.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-consumer/templates/service.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-regulator/templates/service.yaml
@@ -301,6 +321,8 @@ wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-consumer/template
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-regulator/templates/deployment.yaml
 wrote yaml//platform-5gzorro/charts/monitoring-data-aggregator-trader/templates/deployment.yaml
 wrote yaml//platform-5gzorro/charts/postgres-operator/templates/deployment.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/cluster-operator/deployment.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/deployment.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-admin/templates/deployment.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-consumer/templates/deployment.yaml
 wrote yaml//platform-5gzorro/charts/resource-and-service-offer-catalog-regulator/templates/deployment.yaml
@@ -339,12 +361,10 @@ wrote yaml//platform-5gzorro/charts/smart-contract-lifecycle-manager-trader/temp
 wrote yaml//platform-5gzorro/templates/delete-databases-job.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/alertmanager/alertmanager.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-wildcard-certificate.yaml
-wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/50-letsencrypt-clusterissuer.yaml
-wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/50-letsencrypt-clusterissuer.yaml
-wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/50-letsencrypt-clusterissuer.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-topic.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-topic.yaml
+wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster.yaml
@@ -360,6 +380,7 @@ wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-metrics-podmonitor.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-metrics-podmonitor.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/200-kafka-metrics-podmonitor.yaml
+wrote yaml//platform-5gzorro/charts/minio/templates/servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/prometheus.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/alertmanager.rules.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/config-reloaders.yaml
@@ -387,6 +408,7 @@ wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/r
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/prometheus-operator.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/prometheus.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/loki/templates/prometheusrule.yaml
+wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-rabbitmq-cluster.yaml
 wrote yaml//platform-5gzorro/charts/argo-workflows/templates/controller/workflow-controller-servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/charts/grafana/templates/servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/charts/kube-state-metrics/templates/servicemonitor.yaml
@@ -400,10 +422,10 @@ wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus-o
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus/servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/loki/templates/servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/loki-stack/charts/promtail/templates/servicemonitor.yaml
-wrote yaml//platform-5gzorro/charts/minio/templates/servicemonitor.yaml
 wrote yaml//platform-5gzorro/charts/cert-manager/templates/webhook-validating-webhook.yaml
 wrote yaml//platform-5gzorro/charts/ingress-nginx/templates/admission-webhooks/validating-webhook.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus-operator/admission-webhooks/validatingWebhookConfiguration.yaml
+wrote yaml//platform-5gzorro/charts/rabbitmq-cluster-operator/templates/messaging-topology-operator/validating-webhook-configuration.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-postgresql-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-postgresql-cluster.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-postgresql-cluster.yaml
@@ -433,6 +455,7 @@ wrote yaml//platform-5gzorro/charts/identity-and-permissions-manager-trader/temp
 wrote yaml//platform-5gzorro/charts/ingress-nginx/templates/admission-webhooks/job-patch/serviceaccount.yaml
 wrote yaml//platform-5gzorro/charts/kube-prometheus-stack/templates/prometheus-operator/admission-webhooks/job-patch/serviceaccount.yaml
 wrote yaml//platform-5gzorro/templates/delete-databases-job.yaml
+wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster-secrets.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster-secrets.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster-secrets.yaml
 wrote yaml//platform-5gzorro/charts/custom-resource-5gzorro/templates/100-mongodb-cluster-secrets.yaml

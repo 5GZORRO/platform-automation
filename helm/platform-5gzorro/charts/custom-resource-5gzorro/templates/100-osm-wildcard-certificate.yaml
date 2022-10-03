@@ -1,9 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: 5gzorro-wildcard-cert
+  name: 5gzorro-osm-wildcard-cert
+  namespace: osm
 spec:
-  secretName: 5gzorro-wildcard-cert
+  secretName: 5gzorro-osm-wildcard-cert
   issuerRef: 
     kind: ClusterIssuer
     {{- if .Values.certmanager.zerossl.enabled }}
@@ -11,7 +12,7 @@ spec:
     {{- else if .Values.certmanager.letsencrypt.enabled }}
     name: letsencrypt-wildcard-prod
     {{- end }}
-  commonName: "*.{{ .Values.certmanager.azureDns.hostedZoneName }}"
+  commonName: "*.osm.{{ .Values.certmanager.azureDns.hostedZoneName }}"
   dnsNames:
-    - "*.{{ .Values.certmanager.azureDns.hostedZoneName }}"
-    - "{{ .Values.certmanager.azureDns.hostedZoneName }}"
+    - "*.osm.{{ .Values.certmanager.azureDns.hostedZoneName }}"
+    - "osm.{{ .Values.certmanager.azureDns.hostedZoneName }}"

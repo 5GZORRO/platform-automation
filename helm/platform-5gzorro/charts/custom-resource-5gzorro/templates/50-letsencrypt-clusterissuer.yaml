@@ -1,10 +1,11 @@
+{{- if .Values.certmanager.letsencrypt.enabled -}}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
 spec:
   acme:
-    email: {{ .Values.letsencrypt.email}}
+    email: {{ .Values.certmanager.letsencrypt.email}}
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-staging-account-key
@@ -19,7 +20,7 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
-    email: {{ .Values.letsencrypt.email}}
+    email: {{ .Values.certmanager.letsencrypt.email}}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-prod-account-key
@@ -34,16 +35,17 @@ metadata:
   name: letsencrypt-wildcard-prod
 spec:
   acme:
-    email: {{ .Values.letsencrypt.email}}
+    email: {{ .Values.certmanager.letsencrypt.email}}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-prod-account-key
     solvers:
     - dns01:
         azureDNS:
-          subscriptionID: {{ .Values.letsencrypt.azureDns.subscriptionID }}
-          resourceGroupName: {{ .Values.letsencrypt.azureDns.resourceGroupName }}
-          hostedZoneName: {{ .Values.letsencrypt.azureDns.hostedZoneName }}
+          subscriptionID: {{ .Values.certmanager.azureDns.subscriptionID }}
+          resourceGroupName: {{ .Values.certmanager.azureDns.resourceGroupName }}
+          hostedZoneName: {{ .Values.certmanager.azureDns.hostedZoneName }}
           environment: AzurePublicCloud
           managedIdentity:
-            clientID: {{ .Values.letsencrypt.azureDns.clientID }}
+            clientID: {{ .Values.certmanager.azureDns.clientID }}
+{{- end -}}

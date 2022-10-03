@@ -4,3 +4,13 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace | default .Release.Namespace }}
 {{- end -}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dl-argo-events
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: datalake
