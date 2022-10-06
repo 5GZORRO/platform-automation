@@ -1,0 +1,4 @@
+{
+  "catalogueId": "{{ .Values.catalogueapp.catalogue.id }}",
+  "url": "{{ .Values.catalogueapp.catalogue.url }}"
+}

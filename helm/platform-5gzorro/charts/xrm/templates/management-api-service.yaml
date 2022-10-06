@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xrm.fullname" . }}-management-api
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "management-api"
+spec:
+  type: {{ .Values.managementapi.service.type }}
+  ports:
+    - port: {{ .Values.managementapi.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "xrm.selectorLabels" . | nindent 4 }}
+    xrm/component: "management-api"

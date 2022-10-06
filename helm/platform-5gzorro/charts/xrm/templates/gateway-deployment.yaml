@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xrm.fullname" . }}-gateway
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "gateway"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "xrm.selectorLabels" . | nindent 6 }}
+      xrm/component: "gateway"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "gateway"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "xrm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-gateway
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+          env:
+            - name: gravitee_reporters_elasticsearch_endpoints_0
+              value: http://elasticsearch:9200
+            - name: gravitee_management_mongodb_uri
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gateway.mongo.uri }}
+                  key: "connectionString.standard"
+                  optional: false
+            - name: gravitee_ratelimit_mongodb_uri
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gateway.mongo.uri }}
+                  key: "connectionString.standard"
+                  optional: false
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

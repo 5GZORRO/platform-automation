@@ -1,0 +1,172 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xrm.fullname" . }}-catalogueapp
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "catalogueapp"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "xrm.selectorLabels" . | nindent 6 }}
+      xrm/component: "catalogueapp"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "catalogueapp"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "xrm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-catalogueapp
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.catalogueapp.image.repository }}:{{ .Values.catalogueapp.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.catalogueapp.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: CATALOGUE_DB_MODE
+              value: create
+            - name: CATALOGUE_DEFAULT_PROJECT
+              value: admin
+            - name: CATALOGUE_DUMMY_MANO
+              value: "false"
+            - name: CATALOGUE_KAFKA_HOST
+              value: {{ .Values.kafka.host }}
+            - name: CATALOGUE_LOGO_PATH
+              value: /home/logos/default_logo.png
+            - name: CATALOGUE_MANO_LOCAL_CONFIG
+              value: "true"
+            - name: CATALOGUE_MANO_SITE_INVENTORY_CONFIG
+              value: "false"
+            - name: CATALOGUE_OSM_VIM_NETWORK_NAME
+              value: "false"
+            - name: CATALOGUE_POSTGRES_HOST
+              value: {{ .Values.catalogueapp.postgres.host }}
+            - name: CATALOGUE_POSTGRES_PORT
+              value: {{ .Values.catalogueapp.postgres.port | quote }}
+            - name: CATALOGUE_POSTGRES_USERNAME
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.catalogueapp.postgres.existingSecret }}
+                    name: {{ .Values.catalogueapp.postgres.existingSecret }}
+                    key: {{ .Values.catalogueapp.postgres.userKey }}
+                  {{- else }}
+                      name: xrm-db-credentials
+                      key: username
+                  {{- end }}
+            - name: CATALOGUE_POSTGRES_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.catalogueapp.postgres.existingSecret }}
+                    name: {{ .Values.catalogueapp.postgres.existingSecret }}
+                    key: {{ .Values.catalogueapp.postgres.passwordKey }}
+                  {{- else }}
+                      name: xrm-db-credentials
+                      key: password
+                  {{- end }}
+            - name: CATALOGUE_POSTGRES_NAME
+              {{- if .Values.catalogueapp.postgres.existingSecret }}
+              value: {{ .Values.catalogueapp.postgres.name }}
+              {{- else }}
+              valueFrom:
+                  secretKeyRef:
+                      name: xrm-db-credentials
+                      key: name
+              {{- end }}
+            - name: CATALOGUE_RUNTIME_SYNC
+              value: "true"
+            - name: CATALOGUE_RUNTIME_SYNC_PERIOD
+              value: "1"
+            - name: CATALOGUE_SCOPE
+              value: PUBLIC
+            - name: CATALOGUE_SERVER_PORT
+              value: "8080"
+            - name: CATALOGUE_SKIP_DESCRIPTORS_LOAD
+              value: "false"
+            - name: CATALOGUE_SKIP_VIM_CONFIG
+              value: "true"
+            - name: CATALOGUE_STARTUP_SYNC
+              value: "true"
+            - name: CATALOGUE_VIM_TYPE
+              value: DUMMY
+            - name: KEYCLOAK_ADMIN_ROLE
+              value: Administrator
+            - name: KEYCLOAK_AUTHENTICATION
+              value: {{ .Values.catalogueui.keycloak.enabled | quote }}
+            - name: KEYCLOAK_CLIENT
+              value: 5gcatalogue-be
+            - name: KEYCLOAK_CLIENT_SECRET
+              value: 444c517a-d474-4cc8-928f-606414856e1f
+            - name: KEYCLOAK_PUBLIC_CLIENT
+              value: "false"
+            - name: KEYCLOAK_REALM
+              value: osm
+            - name: KEYCLOAK_URL
+              value: http://127.0.0.1:8080/auth/
+            - name: KEYCLOAK_USER_GROUP
+              value: c0b063e1-ffa6-4d67-b0b7-75df0d3f5084
+            - name: KEYCLOAK_USER_ROLE
+              value: User
+            - name: SITE_INVENTORY_URL
+              value: http://{{ include "xrm.fullname" . }}-cataloguegui:8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /home/catalogueStorage
+              name: catalogueapp-hostpath0
+            - mountPath: /home/manoStorage
+              name: catalogueapp-hostpath1
+            - name: mano-conf
+              mountPath: /home/5g-catalogue/5gcatalogue-app/src/main/resources/manoConfigurations/mano.json
+              subPath: mano.json
+            - name: catalogue-conf
+              mountPath: /home/5g-catalogue/5gcatalogue-app/src/main/resources/catalogueConfigurations/publicCatalogue.json
+              subPath: publicCatalogue.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - hostPath:
+            path: /opt/5gcatalogue-app/catalogueStorage
+          name: catalogueapp-hostpath0
+        - hostPath:
+            path: /opt/5gcatalogue-app/manoStorage
+          name: catalogueapp-hostpath1
+        - name: mano-conf
+          configMap:
+              name: {{ include "xrm.fullname" . }}-catalogueapp
+              items:
+                - key: mano.json
+                  path: mano.json
+        - name: catalogue-conf
+          configMap:
+              name: {{ include "xrm.fullname" . }}-catalogueapp
+              items:
+                - key: publicCatalogue.json
+                  path: publicCatalogue.json

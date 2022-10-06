@@ -4,26 +4,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elmarest
-  namespace: "{{ $imageValues.namespace }}"
+  name: {{ include "elma.fullname" . }}
   labels:
-    app: "{{ $imageValues.app }}"
+    {{- include "elma.labels" . | nindent 4 }}
+    elma/component: rest
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/deployment-configmap.yaml") . | sha256sum }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: elmarest
+      {{- include "elma.selectorLabels" . | nindent 6 }}
+      elma/component: rest
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: elmarest
+        {{- include "elma.selectorLabels" . | nindent 8 }}
+        elma/component: rest
     spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - envFrom:
           - configMapRef:
-              name: elma-deployment-configmap
+              name: {{ include "elma.fullname" . }}
           - secretRef:
-              name: elma-deployment-secret
+              name: {{ include "elma.fullname" . }}
           env:
             - name: RABBITMQ_USER
               valueFrom:
@@ -40,7 +54,7 @@ spec:
                   secretKeyRef:
                   {{- if .Values.rabbitmq.existingSecret }}
                     name: {{ .Values.rabbitmq.existingSecret }}
-                    key: {{ .Values.rabbitmq.userKey }}
+                    key: {{ .Values.rabbitmq.passwordKey }}
                   {{- else }}
                       name: rabbitmq-elma-default-user
                       key: password
@@ -48,7 +62,7 @@ spec:
           image: {{ $imageValues.image }}:{{ $imageValues.tag }}
           command: ["elma_rest", "start"]
           imagePullPolicy: "{{ $imageValues.pullPolicy }}"
-          name: elmarest
+          name: {{ include "elma.fullname" . }}
           ports:
             - containerPort: 8000
           resources: {}
@@ -61,11 +75,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: elmarest-service
-  namespace: "{{ $imageValues.namespace }}"
+  name: {{ include "elma.fullname" . }}
 spec:
   selector:
-    app: elmarest
+    {{- include "elma.selectorLabels" . | nindent 4 }}
+    elma/component: rest
   type: ClusterIP
   ports:
     - protocol: TCP

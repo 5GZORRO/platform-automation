@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xrm.fullname" . }}-catalogueui
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "catalogueui"
+spec:
+  type: {{ .Values.catalogueui.service.type }}
+  ports:
+    - port: {{ .Values.catalogueui.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "xrm.selectorLabels" . | nindent 4 }}
+    xrm/component: "catalogueui"

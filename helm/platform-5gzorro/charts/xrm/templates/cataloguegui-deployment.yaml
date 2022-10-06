@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xrm.fullname" . }}-catalogueui
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "catalogueui"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "xrm.selectorLabels" . | nindent 6 }}
+      xrm/component: "catalogueui"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "catalogueui"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "xrm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-catalogueui
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.catalogueui.image.repository }}:{{ .Values.catalogueui.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.catalogueui.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: utils-conf
+              mountPath: /home/5g-catalogue/5gcatalogue-gui/5gcatalogue/plugin/utils.js
+              subPath: utils.js
+            - name: html-conf
+              mountPath: /home/5g-catalogue/5gcatalogue-gui/5gcatalogue/templates/side_top_bar.html
+              subPath: side_top_bar.html
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: utils-conf
+          configMap:
+              name: {{ include "xrm.fullname" . }}-catalogueui
+              items:
+                - key: utils.js
+                  path: utils.js
+        - name: html-conf
+          configMap:
+              name: {{ include "xrm.fullname" . }}-catalogueui
+              items:
+                - key: side_top_bar_default.html
+                  path: side_top_bar_default.html

@@ -118,11 +118,29 @@ dependencies:
     tags:
       - base
   - name: elma
-    alias: elma-agent
+    alias: elma-admin
+    version: "3.1.*"
+    tags:
+      - admin
+    condition: elma-admin.enabled
+  - name: elma
+    alias: elma-trader
     version: "3.1.*"
     tags:
       - trader
-    condition: elma-agent.enabled
+    condition: elma-trader.enabled
+  - name: elma
+    alias: elma-regulator
+    version: "3.1.*"
+    tags:
+      - regulator
+    condition: elma-regulator.enabled
+  - name: elma
+    alias: elma-consumer
+    version: "3.1.*"
+    tags:
+      - consumer
+    condition: elma-consumer.enabled
   - name: monitoring-data-aggregator
     version: "0.1.*"
     condition: monitoring-data-aggregator.enabled
@@ -311,24 +329,48 @@ dependencies:
   - name: monitoring-data-aggregator
     alias: monitoring-data-aggregator-admin
     version: "0.1.*"
-    condition: monitoring-data-aggregator--admin.enabled
+    condition: monitoring-data-aggregator-admin.enabled
     tags:
       - admin
   - name: monitoring-data-aggregator
     alias: monitoring-data-aggregator-regulator
     version: "0.1.*"
-    condition: monitoring-data-aggregator--regulator.enabled
+    condition: monitoring-data-aggregator-regulator.enabled
     tags:
       - regulator
   - name: monitoring-data-aggregator
     alias: monitoring-data-aggregator-trader
     version: "0.1.*"
-    condition: monitoring-data-aggregator--trader.enabled
+    condition: monitoring-data-aggregator-trader.enabled
     tags:
       - trader
   - name: monitoring-data-aggregator
     alias: monitoring-data-aggregator-consumer
     version: "0.1.*"
-    condition: monitoring-data-aggregator--consumer.enabled
+    condition: monitoring-data-aggregator-consumer.enabled
+    tags:
+      - consumer
+  - name: xrm
+    alias: xrm-admin
+    version: "0.1.*"
+    condition: xrm-admin.enabled
+    tags:
+      - admin
+  - name: xrm
+    alias: xrm-regulator
+    version: "0.1.*"
+    condition: xrm-regulator.enabled
+    tags:
+      - regulator
+  - name: xrm
+    alias: xrm-trader
+    version: "0.1.*"
+    condition: xrm-trader.enabled
+    tags:
+      - trader
+  - name: xrm
+    alias: xrm-consumer
+    version: "0.1.*"
+    condition: xrm-consumer.enabled
     tags:
       - consumer

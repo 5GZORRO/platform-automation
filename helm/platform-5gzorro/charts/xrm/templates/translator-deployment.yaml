@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xrm.fullname" . }}-translator
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "translator"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "xrm.selectorLabels" . | nindent 6 }}
+      xrm/component: "translator"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "translator"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "xrm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-translator
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.translator.image.repository }}:{{ .Values.translator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.translator.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DESCRIPTOR_SOURCE_HOSTNAME
+              value: {{ include "xrm.fullname" . }}-catalogueapp
+            - name: DESCRIPTOR_SOURCE_PORT
+              value: {{ .Values.catalogueapp.service.port | quote }}
+            - name: OFFER_CATALOG_HOSTNAME
+              value: zorro5g-resource-and-service-offer-catalog-{{ .Values.role }}
+            - name: OFFER_CATALOG_PORT
+              value: "8080"
+            - name: POSTGRES_HOSTNAME
+              value: {{ .Values.translator.postgres.host }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.translator.postgres.port | quote }}
+            - name: POSTGRES_USER
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.translator.postgres.existingSecret }}
+                    name: {{ .Values.translator.postgres.existingSecret }}
+                    key: {{ .Values.translator.postgres.userKey }}
+                  {{- else }}
+                      name: xrm-db-credentials
+                      key: username
+                  {{- end }}
+            - name: POSTGRES_PSW
+              valueFrom:
+                  secretKeyRef:
+                  {{- if .Values.translator.postgres.existingSecret }}
+                    name: {{ .Values.translator.postgres.existingSecret }}
+                    key: {{ .Values.translator.postgres.passwordKey }}
+                  {{- else }}
+                      name: xrm-db-credentials
+                      key: password
+                  {{- end }}
+            - name: POSTGRES_NAME
+              {{- if .Values.translator.postgres.existingSecret }}
+              value: {{ .Values.translator.postgres.name }}
+              {{- else }}
+              valueFrom:
+                  secretKeyRef:
+                      name: xrm-db-credentials
+                      key: name
+              {{- end }}
+            - name: SERVER_PORT
+              value: "8080"
+            - name: TRANSLATOR_HOSTNAME
+              value: {{ include "xrm.fullname" . }}-translator
+            - name: RAPP_URL
+              value: 172.28.3.242:2626
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /home/catalogueStorage
+              name: translator-hostpath0
+            - mountPath: /home/manoStorage
+              name: translator-hostpath1
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - hostPath:
+            path: /opt/5gcatalogue-app/catalogueStorage
+          name: translator-hostpath0
+        - hostPath:
+            path: /opt/5gcatalogue-app/manoStorage
+          name: translator-hostpath1

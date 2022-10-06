@@ -1,3 +1,4 @@
 yaml/*
 .terraform*
 terraform.tfstate
+debug.yaml

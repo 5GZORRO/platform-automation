@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xrm.fullname" . }}-catalogueapp
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "catalogueapp"
+spec:
+  type: {{ .Values.catalogueapp.service.type }}
+  ports:
+    - port: {{ .Values.catalogueapp.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "xrm.selectorLabels" . | nindent 4 }}
+    xrm/component: "catalogueapp"

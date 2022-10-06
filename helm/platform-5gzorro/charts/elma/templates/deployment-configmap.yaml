@@ -3,10 +3,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: elma-deployment-configmap
-  namespace: "{{ $imageValues.namespace }}"
+  name: {{ include "elma.fullname" . }}
 data:
-  RABBITMQ_URL: "rabbitmq-elma"
+  RABBITMQ_URL: {{ .Values.rabbitmq.url }}
   RABBITMQ_PORT: "5672"
   RABBITMQ_PREFETCH_COUNT: "20"
   RABBITMQ_V_HOST: "/"
@@ -15,24 +14,24 @@ data:
   MANO: "OSM"
   MANO_VERSION: "ZORRO"
   MANO_TZ: "Europe/Madrid"
-  OSM_URL: "172.28.3.15"
-  OSM_PORT: "31081"
-  DOMAIN_ID: "domain1"
-  ELMA_REST_URL: "elmarest-service"
+  OSM_URL: "ng-ui.osm.svc.cluster.local"
+  OSM_PORT: "80"
+  DOMAIN_ID: {{ .Values.domainId }}
+  ELMA_REST_URL: {{ include "elma.fullname" . }}
   ELMA_REST_PORT: "8000"
   ELMA_REST_URL_1: "172.28.3.15"
   ELMA_REST_PORT_1: "31880"
-  ELMA_DB_URL: "elmadb-service"
+  ELMA_DB_URL: {{ include "elma.fullname" . }}-mongodb
   ELMA_DB_PORT: "27017"
   DB_RESTART: "False"
-  ME_CONFIG_MONGODB_URL: "mongodb://elmadb-service:27017/"
-  CATALOG_URL: "172.28.3.15"
-  CATALOG_PORT: "31080"
-  CATALOG_RESOURCES: "None"
-  NET_SLICE_ORCHESTRATOR_URL: "172.28.3.15"
-  NET_SLICE_ORCHESTRATOR_PORT: "31082"
-  NET_SLICE_ORCHESTRATOR_ENDPOINT: "portal/elicensing/"
+  ME_CONFIG_MONGODB_URL: "mongodb://{{ include "elma.fullname" . }}-mongodb:27017/"
+  CATALOG_URL: {{ .Values.catalog.url }}
+  CATALOG_PORT: {{ .Values.catalog.port | quote }}
+  CATALOG_RESOURCES: {{ .Values.catalog.resources }}
+  NET_SLICE_ORCHESTRATOR_URL: {{ .Values.netSlice.url | quote }}
+  NET_SLICE_ORCHESTRATOR_PORT: {{ .Values.netSlice.port | quote }}
+  NET_SLICE_ORCHESTRATOR_ENDPOINT: {{ .Values.netSlice.endpoint }}
   ELMA_RESPONSE_TIMEOUT: "30"
-  DATA_LAKE_URL: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
-  DATA_LAKE_AUTH: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
-  DATA_LAKE_KAFKA: "kafka-cluster-kafka-bootstrap:9092"
+  DATA_LAKE_URL: {{ .Values.datalake.url | quote }}
+  DATA_LAKE_AUTH: {{ .Values.datalake.auth | quote }}
+  DATA_LAKE_KAFKA: {{ .Values.datalake.kafka }}

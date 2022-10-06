@@ -1,0 +1,64 @@
+{{- $imageValues := .Values.image }}
+{{- $elmadb := .Values.elmadb }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "elma.fullname" . }}-mongodb
+  labels:
+    {{- include "elma.labels" . | nindent 4 }}
+    elma/component: mongodb
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/deployment-configmap.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "elma.selectorLabels" . | nindent 6 }}
+      elma/component: mongodb
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "elma.selectorLabels" . | nindent 8 }}
+        elma/component: mongodb
+    spec:
+      containers:
+        - image: mongo:latest
+          name: mongodb-{{ include "elma.fullname" . }}
+          ports:
+            - containerPort: 27017
+          imagePullPolicy: IfNotPresent
+          resources: {}
+        - envFrom:
+            - configMapRef:
+                name: {{ include "elma.fullname" . }}
+          image: mongo-express
+          name: mongo-express
+          ports:
+            - containerPort: 8081
+          imagePullPolicy: IfNotPresent
+          resources: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elma.fullname" . }}-mongodb
+spec:
+  selector:
+    {{- include "elma.selectorLabels" . | nindent 4 }}
+    elma/component: mongodb
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+      name: elmadb-mongo
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      name: elmadb-express

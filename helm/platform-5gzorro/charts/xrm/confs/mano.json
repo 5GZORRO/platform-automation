@@ -1,0 +1,13 @@
+{
+    "manoId": "{{ .Values.catalogueapp.mano.id }}",
+    "manoType": "{{ .Values.catalogueapp.mano.type }}",
+    "manoSite": "{{ .Values.catalogueapp.mano.site }}",
+    "pluginOperationalState": "ENABLED",
+    "ipAddress": "{{ .Values.catalogueapp.mano.ip }}",
+    "port": "{{ .Values.catalogueapp.mano.port }}",
+    "username": "{{ .Values.catalogueapp.mano.username }}",
+    "password": "{{ .Values.catalogueapp.mano.password }}",
+    "project": "{{ .Values.catalogueapp.mano.project }}",
+    "vimAccounts": [
+    ]
+  }

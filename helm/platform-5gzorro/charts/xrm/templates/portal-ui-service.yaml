@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xrm.fullname" . }}-portal-ui
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "portal-ui"
+spec:
+  type: {{ .Values.portalui.service.type }}
+  ports:
+    - port: {{ .Values.portalui.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "xrm.selectorLabels" . | nindent 4 }}
+    xrm/component: "portal-ui"

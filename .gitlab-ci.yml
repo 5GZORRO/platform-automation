@@ -62,6 +62,9 @@ deploy:
   resource_group: ${TF_STATE_NAME}
   rules:
     - if: $DEPLOY == "true"
+  artifacts:
+    paths:
+      - ${TF_ROOT}/
 
 destroy:
   stage: cleanup
