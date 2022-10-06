@@ -153,7 +153,7 @@ resource "null_resource" "install_osm" {
     inline = [
       "wget https://osm-download.etsi.org/ftp/osm-10.0-ten/install_osm.sh",
       "chmod +x install_osm.sh",
-      "./install_osm.sh --hostname nbi.osm.5gzorro.smartcommunitylab.it --charmed --k8s /home/zorro/config"
+      "./install_osm.sh --charmed --k8s /home/zorro/config"
     ]
   }
   connection {
