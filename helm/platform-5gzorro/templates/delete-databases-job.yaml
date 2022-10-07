@@ -30,6 +30,9 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 rules:
+  - apiGroups: ["rabbitmq.com"]
+    resources: ["rabbitmqclusters"]
+    verbs: ["get", "list", "watch", "create", "delete"]
   - apiGroups: ["mongodbcommunity.mongodb.com"]
     resources: ["mongodbcommunity"]
     verbs: ["get", "list", "watch", "create", "delete"]

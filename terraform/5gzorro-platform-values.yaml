@@ -68,17 +68,17 @@ custom-resource-5gzorro:
     email: sysadmin@smartcommunitylab.it
     zerossl:
       enabled: true
-      eabKid: dDw9twJ693ftD04H1pqHxA
+      eabKid: dDw9twJ693ftD04H1pqHxA 
       eabHmac:
         secretName: "zerossl-eabsecret"
         secretKey: "secret"
     letsencrypt:
       enabled: false
     azureDns:
-      subscriptionID: f8948095-f2ff-4dbd-aa56-d319a3c81cf1
-      resourceGroupName: 5gzorro
-      hostedZoneName: 5gzorro.smartcommunitylab.it
-      clientID: e2fabf65-064e-475f-ae4e-89035851b305
+      subscriptionID: f8948095-f2ff-4dbd-aa56-d319a3c81cf1 
+      resourceGroupName: 5gzorro 
+      hostedZoneName: 5gzorro.smartcommunitylab.it 
+      clientID: 68f568db-d1bd-40ab-bacf-de37cf8c05c2 
   kube-prometheus-stack:
     enabled: true
   community-operator:
@@ -93,7 +93,7 @@ custom-resource-5gzorro:
           - name: admin
             db: admin
             passwordSecretRef: 
-              name: admin-password
+              name: 5gzorro-mongodb-idp-admin-password
             roles:
               - name: readWrite
                 db: administrator
@@ -145,7 +145,7 @@ custom-resource-5gzorro:
           - name: admin
             db: admin
             passwordSecretRef: 
-              name: admin-password
+              name: 5gzorro-mongodb-xrm-admin-password
             roles:
               - name: readWrite
                 db: administrator
@@ -677,13 +677,12 @@ external-dns:
   enabled: true
   provider: azure
   azure:
-    resourceGroup: 5gzorro
+    resourceGroup: 5gzorro 
     tenantId: 11d1b7a3-5e92-4744-83dc-831a43e1f967
     subscriptionId: f8948095-f2ff-4dbd-aa56-d319a3c81cf1 
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
-  domainFilters: 
-  - '*.5gzorro.smartcommunitylab.it '
+  domainFilters: ["*.5gzorro.smartcommunitylab.it "]
 
 vault:
   enabled: false
@@ -1959,24 +1958,44 @@ xrm-admin:
     postgres:
       host: zorro5g-psqldb-xrm-admin
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmcatalogueappadmin
+      existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-xrm-admin.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.5gzorro.smartcommunitylab.it"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "admin"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-admin:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
   kafka:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "5gzorro-mongodb-xrm-admin-password"
+      uri: "mongodb-xrm-admin-admin-admin"
   managementapi:
     mongo:
-      uri: "5gzorro-mongodb-xrm-admin-password"
+      uri: "mongodb-xrm-admin-admin-admin"
   translator:
     postgres:
       host: zorro5g-psqldb-xrm-admin
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmtranslatoradmin
+      existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-xrm-admin.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
 
 xrm-regulator:
   role: "regulator"
@@ -1984,24 +2003,44 @@ xrm-regulator:
     postgres:
       host: zorro5g-psqldb-xrm-regulator
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmcatalogueappregulator
+      existingSecret: "xrmcatalogueappregulator.zorro5g-psqldb-xrm-regulator.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.5gzorro.smartcommunitylab.it"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "regulator"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-regulator:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
   kafka:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "5gzorro-mongodb-xrm-regulator-password"
+      uri: "mongodb-xrm-regulator-admin-regulator"
   managementapi:
     mongo:
-      uri: "5gzorro-mongodb-xrm-regulator-password"
+      uri: "mongodb-xrm-regulator-admin-regulator"
   translator:
     postgres:
       host: zorro5g-psqldb-xrm-regulator
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmtranslatorregulator
+      existingSecret: "xrmtranslatorregulator.zorro5g-psqldb-xrm-regulator.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
 
 xrm-trader:
   role: "trader"
@@ -2009,24 +2048,44 @@ xrm-trader:
     postgres:
       host: zorro5g-psqldb-xrm-trader
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmcatalogueapptrader
+      existingSecret: "xrmcatalogueapptrader.zorro5g-psqldb-xrm-trader.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.5gzorro.smartcommunitylab.it"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "trader"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-trader:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
   kafka:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "5gzorro-mongodb-xrm-trader-password"
+      uri: "mongodb-xrm-trader-admin-trader"
   managementapi:
     mongo:
-      uri: "5gzorro-mongodb-xrm-trader-password"
+      uri: "mongodb-xrm-trader-admin-trader"
   translator:
     postgres:
       host: zorro5g-psqldb-xrm-trader
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmtranslatortrader
+      existingSecret: "xrmtranslatortrader.zorro5g-psqldb-xrm-trader.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
 
 xrm-consumer:
   role: "consumer"
@@ -2034,21 +2093,41 @@ xrm-consumer:
     postgres:
       host: zorro5g-psqldb-xrm-consumer
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmcatalogueappconsumer
+      existingSecret: "xrmcatalogueappconsumer.zorro5g-psqldb-xrm-consumer.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.5gzorro.smartcommunitylab.it"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "consumer"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-consumer:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
   kafka:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "5gzorro-mongodb-xrm-consumer-password"
+      uri: "mongodb-xrm-consumer-admin-consumer"
   managementapi:
     mongo:
-      uri: "5gzorro-mongodb-xrm-consumer-password"
+      uri: "mongodb-xrm-consumer-admin-consumer"
   translator:
     postgres:
       host: zorro5g-psqldb-xrm-consumer
       port: 5432
-      existingSecret: ""
-      userKey: ""
-      passwordKey: ""
+      name: xrmtranslatorconsumer
+      existingSecret: "xrmtranslatorconsumer.zorro5g-psqldb-xrm-consumer.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"

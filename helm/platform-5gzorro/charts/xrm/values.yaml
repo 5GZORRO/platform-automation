@@ -12,7 +12,7 @@ catalogueapp:
   image:
     repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-app
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "fix"
   service:
     type: ClusterIP
     port: 8080
@@ -38,7 +38,7 @@ catalogueui:
   image:
     repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-gui
     pullPolicy: IfNotPresent
-    tag: ""
+    tag: "latest"
   service:
     type: ClusterIP
     port: 80
@@ -95,7 +95,7 @@ portalui:
     port: 8080
 translator:
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5gzorro/xrm-resource-definition-translator
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-resource-definition-translator
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

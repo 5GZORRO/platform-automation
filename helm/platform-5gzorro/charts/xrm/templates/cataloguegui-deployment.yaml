@@ -70,5 +70,5 @@ spec:
           configMap:
               name: {{ include "xrm.fullname" . }}-catalogueui
               items:
-                - key: side_top_bar_default.html
-                  path: side_top_bar_default.html
+                - key: side_top_bar.html
+                  path: side_top_bar.html

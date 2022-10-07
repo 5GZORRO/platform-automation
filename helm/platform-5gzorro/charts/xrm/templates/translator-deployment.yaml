@@ -87,7 +87,9 @@ spec:
             - name: TRANSLATOR_HOSTNAME
               value: {{ include "xrm.fullname" . }}-translator
             - name: RAPP_URL
-              value: 172.28.3.242:2626
+              value: ""
+            - name: SLICE_MANAGER_URL
+              value: "172.28.3.15:32135"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

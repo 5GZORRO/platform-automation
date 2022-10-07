@@ -7,3 +7,4 @@ metadata:
     xrm/component: "catalogueui"
 data:
   utils.js: | {{- tpl (.Files.Get "confs/utils.js") $ | nindent 4 }}
+  side_top_bar.html: | {{- tpl (.Files.Get "confs/side_top_bar.html") $ | nindent 4 }}
