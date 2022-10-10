@@ -374,3 +374,22 @@ dependencies:
     condition: xrm-consumer.enabled
     tags:
       - consumer
+  - name: issm
+    alias: issm-admin
+    version: "0.1.*"
+    condition: issm-admin.enabled
+    tags:
+      - admin
+      - base
+  - name: issm
+    alias: issm-trader
+    version: "0.1.*"
+    condition: issm-trader.enabled
+    tags:
+      - trader
+  - name: issm
+    alias: issm-consumer
+    version: "0.1.*"
+    condition: issm-consumer.enabled
+    tags:
+      - consumer

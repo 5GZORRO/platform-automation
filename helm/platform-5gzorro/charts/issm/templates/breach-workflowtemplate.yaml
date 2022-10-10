@@ -1,0 +1,326 @@
+# Copyright 2021 - 2022 IBM Corporation
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+{{- if ne .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: breach
+  namespace: {{ .Chart.Name }}
+spec:
+  templates:
+  - name: breach
+    # Entry point of a breach notification arriving into ISSM local agent. ISSM
+    # generates a scaleout operation out from
+    dag:
+      tasks:
+      - name: transaction-uuid
+        templateRef:
+          name: workflow-base
+          template: py-split
+        arguments:
+          parameters:
+          - name: str
+            # important: transaction_uuid=<domain>:<tansaction uuid>
+            value: "{{`{{workflow.parameters.transaction_uuid}}`}}"
+          - name: idx
+            value: 1
+
+      - name: service-owner
+        templateRef:
+          name: workflow-base
+          template: py-split
+        arguments:
+          parameters:
+          - name: str
+            # important: transaction_uuid=<domain>:<tansaction uuid>
+            value: "{{`{{workflow.parameters.transaction_uuid}}`}}"
+          - name: idx
+            value: 0
+
+      - name: get-platform-env
+        templateRef:
+          name: workflow-environment
+          template: get-platform-env
+
+      - name: get-domain-env
+        dependencies: [service-owner]
+        templateRef:
+          name: workflow-environment
+          template: get-domain-env
+        arguments:
+          parameters:
+          - name: domain
+            value: "{{`{{tasks.service-owner.outputs.result}}`}}"
+
+      - name: get-transaction
+        dependencies: [transaction-uuid, get-domain-env]
+        templateRef:
+          name: workflow-transaction
+          template: issm-api-get-transaction
+        arguments:
+          parameters:
+          - name: issm_api_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.issm_api_url}}`}}"
+          - name: transaction_uuid
+            value: "{{`{{tasks.transaction-uuid.outputs.result}}`}}"
+
+      - name: transaction-data
+        dependencies: [get-transaction]
+        templateRef:
+          name: workflow-transaction
+          template: jq-script
+        arguments:
+          parameters:
+          - name: json_str
+            value: "{{`{{tasks.get-transaction.outputs.result}}`}}"
+
+      - name: prepare-orders
+        dependencies: [transaction-data]
+        templateRef:
+          name: workflow-catalog
+          template: prepare-orders-from-catalog
+        arguments:
+          parameters:
+          - name: catalogue_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+          - name: order_id
+            # NOTE: here it is an ARRAY of <uuid, main>
+            value: "{{`{{tasks.transaction-data.outputs.parameters.order_id}}`}}"
+          - name: category
+            value: "{{`{{tasks.transaction-data.outputs.parameters.category}}`}}"
+          - name: snfvo_data
+            value: "{{`{{tasks.transaction-data.outputs.parameters.snfvo_data}}`}}"
+
+      - name: update-snfvo
+        # update snfvo with scaleout type and specific parameters to be used
+        # in scaleout
+        dependencies: [prepare-orders]
+        # prepare-orders works on snfvo_data so synch
+        template: update-snfvo
+        arguments:
+          parameters:
+          - name: snfvo_data
+            value: "{{`{{tasks.prepare-orders.outputs.parameters.snfvo_data}}`}}"
+          - name: opaque_params
+            value: "{{`{{workflow.parameters.opaque_params}}`}}"
+          - name: operationType
+            value: "{{`{{workflow.parameters.operationType}}`}}"
+
+      - name: trigger-scaleout
+        template: scaleout
+        dependencies: [update-snfvo, get-platform-env]
+        arguments:
+          parameters:
+          - name: service_owner
+            value: "{{`{{tasks.transaction-data.outputs.parameters.service_owner}}`}}"
+          - name: place
+            value: "{{`{{workflow.parameters.place}}`}}"
+          - name: order_id
+            # main order id (str)
+            value: "{{`{{tasks.prepare-orders.outputs.parameters.order_id}}`}}"
+          - name: instance_id
+            value: "{{`{{workflow.parameters.instance_id}}`}}"
+          - name: elma_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.elma_url}}`}}"
+          - name: catalogue_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+          - name: trmf_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.trmf_url}}`}}"
+          - name: issm_api_url
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.issm_api_url}}`}}"
+          - name: domain_related_party_did
+            value: "{{`{{tasks.get-domain-env.outputs.parameters.domain_related_party_did}}`}}"
+
+          - name: srsd_url
+            value: "{{`{{tasks.get-platform-env.outputs.parameters.srsd_url}}`}}"
+
+          - name: kafka_dl
+            value: "{{`{{tasks.get-platform-env.outputs.parameters.kafka_dl}}`}}"
+
+          - name: snfvo_data
+            # customized snfvo_data along with sub order ids
+            value: "{{`{{tasks.update-snfvo.outputs.parameters.snfvo_data}}`}}"
+
+  - name: update-snfvo
+    inputs:
+      parameters:
+      - name: snfvo_data
+      - name: operationType
+      - name: opaque_params
+    script:
+      image: python:alpine3.6
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import sys
+
+        snfvo_data = {{`{{inputs.parameters.snfvo_data}}`}}
+        operationType = "{{`{{inputs.parameters.operationType}}`}}"
+        opaque_params = {{`{{inputs.parameters.opaque_params}}`}}
+
+        sys.stdout.write('snfvo_data: %s\noperationType: "%s"\nopaque_params: %s\n' %
+                          (snfvo_data, operationType, opaque_params))
+
+        snfvo_data['scaleout_type'] = operationType
+        # NOTE: extension_info should match same key name supplied in the intent
+        # for explicit scaleout
+        snfvo_data.setdefault('extension_info', {}).update(opaque_params)
+        with open('/tmp/snfvo_data.txt', 'w') as f:
+            # flatten it (like print) since it's going to be published on
+            # kafka
+            f.write(str(snfvo_data))
+            #json.dump(snfvo_data, f)
+
+    outputs:
+      parameters:
+      - name: snfvo_data
+        valueFrom:
+          path: /tmp/snfvo_data.txt
+
+
+  - name: scaleout
+    inputs:
+      parameters:
+      - name: service_owner
+      - name: place
+      - name: order_id
+      - name: instance_id
+      - name: elma_url
+      - name: catalogue_url
+      - name: trmf_url
+      - name: issm_api_url
+      - name: domain_related_party_did
+      - name: srsd_url
+      - name: kafka_dl
+      - name: snfvo_data
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+        import uuid
+
+        from kafka import KafkaProducer
+        from kafka.errors import KafkaError
+
+        KAFKA_TOPIC = "issm-in-{{`{{inputs.parameters.service_owner}}`}}"
+        KAFKA_TIMEOUT = 10
+        KAFKA_API_VERSION = (1, 1, 0)
+
+        event_uuid = str(uuid.uuid4()).replace('-','')
+
+        sys.stdout.write('event_uuid: "%s"\nKAFKA_TOPIC: "%s"\n' %
+                          (event_uuid, KAFKA_TOPIC))
+
+        payload = {
+            "event_uuid": event_uuid,
+            "transaction_uuid": event_uuid,
+            "operation": "scaleout", "sub_operation": "SCALEOUT_SERVICE",
+            "service_owner": "{{`{{inputs.parameters.service_owner}}`}}",
+            "place": {{`{{inputs.parameters.place}}`}},
+            "service_owner": "{{`{{inputs.parameters.service_owner}}`}}",
+            "order_id": "{{`{{inputs.parameters.order_id}}`}}",
+            "elma_url": "{{`{{inputs.parameters.elma_url}}`}}",
+            "catalogue_url": "{{`{{inputs.parameters.catalogue_url}}`}}",
+            "kafka_dl": "{{`{{inputs.parameters.kafka_dl}}`}}",
+            "trmf_url": "{{`{{inputs.parameters.trmf_url}}`}}",
+            "srsd_url": "{{`{{inputs.parameters.srsd_url}}`}}",
+            "issm_api_url": "{{`{{inputs.parameters.issm_api_url}}`}}",
+            "domain_related_party_did": "{{`{{inputs.parameters.domain_related_party_did}}`}}",
+            "snfvo_data": {{`{{inputs.parameters.snfvo_data}}`}},
+            "sla_breach": {
+              "applicable": "true",
+              "breachPredictionNotification": {{`{{workflow.parameters.breachPredictionNotification}}`}}
+            }
+        }
+
+        sys.stdout.write('payload: %s\n' % payload)
+
+        KAFKA_SERVER = "{}".format("{{`{{workflow.parameters.kafka}}`}}")
+        producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER,
+                                 api_version=KAFKA_API_VERSION,
+                                 value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+
+        t = producer.send(KAFKA_TOPIC, payload)
+        # Block for 'synchronous' send; set timeout on X seconds
+        try:
+            t.get(timeout=KAFKA_TIMEOUT)
+        except KafkaError as ke:
+            raise ke
+        print ("0")
+
+        with open('/tmp/event_uuid.txt', 'w') as f:
+            f.write(str(event_uuid))
+    outputs:
+      parameters:
+      - name: event_uuid
+        valueFrom:
+          path: /tmp/event_uuid.txt
+
+#  - name: trigger-scaleout
+#    inputs:
+#      parameters:
+#      - name: kafka_dl
+#      - name: service_owner
+#      - name: place
+#      - name: order_id
+#      - name: instance_id
+#      - name: elma_url
+#      - name: catalogue_url
+#      - name: trmf_url
+#      - name: srsd_url
+#      - name: issm_api_url
+#      - name: domain_related_party_did
+#      - name: snfvo_data
+#    steps:
+#      - - name: event-uuid
+#          templateRef:
+#            name: workflow-base
+#            template: event-uuid
+#      - - name: publish-to-scaleout
+#          templateRef:
+#            name: workflow-base
+#            template: publish-on-kafka
+#          arguments:
+#            parameters:
+#            - name: data
+#              # Triggering here a new bussines transaction:
+#              # important that event and transaction uuids are the same
+#              value: |
+#                { "event_uuid": "{{`{{steps.event-uuid.outputs.result}}`}}", "transaction_uuid": "{{`{{steps.event-uuid.outputs.result}}`}}",
+#                  "operation": "scaleout", "sub_operation": "SCALEOUT_SERVICE",
+#                  "kafka_dl": "{{`{{inputs.parameters.kafka_dl}}`}}",
+#                  "place": {{`{{inputs.parameters.place}}`}},
+#                  "service_owner": "{{`{{inputs.parameters.service_owner}}`}}",
+#                  "order_id": "{{`{{inputs.parameters.order_id}}`}}",
+#                  "instance_id": "{{`{{inputs.parameters.instance_id}}`}}",
+#                  "elma_url": "{{`{{inputs.parameters.elma_url}}`}}",
+#                  "catalogue_url": "{{`{{inputs.parameters.catalogue_url}}`}}",
+#                  "trmf_url": "{{`{{inputs.parameters.trmf_url}}`}}",
+#                  "srsd_url": "{{`{{inputs.parameters.srsd_url}}`}}",
+#                  "issm_api_url": "{{`{{inputs.parameters.issm_api_url}}`}}",
+#                  "domain_related_party_did": "{{`{{inputs.parameters.domain_related_party_did}}`}}",
+#                  "snfvo_data": {{`{{inputs.parameters.snfvo_data}}`}},
+#                  "sla_breach": {
+#                    "applicable": "true",
+#                    "breachPredictionNotification": {{`{{workflow.parameters.breachPredictionNotification}}`}}
+#                  }
+#                }
+#            - name: kafka_topic
+#              value: "issm-in-{{`{{inputs.parameters.service_owner}}`}}"
+{{- end }}

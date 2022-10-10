@@ -1,0 +1,156 @@
+# Copyright 2021 - 2022 IBM Corporation
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+{{- if ne .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: workflow-environment
+  namespace: {{ .Chart.Name }}
+spec:
+  templates:
+  - name: get-platform-env
+    # Defines access information for various centralized services.
+    #
+    # This is one of the first steps that ISSM loads for the transactions to
+    # properly access various platrform services
+    #
+    # Outputs
+    # refer to <outputs:> section for details
+    script:
+      image: python:alpine3.6
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+
+        platform = {
+          "srsd_url": "http://172.28.3.15:32068",
+          "kafka_dl": "172.28.3.196:9092"
+        }
+
+        with open('/tmp/srsd_url.txt', 'w') as f:
+            f.write(str(platform['srsd_url']))
+
+        with open('/tmp/kafka_dl.txt', 'w') as f:
+            f.write(str(platform['kafka_dl']))
+
+    outputs:
+      parameters:
+      - name: srsd_url
+        valueFrom:
+          path: /tmp/srsd_url.txt
+      - name: kafka_dl
+        valueFrom:
+          path: /tmp/kafka_dl.txt
+  
+  
+  - name: get-domain-env
+    # Defines access information for various services of a given domain.
+    #
+    # This is one of the first steps that ISSM loads for the transactions to
+    # properly access various platrform services
+    #
+    # Parameters
+    # domain: operator name (e.g. operator-a) (str)
+    #
+    # Outputs
+    # refer to <outputs:> section for details
+    inputs:
+      parameters:
+      - name: domain
+    script:
+      image: python:alpine3.6
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import sys
+
+        domain = "{{`{{inputs.parameters.domain}}`}}"
+
+        sys.stdout.write('domain: "%s"\n' % domain)
+
+        domains_envs = {
+            "operator-a": {
+              "catalogue_url": "http://172.28.3.15:31080",
+              "elma_url": "http://172.28.3.15:30880",
+              "trmf_url": "http://172.28.3.15:31113",
+              "vs_url": "http://172.28.3.15:31082",
+              "issm_api_url": "http://172.28.3.15:30080",
+              "related_party_did": "OD1ndI3xw0Pi6Sl4rgoa6F"
+            },
+            "operator-b": {
+              "catalogue_url": "http://172.28.3.15:32080",
+              "elma_url": "http://172.28.3.15:31880",
+              "trmf_url": "http://172.28.3.15:31114",
+              "vs_url": "http://172.28.3.15:32082",
+              "issm_api_url": "http://172.28.3.15:30080",
+              "related_party_did": "V7GMvKbYXujtJhZwiBdxCu"
+            },
+            "operator-c": {
+              "catalogue_url": "http://172.28.3.15:32180",
+              "elma_url": "http://172.28.3.15:32880",
+              "trmf_url": "http://172.28.3.15:31115",
+              "vs_url": "http://10.4.2.206:30055",
+              "issm_api_url": "http://172.28.3.15:30080",
+              "related_party_did": "X4a1JBQh1xYH3vi756N2P3"
+            },
+            "operator-e": {
+              "catalogue_url": "http://10.4.2.126:31104",
+              "elma_url": "http://0.0.0.0:0000",
+              "trmf_url": "http://10.4.2.110:31116",
+              "vs_url": "http://10.4.2.126:31082",
+              "issm_api_url": "http://10.4.2.126:30080",
+              "related_party_did": "GwvbsTg539xMqYraTQiZa5"
+            }
+        }
+
+        with open('/tmp/catalogue_url.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['catalogue_url']))
+
+        with open('/tmp/elma_url.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['elma_url']))
+
+        with open('/tmp/trmf_url.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['trmf_url']))
+
+        with open('/tmp/vs_url.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['vs_url']))
+
+        with open('/tmp/issm_api_url.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['issm_api_url']))
+
+        with open('/tmp/related_party_did.txt', 'w') as f:
+            f.write(str(domains_envs[domain]['related_party_did']))
+
+    outputs:
+      parameters:
+      - name: catalogue_url
+        valueFrom:
+          path: /tmp/catalogue_url.txt
+      - name: elma_url
+        valueFrom:
+          path: /tmp/elma_url.txt
+      - name: trmf_url
+        valueFrom:
+          path: /tmp/trmf_url.txt
+      - name: vs_url
+        valueFrom:
+          path: /tmp/vs_url.txt
+      - name: issm_api_url
+        valueFrom:
+          path: /tmp/issm_api_url.txt
+      - name: domain_related_party_did
+        valueFrom:
+          path: /tmp/related_party_did.txt
+{{- end -}}

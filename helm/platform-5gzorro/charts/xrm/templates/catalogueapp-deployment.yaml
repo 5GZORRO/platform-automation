@@ -42,7 +42,7 @@ spec:
               protocol: TCP
           env:
             - name: CATALOGUE_DB_MODE
-              value: create
+              value: create-drop
             - name: CATALOGUE_DEFAULT_PROJECT
               value: admin
             - name: CATALOGUE_DUMMY_MANO
@@ -131,8 +131,10 @@ spec:
           volumeMounts:
             - mountPath: /home/catalogueStorage
               name: catalogueapp-hostpath0
+              # subPath: catalogueStorage
             - mountPath: /home/manoStorage
               name: catalogueapp-hostpath1
+              # subPath: manoStorage
             - name: mano-conf
               mountPath: /home/5g-catalogue/5gcatalogue-app/src/main/resources/manoConfigurations/mano.json
               subPath: mano.json
@@ -152,12 +154,19 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - hostPath:
-            path: /opt/5gcatalogue-app/catalogueStorage
+        {{- if .Values.persistence.enabled }}
+        - persistentVolumeClaim:
+            claimName: {{ include "xrm.fullname" . }}-global-pvc
           name: catalogueapp-hostpath0
-        - hostPath:
-            path: /opt/5gcatalogue-app/manoStorage
+        - persistentVolumeClaim:
+            claimName: {{ include "xrm.fullname" . }}-global-pvc
           name: catalogueapp-hostpath1
+        {{- else }}
+        - emptyDir: {}
+          name: catalogueapp-hostpath0
+        - emptyDir: {}
+          name: catalogueapp-hostpath1
+        {{- end }}
         - name: mano-conf
           configMap:
               name: {{ include "xrm.fullname" . }}-catalogueapp

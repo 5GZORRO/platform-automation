@@ -1,0 +1,19 @@
+{{- if ne .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: issm-aux
+  namespace: {{ .Chart.Name }}
+spec:
+  kafka:
+    aux:
+      url: {{ .Values.kafka.url }}:{{ .Values.kafka.port }}
+      topic: issm-aux-{{ .Values.operatorName }}
+      jsonBody: true
+      partition: "0"
+      connectionBackoff:
+        duration: 10000000000
+        steps: 5
+        factor: 2
+        jitter: 0.2
+{{- end -}}

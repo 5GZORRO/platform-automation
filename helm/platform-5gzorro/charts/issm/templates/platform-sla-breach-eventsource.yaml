@@ -1,0 +1,19 @@
+{{- if eq .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: issm-sla-breach
+  namespace: {{ .Chart.Name }}
+spec:
+  kafka:
+    sla-breach:
+      url: {{ .Values.kafka.url }}:{{ .Values.kafka.port }}
+      topic: isbp-topic-out
+      jsonBody: true
+      partition: "0"
+      connectionBackoff:
+        duration: 10000000000
+        steps: 5
+        factor: 2
+        jitter: 0.2
+{{- end -}}

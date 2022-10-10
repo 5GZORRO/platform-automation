@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-events-binding-issm-{{ .Values.operatorName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-events-role
+subjects:
+- kind: ServiceAccount
+  name: {{ include "issm.serviceAccountName" . }}
+  namespace: {{ .Chart.Name }}
+---

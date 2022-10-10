@@ -1,0 +1,1039 @@
+# Copyright 2020 - 2021 IBM Corporation
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+{{- if ne .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: workflow-catalog
+  namespace: {{ .Chart.Name }}
+spec:
+  templates:
+  - name: prepare-orders-from-catalog
+    # This step is responsible for parsing the list of orders provided by the
+    # intent - into 'main' and 'sub' orders.
+    #
+    # 'main' order is returned via output order_id and sub order(s) are set inside the provided
+    # snfvo_data as <sub order category>_order_id_<index>
+    #
+    # Parameters
+    # catalogue_url: url to the catalogue (str)
+    # order_id: list of json elements {'uuid': <uuid>, 'main': <boolean>}
+    # category: the category of the main order as being provided in input intent (string)
+    # snfvo_data: snvfo data as being provided in input intent (json)
+    #
+    # Outputs
+    # refer to <outputs:> section for details
+    inputs:
+      parameters:
+      - name: catalogue_url
+      # this is an ARRAY
+      - name: order_id
+      - name: category
+      - name: snfvo_data
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        order_ids = {{`{{inputs.parameters.order_id}}`}}
+        category = "{{`{{inputs.parameters.category}}`}}"
+        snfvo_data = {{`{{inputs.parameters.snfvo_data}}`}}
+
+        sys.stdout.write('order_ids: %s\ncategory: "%s"\nsnfvo_data: %s\n' %
+                          (order_ids, category, snfvo_data))
+
+        order_id = ""
+        category_sub_order = {}
+
+        categories = ["VNF", "Edge", "Slice", "Network Service", "Spectrum"]
+
+        found = False
+        headers = {'Content-Type': 'application/json'}
+        for o_id in order_ids:
+            main_value = o_id.get('main', 'false')
+            uuid_value = o_id['uuid']
+            sys.stdout.write('Retrieve Order ID: %s, Main: %s\n' % (uuid_value, main_value))
+            r = requests.get("{{`{{inputs.parameters.catalogue_url}}`}}/tmf-api/productOrderingManagement/v4/productOrder/%s" % uuid_value,
+                headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n\n')
+    
+            # retrieve the PO offer
+            # Note: order 1:1 offer
+            po_href = r.json()['productOrderItem'][0]['productOffering']['href']
+            r = requests.get(str(po_href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n\n')
+
+            po = r.json()
+
+            po_c = r.json()['category'][0]['name']
+            if po_c not in categories:
+                raise Exception('*** Illegal PO category "%s" must be: %s ***' % (po_c, categories))
+            if main_value is "true":
+                found = True
+                sys.stdout.write('Main order_id: %s\n' % uuid_value)
+                order_id = uuid_value
+            else:
+                o_ids = category_sub_order.setdefault(po_c.lower().replace(" ", ""), [])
+                o_ids.append(uuid_value)
+
+        sys.stdout.write('caterogy to orders: %s\n' % category_sub_order)
+        for k in category_sub_order:
+            o_ids = category_sub_order[k]
+            for i in range(len(o_ids)):
+                snfvo_data['%s_order_id_%s' % (k, str(i))] = o_ids[i]
+
+        with open('/tmp/order_id.txt', 'w') as f:
+            f.write(str(order_id))
+
+        with open('/tmp/snfvo_data.txt', 'w') as f:
+            json.dump(snfvo_data, f)
+
+    outputs:
+      parameters:
+      - name: order_id
+        valueFrom:
+          path: /tmp/order_id.txt
+
+      - name: snfvo_data
+        valueFrom:
+          path: /tmp/snfvo_data.txt
+
+  - name: get-order-from-catalog
+    # This step is responsible to retrieve an order offer by querying the
+    # domain catalogue with the given order uuid.
+    #
+    # Note: it is assumed that an order contains a single product offer.
+    #
+    # Parameters
+    # catalogue_url: domain catalogue URL (str in URL format)
+    # order_id: The uuid of the order (str)
+    #
+    # Outputs
+    # refer to <outputs:> section for details
+    inputs:
+      parameters:
+      - name: order_id
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import re
+        import requests
+        import sys
+
+        REGEX = re.compile('.*([0-9]+).*')
+        categories = ["VNF", "Edge", "Slice", "Network Service", "Spectrum"]
+        def find(l, predicate):
+            """
+            util method
+            """
+            results = [x for x in l if predicate(x)]
+            return results[0] if len(results) > 0 else None
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.get("{{`{{workflow.parameters.catalogue_url}}`}}/tmf-api/productOrderingManagement/v4/productOrder/{{`{{inputs.parameters.order_id}}`}}",
+            headers=headers)
+        json.dump(r.json(), sys.stdout)
+        sys.stdout.write('\n')
+
+        # retrieve the PO offer
+        # Note: order 1:1 offer
+        po_href = r.json()['productOrderItem'][0]['productOffering']['href']
+        r = requests.get(str(po_href), headers=headers)
+        json.dump(r.json(), sys.stdout)
+        sys.stdout.write('\n')
+
+        po = r.json()
+        try:
+            category = r.json()['category'][0]['name']
+            if category not in categories:
+                raise Exception('*** Illegal PO category "%s" must be: %s ***' % (category, categories))
+        except:
+            raise
+
+        # PO name
+        name = ""
+        # PO id
+        po_id = ""
+        sla_did = ""
+        vsbName = ""
+        mem_unit = ""
+        mem_min = ""
+        mem_max = ""
+        cpu_min = ""
+        cpu_max = ""
+        storage_unit = ""
+        storage_min = ""
+        storage_max = ""
+
+        place = {}
+        related_party = ""
+        related_party_did = ""
+
+        resourceSpecification = {}
+        serviceSpecification_resourceSpecification = []
+
+        po_validFor = {}
+
+        # SLA
+        sla_did = po.get('serviceLevelAgreement', {}).get('id', "")
+        sys.stdout.write('sla_did: "%s" \n' % sla_did)
+
+        # Name
+        name = po['name']
+        sys.stdout.write('name: "%s" \n' % name)
+
+        # Id
+        po_id = po['id']
+        sys.stdout.write('po_id: "%s" \n' % po_id)
+
+        # Place
+        href = po['place'][0]['href']
+        r = requests.get(str(href), headers=headers)
+        json.dump(r.json(), sys.stdout)
+        sys.stdout.write('\n')
+        place = r.json()
+        sys.stdout.write('place: "%s" \n' % place)
+
+        # validFor
+        po_validFor = po['validFor']
+        sys.stdout.write('validFor: %s \n' % po_validFor)
+
+        if category in ['Network Service', 'Slice', 'Edge', 'Cloud', 'VNF', 'Spectrum']:
+            href = po['productSpecification']['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+            # resource owner
+            related_party = r.json()['relatedParty'][0]['name']
+            related_party = related_party.replace('_','-').lower()
+            sys.stdout.write('related_party: "%s" \n' % related_party)
+
+            related_party_did = r.json()['relatedParty'][0]['extendedInfo']
+            sys.stdout.write('related_party_did: "%s" \n' % related_party_did)
+
+            # resourceSpecification
+            try:
+                href = r.json()['resourceSpecification'][0]['href']
+                r = requests.get(str(href), headers=headers)
+                resourceSpecification = r.json()
+            except:
+                # return empty resourceSpecification
+                pass
+
+            # serviceSpecification
+            try:
+                href = r.json()['serviceSpecification'][0]['href']
+                r = requests.get(str(href), headers=headers)
+
+                for r_spec in r.json()['resourceSpecification']:
+                    r = requests.get(str(r_spec['href']), headers=headers)
+                    serviceSpecification_resourceSpecification.append(r.json())
+
+            except:
+                # return empty serviceSpecification
+                pass
+
+        if category == 'VNF':
+            href = po['productSpecification']['href']
+            r = requests.get(str(href), headers=headers)
+            href = r.json()['resourceSpecification'][0]['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+    
+            rsc_list = r.json()[0]['resourceSpecCharacteristic']
+            # 1. vsbName
+            element = find(rsc_list, lambda e: e.get('name', '') == 'vsbName')
+            if not element:
+                raise Exception("*** Unable to find 'vsbName' ***")
+    
+            vsbName = element['resourceSpecCharacteristicValue'][0]['value']['value']
+            sys.stdout.write('vsbName: "%s" \n' % vsbName)
+    
+            # 2. vCPU Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'vCPU Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'vCPU Requirements' ***")
+    
+            # min
+            min = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-vCPU')
+            if not min:
+                raise Exception("*** Unable to find 'min-vCPU' ***")
+            cpu_min = min['value']['value']
+    
+            # max
+            max = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-vCPU')
+            if not max:
+                raise Exception("*** Unable to find 'max-vCPU' ***")
+            cpu_max = max['value']['value']
+    
+            sys.stdout.write('cpu_min/max: "%s, %s" \n' % (cpu_min, cpu_max))
+    
+            # 3. Virtual Memory Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'Virtual Memory Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'Virtual Memory Requirements' ***")
+    
+            # min
+            min = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-virtual-memory')
+            if not min:
+                raise Exception("*** Unable to find 'min-virtual-memory' ***")
+            mem_min = min['value']['value']
+            mem_unit = min['unitOfMeasure']
+    
+            # max
+            max = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-virtual-memory')
+            if not max:
+                raise Exception("*** Unable to find 'max-virtual-memory' ***")
+            mem_max = max['value']['value']
+    
+            sys.stdout.write('mem_min/max: "%s, %s" \n' % (mem_min, mem_max))
+            sys.stdout.write('mem_unit: "%s" \n' % mem_unit)
+    
+            # 4. Storage Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'Storage Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'Storage Requirements' ***")
+    
+            # min
+            min = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-storage')
+            if not min:
+                raise Exception("*** Unable to find 'min-storage' ***")
+            storage_min = min['value']['value']
+            storage_unit = min['unitOfMeasure']
+    
+            # max
+            max = find(element['resourceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-storage')
+            if not max:
+                raise Exception("*** Unable to find 'max-storage' ***")
+            storage_max = max['value']['value']
+    
+            sys.stdout.write('storage_min/max: "%s, %s" \n' % (storage_min, storage_max))
+            sys.stdout.write('storage_unit: "%s" \n' % storage_unit)
+
+
+        if category == 'Network Service':
+            href = po['productSpecification']['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+    
+            href = r.json()['serviceSpecification'][0]['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+    
+            srv_spec = r.json()
+
+            rsc_list = srv_spec['serviceSpecCharacteristic']
+            # 1. vsbName
+            element = find(rsc_list, lambda e: e.get('name', '') == 'vsbName')
+            if not element:
+                raise Exception("*** Unable to find 'vsbName' ***")
+    
+            vsbName = element['serviceSpecCharacteristicValue'][0]['value']['value']
+            sys.stdout.write('vsbName: "%s" \n' % vsbName)
+    
+            # 2. vCPU Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'vCPU Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'vCPU Requirements' ***")
+    
+            # min
+            min = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-vCPU')
+            if not min:
+                raise Exception("*** Unable to find 'min-vCPU' ***")
+            cpu_min = min['value']['value']
+    
+            # max
+            max = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-vCPU')
+            if not max:
+                raise Exception("*** Unable to find 'max-vCPU' ***")
+            cpu_max = max['value']['value']
+    
+            sys.stdout.write('cpu_min/max: "%s, %s" \n' % (cpu_min, cpu_max))
+    
+            # 3. Virtual Memory Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'Virtual Memory Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'Virtual Memory Requirements' ***")
+    
+            # min
+            min = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-virtual-memory')
+            if not min:
+                raise Exception("*** Unable to find 'min-virtual-memory' ***")
+            mem_min = min['value']['value']
+            mem_unit = min['unitOfMeasure']
+    
+            # max
+            max = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-virtual-memory')
+            if not max:
+                raise Exception("*** Unable to find 'max-virtual-memory' ***")
+            mem_max = max['value']['value']
+    
+            sys.stdout.write('mem_min/max: "%s, %s" \n' % (mem_min, mem_max))
+            sys.stdout.write('mem_unit: "%s" \n' % mem_unit)
+    
+            # 4. Storage Requirements
+            element = find(rsc_list, lambda e: e.get('name', '') == 'Storage Requirements')
+            if not element:
+                raise Exception("*** Unable to find 'Storage Requirements' ***")
+    
+            # min
+            min = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'min-storage')
+            if not min:
+                raise Exception("*** Unable to find 'min-storage' ***")
+            storage_min = min['value']['value']
+            storage_unit = min['unitOfMeasure']
+    
+            # max
+            max = find(element['serviceSpecCharacteristicValue'], lambda e: e['value']['alias'] == 'max-storage')
+            if not max:
+                raise Exception("*** Unable to find 'max-storage' ***")
+            storage_max = max['value']['value']
+    
+            sys.stdout.write('storage_min/max: "%s, %s" \n' % (storage_min, storage_max))
+            sys.stdout.write('storage_unit: "%s" \n' % storage_unit)
+
+        if category == 'Slice':
+            href = po['productSpecification']['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+    
+            href = r.json()['serviceSpecification'][0]['href']
+            r = requests.get(str(href), headers=headers)
+            json.dump(r.json(), sys.stdout)
+            sys.stdout.write('\n')
+    
+            rsc_list = r.json()['serviceSpecCharacteristic']
+            # 1. vsbName
+            element = find(rsc_list, lambda e: e.get('name', '') == 'vsbName')
+            if not element:
+                raise Exception("*** Unable to find 'vsbName' ***")
+    
+            vsbName = element['serviceSpecCharacteristicValue'][0]['value']['value']
+            sys.stdout.write('vsbName: "%s" \n' % vsbName)
+
+        # can only use DID
+        # sys.stdout.write('po id: "%s" \n' % po['id'])
+        r = requests.get("{{`{{workflow.parameters.catalogue_url}}`}}/tmf-api/productCatalogManagement/v4/productOfferingStatus/%s" % po['id'],
+            headers=headers)
+
+        json.dump(r.json(), sys.stdout)
+        sys.stdout.write('\n')
+        did = r.json()['did']
+
+        with open('/tmp/id.txt', 'w') as f:
+            f.write(str(po_id))
+
+        with open('/tmp/sla_did.txt', 'w') as f:
+            f.write(str(sla_did))
+
+        with open('/tmp/vsbName.txt', 'w') as f:
+            f.write(str(vsbName))
+
+        with open('/tmp/mem_unit.txt', 'w') as f:
+            f.write(str(mem_unit))
+
+        with open('/tmp/mem_min.txt', 'w') as f:
+            f.write(str(mem_min))
+        with open('/tmp/mem_max.txt', 'w') as f:
+            f.write(str(mem_max))
+
+        with open('/tmp/cpu_min.txt', 'w') as f:
+            f.write(str(cpu_min))
+        with open('/tmp/cpu_max.txt', 'w') as f:
+            f.write(str(cpu_max))
+
+        with open('/tmp/storage_unit.txt', 'w') as f:
+            f.write(str(storage_unit))
+
+        with open('/tmp/storage_min.txt', 'w') as f:
+            f.write(str(storage_min))
+        with open('/tmp/storage_max.txt', 'w') as f:
+            f.write(str(storage_max))
+
+        with open('/tmp/did.txt', 'w') as f:
+            f.write(str(did))
+
+        with open('/tmp/place.txt', 'w') as f:
+            json.dump(place, f)
+
+        with open('/tmp/related_party.txt', 'w') as f:
+            f.write(related_party)
+
+        with open('/tmp/related_party_did.txt', 'w') as f:
+            f.write(related_party_did)
+
+        with open('/tmp/name.txt', 'w') as f:
+            f.write(name)
+
+        with open('/tmp/resourceSpecification.txt', 'w') as f:
+            json.dump(resourceSpecification, f)
+
+        with open('/tmp/serviceSpecification_resourceSpecification.txt', 'w') as f:
+            json.dump(serviceSpecification_resourceSpecification, f)
+
+        with open('/tmp/po_validFor.txt', 'w') as f:
+            json.dump(po_validFor, f)
+
+    outputs:
+      parameters:
+      - name: id
+        valueFrom:
+          path: /tmp/id.txt
+
+      - name: sla_did
+        valueFrom:
+          path: /tmp/sla_did.txt
+
+      - name: vsbName
+        valueFrom:
+          path: /tmp/vsbName.txt
+
+      - name: mem_unit
+        valueFrom:
+          path: /tmp/mem_unit.txt
+
+      - name: mem_min
+        valueFrom:
+          path: /tmp/mem_min.txt
+      - name: mem_max
+        valueFrom:
+          path: /tmp/mem_max.txt
+
+      - name: cpu_min
+        valueFrom:
+          path: /tmp/cpu_min.txt
+      - name: cpu_max
+        valueFrom:
+          path: /tmp/cpu_max.txt
+
+      - name: storage_unit
+        valueFrom:
+          path: /tmp/storage_unit.txt
+
+      - name: storage_min
+        valueFrom:
+          path: /tmp/storage_min.txt
+      - name: storage_max
+        valueFrom:
+          path: /tmp/storage_max.txt
+
+      - name: place
+        valueFrom:
+          path: /tmp/place.txt
+
+      - name: related_party
+        valueFrom:
+          path: /tmp/related_party.txt
+
+      - name: related_party_did
+        valueFrom:
+          path: /tmp/related_party_did.txt
+
+      - name: did
+        valueFrom:
+          path: /tmp/did.txt
+
+      - name: name
+        valueFrom:
+          path: /tmp/name.txt
+
+      - name: resourceSpecification
+        valueFrom:
+          path: /tmp/resourceSpecification.txt
+
+      - name: serviceSpecification_resourceSpecification
+        valueFrom:
+          path: /tmp/serviceSpecification_resourceSpecification.txt
+
+      - name: validFor
+        valueFrom:
+          path: /tmp/po_validFor.txt
+
+  - name: create-order
+    # Step to create an order object.
+    #
+    # Parameters
+    # resource_category: product offer category (e.g. Edge, RAN)
+    # resource_id: product offer uuid (str)
+    # related_party_seller: operator name that owns this product offer (str)
+    # related_party_did_seller: operator DID (str)
+    # related_party_buyer: operator name. Usually service owner (str)
+    # related_party_did_buyer: operator DID (str)
+    #
+    # Outputs
+    # refer to <outputs:> section for details
+    inputs:
+      parameters:
+      - name: resource_category      
+      - name: resource_id
+      - name: resource_name
+
+      - name: related_party_seller
+      - name: related_party_did_seller
+
+      - name: related_party_buyer
+      - name: related_party_did_buyer
+      - name: validFor
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        transaction_uuid = "{{`{{workflow.parameters.transaction_uuid}}`}}"
+
+        validFor = {{`{{inputs.parameters.validFor}}`}}
+        sys.stdout.write('validFor: %s \n' % validFor)
+
+        payload = {
+           "category": "{{`{{inputs.parameters.resource_category}}`}}",
+           "description": "Product Order by ISSM Transaction ID: %s" % transaction_uuid,
+           "requestedStartDate": validFor['startDateTime'],
+           "requestedCompletionDate": validFor['endDateTime'],
+           "productOrderItem": [
+              {
+                 "quantity": 1,
+                 "action": "add",
+                 "productOffering": {
+                    "id": "{{`{{inputs.parameters.resource_id}}`}}",
+                    "name": "{{`{{inputs.parameters.resource_name}}`}}"
+                 }
+              }
+           ],
+           "relatedParty": [
+              {
+                 "name": "{{`{{inputs.parameters.related_party_seller}}`}}",
+                 "role": "Seller",
+                 "extendedInfo": "{{`{{inputs.parameters.related_party_did_seller}}`}}"
+              },
+              {
+                 "name": "{{`{{inputs.parameters.related_party_buyer}}`}}",
+                 "role": "Buyer",
+                 "extendedInfo": "{{`{{inputs.parameters.related_party_did_buyer}}`}}"
+              }
+           ]
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post("{{`{{workflow.parameters.catalogue_url}}`}}/tmf-api/productOrderingManagement/v4/productOrder",
+            json=payload,
+            headers=headers)
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+        # orderId
+        order_id = r.json()['id']
+
+        with open('/tmp/order_id.txt', 'w') as f:
+            f.write(str(order_id))
+
+    outputs:
+      parameters:
+      - name: order_id
+        valueFrom:
+          path: /tmp/order_id.txt
+
+
+  - name: notify-trmf
+    # Notify TRMF with the given product offer DID.
+    #
+    # This step is being called after a resource is being purchased
+    #
+    # Parameters:
+    # resource_did: product offer DID
+    inputs:
+      parameters:
+      - name: resource_did
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        resource_did = "{{`{{inputs.parameters.resource_did}}`}}"
+        sys.stdout.write('Input parameters. resource_did: "%s"\n' % resource_did)
+        payload = {
+            "offerDID": resource_did
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post("{{`{{workflow.parameters.trmf_url}}`}}/notify_final_selection",
+            json=payload,
+            headers=headers)
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+  - name: acquire
+    # Template that is composed with `create-order` followed by
+    # `notify-reputation-manager`
+    inputs:
+      parameters:
+      - name: resource_name
+      - name: resource_category
+      - name: resource_id
+      - name: related_party_buyer
+      - name: related_party_did_buyer
+
+      - name: related_party_seller
+      - name: related_party_did_seller
+      - name: resource_did
+      - name: validFor
+    steps:
+      - - name: acquire-resource
+          template: create-order
+          arguments:
+            parameters:
+            - name: resource_category
+              value: "{{`{{inputs.parameters.resource_category}}`}}"
+            - name: resource_name
+              value: "{{`{{inputs.parameters.resource_name}}`}}"
+            - name: resource_id
+              value: "{{`{{inputs.parameters.resource_id}}`}}"
+            - name: related_party_seller
+              value: "{{`{{inputs.parameters.related_party_seller}}`}}"
+            - name: related_party_did_seller
+              value: "{{`{{inputs.parameters.related_party_did_seller}}`}}"
+            - name: related_party_buyer
+              value: "{{`{{inputs.parameters.related_party_buyer}}`}}"
+            - name: related_party_did_buyer
+              value: "{{`{{inputs.parameters.related_party_did_buyer}}`}}"
+            - name: validFor
+              value: "{{`{{inputs.parameters.validFor}}`}}"
+
+#      - - name: notify-reputation-manager
+#          template: notify-trmf
+#          arguments:
+#            parameters:
+#            - name: resource_did
+#              value: "{{`{{inputs.parameters.resource_did}}`}}"
+
+    outputs:
+      parameters:
+      - name: order_id
+        valueFrom:
+          parameter: "{{`{{steps.acquire-resource.outputs.parameters.order_id}}`}}"
+
+
+  - name: update-order-instance-id
+    # Update an order with an instantiated instance.
+    #
+    # Parameters
+    # issm_api_url: domain ISSM agent to be used for this request (str in URL format)
+    # transaction_uuid: the transaction that instantiated this instance (str in UUID format)
+    # main: whether this instance is related to an order which is considered as the main order in this transaction. Boolean
+    # order_id: the order id the instance had been instantiated from (str in UUID format)
+    # related_party: operator name e.g. operator-a where this instance had been instantiated at (str)
+    # instance_id: the id of the instance as returned by the operator orchestrator (str)
+    inputs:
+      parameters:
+      - name: transaction_uuid
+      - name: order_id
+      - name: main
+      - name: instance_id
+      - name: related_party
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        transaction_uuid = "{{`{{inputs.parameters.transaction_uuid}}`}}"
+        main = "{{`{{inputs.parameters.main}}`}}"
+        order_id = "{{`{{inputs.parameters.order_id}}`}}"
+        instance_id = "{{`{{inputs.parameters.instance_id}}`}}"
+        related_party = "{{`{{inputs.parameters.related_party}}`}}"
+
+        sys.stdout.write(
+            'Input parameters. transaction_uuid: "%s", main: "%s", order_id: "%s", instance_id: "%s", related_party: "%s"\n' %
+            (transaction_uuid, main, order_id, instance_id, related_party))
+
+        headers = {'Content-Type': 'application/json'}
+        payload = {
+            "main": main,
+            "vsi_id_related_party": ":".join([instance_id, related_party]),
+            "order_id": order_id
+        }
+        r = requests.post("{{`{{workflow.parameters.issm_api_url}}`}}/productOrderStatusTransaction/%s/statusInstance" %
+            transaction_uuid, json=payload, headers=headers)
+
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+
+  - name: delete-status-instance
+    # Remove an instantiated instance given its related_party and vsi_id.
+    # Note: the instance is automatically removed from its order.
+    #
+    # Parameters
+    # issm_api_url: domain ISSM agent to be used for this request (str in URL format)
+    # transaction_uuid: the transaction this instantiated instance belongs to (str in UUID format)
+    # related_party: operator name e.g. operator-a where this instance had been instantiated at (str)
+    # vsi_id: the id of the instance as returned by the operator orchestrator (str)
+    inputs:
+      parameters:
+      - name: transaction_uuid
+      - name: vsi_id
+      - name: related_party
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        transaction_uuid = "{{`{{inputs.parameters.transaction_uuid}}`}}"
+        vsi_id = "{{`{{inputs.parameters.vsi_id}}`}}"
+        related_party = "{{`{{inputs.parameters.related_party}}`}}"
+
+        sys.stdout.write(
+            'Input parameters. transaction_uuid: "%s", vsi_id: "%s", related_party: "%s"\n' %
+            (transaction_uuid, vsi_id, related_party))
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.delete("{{`{{workflow.parameters.issm_api_url}}`}}/productOrderStatusTransaction/%s/statusInstance/%s" %
+            (transaction_uuid, ":".join([vsi_id, related_party])), json={}, headers=headers)
+
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+
+  - name: delete-status-transaction
+    # Remove the transaction composite root object.
+    # This step assumes all instances belong to this transaction, had been removed.
+    #
+    # Parameters
+    # issm_api_url: domain ISSM agent to be used for this request (str in URL format)
+    # transaction_uuid: the transaction to delete its composite object (str in UUID format)
+    inputs:
+      parameters:
+      - name: transaction_uuid
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        transaction_uuid = "{{`{{inputs.parameters.transaction_uuid}}`}}"
+
+        sys.stdout.write(
+            'Input parameters. transaction_uuid: "%s"\n' % transaction_uuid)
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.delete("{{`{{workflow.parameters.issm_api_url}}`}}/productOrderStatusTransaction/%s" %
+            transaction_uuid, json={}, headers=headers)
+
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+
+
+  - name: list-status-instance-of-order
+    # Return all instantiated instances of this order
+    #
+    # Parameters
+    # issm_api_url: domain ISSM agent to be used for this request (str in URL format)
+    # order_id: the order (str in UUID format)
+    #
+    # Outputs
+    # status_instances: an array of StatusInstance object (json)
+    inputs:
+      parameters:
+      - name: order_id
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        status_instances = []
+        order_id = "{{`{{inputs.parameters.order_id}}`}}"
+
+        sys.stdout.write(
+            'Input parameters. order_id: "%s"\n' % order_id)
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.get("{{`{{workflow.parameters.issm_api_url}}`}}/%s/statusInstance" % order_id, json={}, headers=headers)
+
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+        status_instances = r.json()
+        with open('/tmp/status_instances.txt', 'w') as f:
+            json.dump(status_instances, f)
+
+
+    outputs:
+      parameters:
+      - name: status_instances
+        valueFrom:
+          path: /tmp/status_instances.txt
+
+  - name: list-status-instance-of-transaction
+    # Return all instances instantiated by this transaction.
+    #
+    # Parameters
+    # issm_api_url: domain ISSM agent to be used for this request (str in URL format)
+    # transaction_uuid: the transaction (str in UUID format)
+    #
+    # Outputs
+    # status_instances: an array of StatusInstance object (json)
+    inputs:
+      parameters:
+      - name: transaction_uuid
+    script:
+      image: docker.pkg.github.com/5gzorro/issm/python:alpine3.6-kafka-v0.1
+      imagePullPolicy: IfNotPresent
+      command: [python]
+      source: |
+        import json
+        import requests
+        import sys
+
+        def raise_for_status(r):
+            http_error_msg = ''
+            if 400 <= r.status_code < 500:
+                http_error_msg = '%s Client Error: %s' % (r.status_code, r.reason)
+
+            elif 500 <= r.status_code < 600:
+                http_error_msg = '%s Server Error: %s' % (r.status_code, r.reason)
+
+            return http_error_msg
+
+        status_instances = []
+        transaction_uuid = "{{`{{inputs.parameters.transaction_uuid}}`}}"
+
+        sys.stdout.write(
+            'Input parameters. transaction_uuid: "%s"\n' % transaction_uuid)
+
+        headers = {'Content-Type': 'application/json'}
+        r = requests.get("{{`{{workflow.parameters.issm_api_url}}`}}/productOrderStatusTransaction/%s/statusInstance" %
+            transaction_uuid, json={}, headers=headers)
+
+        sys.stdout.write('r.text [%s]\n' % r.text)
+        error_msg = raise_for_status(r)
+        if error_msg:
+            raise Exception('%s. %s' % (error_msg, r.text))
+
+        status_instances = r.json()
+        with open('/tmp/status_instances.txt', 'w') as f:
+            json.dump(status_instances, f)
+
+    outputs:
+      parameters:
+      - name: status_instances
+        valueFrom:
+          path: /tmp/status_instances.txt
+{{- end -}}

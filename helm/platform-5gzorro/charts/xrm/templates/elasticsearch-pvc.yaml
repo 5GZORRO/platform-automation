@@ -1,0 +1,13 @@
+{{- if .Values.elasticsearch.persistence.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "xrm.fullname" . }}-elasticsearch-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.elasticsearch.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.elasticsearch.persistence.size }}
+{{- end -}}

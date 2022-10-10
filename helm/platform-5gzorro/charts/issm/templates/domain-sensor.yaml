@@ -1,0 +1,876 @@
+# Copyright 2020 - 2021 IBM Corporation
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+#
+# Sensor that invokes a workflow locally on the operator premises
+# Every domain should have a sensor
+#
+{{- if ne .Values.role "admin" }}
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: issm-branch
+  namespace: {{ .Chart.Name }}
+spec:
+  template:
+    serviceAccountName: {{ include "issm.serviceAccountName" . }}
+  dependencies:
+    - name: test-dep
+      # connects to platform bus
+      eventSourceName: issm-kafka
+      eventName: intent
+  triggers:
+    - template:
+        name: kafka-workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                #
+                # Workflow name is the event_uuid defined in the payload
+                # (see event parameters below)
+                #
+                name: "OVERRIDE"
+                labels:
+                  #
+                  # transaction_uuid lable contains the transaction uuid of
+                  # bussiness flow. NOTE: there could be several instances with
+                  # a same transaction uuid
+                  #
+                  transaction_uuid: OVERRIDE
+                  #
+                  # to denote that this wf belongs to ISSM component to be used
+                  # by ISSM-API queries
+                  issm: "true"
+              spec:
+                entrypoint: handlerequest
+                arguments:
+                  parameters:
+                  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  # Platform kafka bus
+                  # (the only hard coded attribute)
+                  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  - name: kafka
+                    value: {{ .Values.kafka.url }}:{{ .Values.kafka.port }}
+
+                  - name: kafka_dl
+                    value: OVERRIDE
+
+                  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  # Mandatory to exist
+                  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  - name: transaction_uuid
+
+                  - name: service_owner
+
+                  # 'instantiate', 'scaleout, terminate'
+                  - name: operation
+                    value: OVERRIDE
+
+                  # the sub operation whithin the (main) operation
+                  - name: sub_operation
+                    value: OVERRIDE
+
+                  - name: vsbName
+                    value: OVERRIDE
+
+                  # Id of existing instance (for scaleout)
+                  - name: instance_id
+                    value: OVERRIDE
+
+                  - name: resources
+                    value: OVERRIDE
+
+                  - name: resource_owner
+                    # operator owner as denoted in the offer
+                    value: OVERRIDE
+
+                  - name: elma_url
+                    value: OVERRIDE
+
+                  - name: catalogue_url
+                    value: OVERRIDE
+
+                  - name: trmf_url
+                    value: OVERRIDE
+
+                  - name: srsd_url
+                    value: OVERRIDE
+
+                  - name: issm_api_url
+                    value: OVERRIDE
+
+                  - name: place
+                    value: OVERRIDE
+
+                  - name: sla_breach
+
+                  - name: order_id
+                    value: OVERRIDE
+
+                  - name: userdata
+                    value: OVERRIDE
+
+                  - name: category
+                    value: OVERRIDE
+
+                  - name: snfvo_data
+                    value: OVERRIDE
+
+                  - name: vsd_parameters
+                    value: OVERRIDE
+
+                  - name: productOrder
+                    value: OVERRIDE
+
+                  - name: productOrderStatusTransaction
+                    value: OVERRIDE
+
+                  - name: statusInstance
+                    value: OVERRIDE
+
+                  - name: vsi_id
+                    value: OVERRIDE
+
+                  - name: app_topology
+                    value: OVERRIDE
+
+                  - name: optimizer_output
+                    value: OVERRIDE
+
+                  - name: serviceSpecification_resourceSpecification
+                    value: OVERRIDE
+
+                  - name: resources_ran
+                    value: OVERRIDE
+
+                  # this domain DID
+                  - name: domain_related_party_did
+
+                templates:
+                - name: handlerequest
+                  #
+                  # Main entry point for all transaction operations
+                  #
+                  steps:
+                  - - name: instantiate
+                      when: "{{`{{workflow.parameters.operation}}`}} == \"instantiate\""
+                      template: instantiate
+
+                  - - name: scaleout
+                      when: "{{`{{workflow.parameters.operation}}`}} == \"scaleout\""
+                      template: scaleout
+
+                  - - name: terminate
+                      when: "{{`{{workflow.parameters.operation}}`}} == \"terminate\""
+                      template: terminate
+
+                - name: instantiate
+                  steps:
+                  - - name: instantiate-from-api
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"API\""
+                      template: instantiate-from-api
+
+                  - - name: instantiate-invoke-snfvo
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"INSTANTIATE_SERVICE\""
+                      template: instantiate-invoke-snfvo
+
+                  - - name: instantiate-invoke-snfvo-2
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"BEST_OFFER_SELECTION\""
+                      template: instantiate-invoke-snfvo
+
+                  - - name: instantiate-orchestrate
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"ORCHESTRATE\""
+                      template: orchestrate
+
+                - name: instantiate-from-api
+                  #
+                  # Load domain's env first and parse order array, then call into
+                  # INSTANTIATE_SERVICE
+                  #
+                  dag:
+                    tasks:
+                    - name: get-domain-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-domain-env
+                      arguments:
+                        parameters:
+                        - name: domain
+                          value: "{{`{{workflow.parameters.service_owner}}`}}"
+
+                    - name: get-platform-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-platform-env
+
+                    - name: prepare-orders
+                      dependencies: [get-domain-env]
+                      templateRef:
+                        name: workflow-catalog
+                        template: prepare-orders-from-catalog
+                      arguments:
+                        parameters:
+                        - name: catalogue_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+                        - name: order_id
+                          # NOTE: here it is an ARRAY
+                          value: "{{`{{workflow.parameters.order_id}}`}}"
+                        - name: category
+                          value: "{{`{{workflow.parameters.category}}`}}"
+                        - name: snfvo_data
+                          value: "{{`{{workflow.parameters.snfvo_data}}`}}"
+
+                    - name: do-instantiate
+                      dependencies: [prepare-orders, get-platform-env]
+                      templateRef:
+                        name: instantiate-scaleout-terminate
+                        template: instantiate
+                      arguments:
+                        parameters:
+                        - name: catalogue_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+                        - name: elma_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.elma_url}}`}}"
+                        - name: trmf_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.trmf_url}}`}}"
+                        - name: issm_api_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.issm_api_url}}`}}"
+                        - name: domain_related_party_did
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.domain_related_party_did}}`}}"
+
+                        - name: srsd_url
+                          value: "{{`{{tasks.get-platform-env.outputs.parameters.srsd_url}}`}}"
+                        - name: kafka_dl
+                          value: "{{`{{tasks.get-platform-env.outputs.parameters.kafka_dl}}`}}"
+
+                        - name: order_id
+                          value: "{{`{{tasks.prepare-orders.outputs.parameters.order_id}}`}}"
+                        - name: snfvo_data
+                          value: "{{`{{tasks.prepare-orders.outputs.parameters.snfvo_data}}`}}"
+
+
+                - name: scaleout
+                  #
+                  # Load domain's env first and parse order array, then call into
+                  # SCALEOUT_SERVICE
+                  #
+                  steps:
+                  - - name: scaleout-from-api
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"API\""
+                      template: scaleout-from-api
+
+                  - - name: scaleout-invoke-snfvo
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"SCALEOUT_SERVICE\""
+                      template: scaleout-invoke-snfvo
+
+                  - - name: scaleout-invoke-snfvo-2
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"BEST_OFFER_SELECTION\""
+                      template: scaleout-invoke-snfvo
+
+                  - - name: scaleout-orchestrate
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"ORCHESTRATE\""
+                      template: orchestrate
+
+                - name: scaleout-from-api
+                  #
+                  # Entry point called from portal invocation
+                  #
+                  dag:
+                    tasks:
+                    - name: get-domain-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-domain-env
+                      arguments:
+                        parameters:
+                        - name: domain
+                          value: "{{`{{workflow.parameters.service_owner}}`}}"
+  
+                    - name: get-platform-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-platform-env
+  
+                    - name: prepare-orders
+                      dependencies: [get-domain-env]
+                      templateRef:
+                        name: workflow-catalog
+                        template: prepare-orders-from-catalog
+                      arguments:
+                        parameters:
+                        - name: catalogue_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+                        - name: order_id
+                          # NOTE: here it is an ARRAY
+                          value: "{{`{{workflow.parameters.order_id}}`}}"
+                        - name: category
+                          value: "{{`{{workflow.parameters.category}}`}}"
+                        - name: snfvo_data
+                          value: "{{`{{workflow.parameters.snfvo_data}}`}}"
+  
+                    - name: do-scaleout
+                      dependencies: [prepare-orders, get-platform-env]
+                      templateRef:
+                        name: instantiate-scaleout-terminate
+                        template: scaleout
+                      arguments:
+                        parameters:
+                        - name: catalogue_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.catalogue_url}}`}}"
+                        - name: elma_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.elma_url}}`}}"
+                        - name: trmf_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.trmf_url}}`}}"
+                        - name: issm_api_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.issm_api_url}}`}}"
+                        - name: domain_related_party_did
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.domain_related_party_did}}`}}"
+
+                        - name: srsd_url
+                          value: "{{`{{tasks.get-platform-env.outputs.parameters.srsd_url}}`}}"
+                        - name: kafka_dl
+                          value: "{{`{{tasks.get-platform-env.outputs.parameters.kafka_dl}}`}}"
+
+                        - name: order_id
+                          value: "{{`{{tasks.prepare-orders.outputs.parameters.order_id}}`}}"
+                        - name: snfvo_data
+                          value: "{{`{{tasks.prepare-orders.outputs.parameters.snfvo_data}}`}}"
+
+
+                - name: terminate
+                  steps:
+                  - - name: terminate-from-api
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"API\""
+                      template: terminate-from-api
+
+                  - - name: terminate-service
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"TERMINATE_SERVICE\""
+                      template: terminate-service
+
+                  - - name: terminate-orchestrate
+                      when: "{{`{{workflow.parameters.sub_operation}}`}} == \"ORCHESTRATE_TERMINATE\""
+                      template: orchestrate-terminate
+
+
+                - name: terminate-from-api
+                  #
+                  # Load domain's env first
+                  #
+                  dag:
+                    tasks:
+                    - name: get-domain-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-domain-env
+                      arguments:
+                        parameters:
+                        - name: domain
+                          value: "{{`{{workflow.parameters.service_owner}}`}}"
+
+                    - name: get-platform-env
+                      templateRef:
+                        name: workflow-environment
+                        template: get-platform-env
+
+                    - name: do-terminate
+                      dependencies: [get-domain-env, get-platform-env]
+                      templateRef:
+                        name: instantiate-scaleout-terminate
+                        template: terminate
+                      arguments:
+                        parameters:
+                        - name: issm_api_url
+                          value: "{{`{{tasks.get-domain-env.outputs.parameters.issm_api_url}}`}}"
+
+                        - name: kafka_dl
+                          value: "{{`{{tasks.get-platform-env.outputs.parameters.kafka_dl}}`}}"
+
+
+                - name: terminate-service
+                  steps:
+                  - - name: prepare-terminate
+                      template: prepare-terminate
+
+                  - - name: terminate-status-instance
+                      when: "\"{{`{{steps.prepare-terminate.outputs.result}}`}}\" == \"statusInstance\""
+                      template: terminate-status-instance
+                      arguments:
+                        parameters:
+                        - name: status_instance
+                          value: "{{`{{workflow.parameters.statusInstance}}`}}"
+
+                  - - name: terminate-product-order
+                      when: "\"{{`{{steps.prepare-terminate.outputs.result}}`}}\" == \"productOrder\""
+                      template: terminate-product-order
+
+                  - - name: terminate-transaction
+                      when: "\"{{`{{steps.prepare-terminate.outputs.result}}`}}\" == \"productOrderStatusTransaction\""
+                      template: terminate-transaction
+
+
+                - name: terminate-transaction
+                  dag:
+                    tasks:
+                    - name: get-transaction-uuid
+                      templateRef:
+                        name: workflow-base
+                        template: from-key
+                      arguments:
+                        parameters:
+                        - name: key
+                          value: transaction_uuid
+                        - name: json_str
+                          value: |
+                            {{`{{workflow.parameters.productOrderStatusTransaction}}`}}
+
+                    - name: list-status-instance
+                      dependencies: [get-transaction-uuid]
+                      templateRef:
+                        name: workflow-catalog
+                        template: list-status-instance-of-transaction
+                      arguments:
+                        parameters:
+                        - name: transaction_uuid
+                          value: "{{`{{tasks.get-transaction-uuid.outputs.result}}`}}"
+
+                    - name: loop-status-instances
+                      dependencies: [list-status-instance]
+                      template: terminate-status-instance
+                      arguments:
+                        parameters:
+                        - name: status_instance
+                          value: "{{`{{item}}`}}"
+                      withParam: "{{`{{tasks.list-status-instance.outputs.parameters.status_instances}}`}}"
+
+                    - name: delete-status-transaction
+                      dependencies: [loop-status-instances]
+                      templateRef:
+                        name: workflow-catalog
+                        template: delete-status-transaction
+                      arguments:
+                        parameters:
+                        - name: transaction_uuid
+                          value: "{{`{{tasks.get-transaction-uuid.outputs.result}}`}}"
+
+
+                - name: terminate-product-order
+                  dag:
+                    tasks:
+                    - name: get-order-id
+                      templateRef:
+                        name: workflow-base
+                        template: from-key
+                      arguments:
+                        parameters:
+                        - name: key
+                          value: order_id
+                        - name: json_str
+                          value: |
+                            {{`{{workflow.parameters.productOrder}}`}}
+
+                    - name: list-status-instance
+                      dependencies: [get-order-id]
+                      templateRef:
+                        name: workflow-catalog
+                        template: list-status-instance-of-order
+                      arguments:
+                        parameters:
+                        - name: order_id
+                          value: "{{`{{tasks.get-order-id.outputs.result}}`}}"
+
+                    - name: loop-status-instances
+                      dependencies: [list-status-instance]
+                      template: terminate-status-instance
+                      arguments:
+                        parameters:
+                        - name: status_instance
+                          value: "{{`{{item}}`}}"
+                      withParam: "{{`{{tasks.list-status-instance.outputs.parameters.status_instances}}`}}"
+
+
+                - name: terminate-status-instance
+                  inputs:
+                    parameters:
+                    - name: status_instance
+                  dag:
+                    tasks:
+                    - name: get-transaction-uuid
+                      templateRef:
+                        name: workflow-base
+                        template: from-key
+                      arguments:
+                        parameters:
+                        - name: key
+                          value: transaction_uuid
+                        - name: json_str
+                          value: |
+                            {{`{{inputs.parameters.status_instance}}`}}
+
+                    - name: get-vsi-id
+                      templateRef:
+                        name: workflow-base
+                        template: from-key
+                      arguments:
+                        parameters:
+                        - name: key
+                          value: vsi_id
+                        - name: json_str
+                          value: |
+                            {{`{{inputs.parameters.status_instance}}`}}
+
+                    - name: get-related-party
+                      templateRef:
+                        name: workflow-base
+                        template: from-key
+                      arguments:
+                        parameters:
+                        - name: key
+                          value: related_party
+                        - name: json_str
+                          value: |
+                            {{`{{inputs.parameters.status_instance}}`}}
+
+                    - name: trigger-orchestration-terminate
+                      dependencies: [get-transaction-uuid, get-vsi-id, get-related-party]
+                      templateRef:
+                        name: workflow-orchestrator
+                        template: trigger-orchestration-terminate
+                      arguments:
+                        parameters:
+                        - name: resource_owner
+                          value: "{{`{{tasks.get-related-party.outputs.result}}`}}"
+                        - name: vsi_id
+                          value: "{{`{{tasks.get-vsi-id.outputs.result}}`}}"
+
+                    - name: delete-status-instance
+                      dependencies: [trigger-orchestration-terminate]
+                      templateRef:
+                        name: workflow-catalog
+                        template: delete-status-instance
+                      arguments:
+                        parameters:
+                        - name: transaction_uuid
+                          value: "{{`{{tasks.get-transaction-uuid.outputs.result}}`}}"
+                        - name: vsi_id
+                          value: "{{`{{tasks.get-vsi-id.outputs.result}}`}}"
+                        - name: related_party
+                          value: "{{`{{tasks.get-related-party.outputs.result}}`}}"
+
+
+
+
+                - name: orchestrate
+                  templateRef:
+                    name: orchestrate
+                    template: orchestrate
+
+                - name: orchestrate-terminate
+                  templateRef:
+                    name: orchestrate
+                    template: orchestrate-terminate
+
+
+                - name: instantiate-invoke-snfvo
+                  # 
+                  # Invoke proper s-nfvo (Instantiate)
+                  #
+                  # Note: conditional snfvo steps are missing because they are
+                  # dynamically added/removed during platform lifecycle
+                  steps:
+                  - - name: get-order-from-catalog
+                      templateRef:
+                        name: workflow-catalog
+                        template: get-order-from-catalog
+                      arguments:
+                        parameters:
+                        - name: order_id
+                          value: "{{`{{workflow.parameters.order_id}}`}}"
+
+                - name: scaleout-invoke-snfvo
+                  # 
+                  # Invoke proper s-nfvo (Scaleout)
+                  #
+                  # Note: conditional snfvo steps are missing because they are
+                  # dynamically added/removed during platform lifecycle
+                  steps:
+                  - - name: get-order-from-catalog
+                      templateRef:
+                        name: workflow-catalog
+                        template: get-order-from-catalog
+                      arguments:
+                        parameters:
+                        - name: order_id
+                          value: "{{`{{workflow.parameters.order_id}}`}}"
+
+
+                - name: prepare-terminate
+                  #
+                  # Utility step to be used as a branching point based on
+                  # termination type
+                  #
+                  script:
+                    image: python:alpine3.6
+                    imagePullPolicy: IfNotPresent
+                    command: [python]
+                    source: |
+                      productOrder = {{`{{workflow.parameters.productOrder}}`}}
+                      productOrderStatusTransaction = {{`{{workflow.parameters.productOrderStatusTransaction}}`}}
+                      statusInstance = {{`{{workflow.parameters.statusInstance}}`}}
+                      if productOrder:
+                          print("productOrder")
+                      elif productOrderStatusTransaction:
+                          print("productOrderStatusTransaction")
+                      elif statusInstance:
+                          print("statusInstance")
+                      else:
+                          print ("wrong value")
+                      
+
+          parameters:
+            - src:
+                #
+                # event_uuid is treated as an instance uuid for this
+                # specific flow instance
+                #
+                dependencyName: test-dep
+                dataKey: body.event_uuid
+              dest: metadata.name
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.kafka_dl
+              dest: spec.arguments.parameters.1.value
+
+            - src:
+                #
+                # transaction_uuid is treated as the whole business transaction
+                # that can contain several flows (i.e. several event_uuids)
+                #
+                dependencyName: test-dep
+                dataKey: body.transaction_uuid
+              dest: metadata.labels.transaction_uuid
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.transaction_uuid
+                value: notapplicable
+              dest: spec.arguments.parameters.2.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.service_owner
+                value: DEFAULT
+              dest: spec.arguments.parameters.3.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.operation
+              dest: spec.arguments.parameters.4.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.operation
+              dest: metadata.labels.operation
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.sub_operation
+                value: instantiate
+              dest: spec.arguments.parameters.5.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.vsbName
+                value: DEFAULT
+              dest: spec.arguments.parameters.6.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.instance_id
+                value: DEFAULT
+              dest: spec.arguments.parameters.7.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.resources
+                value: DEFAULT
+              dest: spec.arguments.parameters.8.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.resource_owner
+                value: DEFAULT
+              dest: spec.arguments.parameters.9.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.elma_url
+                value: DEFAULT
+              dest: spec.arguments.parameters.10.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.catalogue_url
+                value: DEFAULT
+              dest: spec.arguments.parameters.11.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.trmf_url
+                value: DEFAULT
+              dest: spec.arguments.parameters.12.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.srsd_url
+                value: DEFAULT
+              dest: spec.arguments.parameters.13.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.issm_api_url
+                value: DEFAULT
+              dest: spec.arguments.parameters.14.value
+
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.place
+                value: |
+                  {
+                  }
+                
+              dest: spec.arguments.parameters.15.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.sla_breach
+                value: |
+                  {
+                    "applicable": "false"
+                  }
+              dest: spec.arguments.parameters.16.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.order_id
+                value: DEFAULT
+              dest: spec.arguments.parameters.17.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.userdata
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.18.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.category
+                value: DEFAULT
+              dest: spec.arguments.parameters.19.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.snfvo_data
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.20.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.vsd_parameters
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.21.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.productOrder
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.22.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.productOrderStatusTransaction
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.23.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.statusInstance
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.24.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.vsi_id
+                value: DEFAULT
+              dest: spec.arguments.parameters.25.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.app_topology
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.26.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.optimizer_output
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.27.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.serviceSpecification_resourceSpecification
+                value: |
+                  {
+                  }
+              dest: spec.arguments.parameters.28.value
+
+            - src:
+                dependencyName: test-dep
+                dataKey: body.resources_ran
+                value: DEFAULT
+              dest: spec.arguments.parameters.29.value
+
+            - src:
+                dependencyName: test-dep
+                # Note: retrieved from *this* domain
+                # mapped into service_owner_did
+                dataKey: body.domain_related_party_did
+                value: DEFAULT
+              dest: spec.arguments.parameters.30.value
+{{- end -}}

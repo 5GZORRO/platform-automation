@@ -1,0 +1,15 @@
+{{- if ne .Values.role "admin" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: issm-api
+  namespace: {{ .Chart.Name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "issm.serviceAccountName" . }}
+  namespace: {{ .Chart.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: issm-api
+{{- end }}

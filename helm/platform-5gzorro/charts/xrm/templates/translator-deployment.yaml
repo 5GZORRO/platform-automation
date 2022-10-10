@@ -92,11 +92,6 @@ spec:
               value: "172.28.3.15:32135"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - mountPath: /home/catalogueStorage
-              name: translator-hostpath0
-            - mountPath: /home/manoStorage
-              name: translator-hostpath1
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -109,10 +104,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      volumes:
-        - hostPath:
-            path: /opt/5gcatalogue-app/catalogueStorage
-          name: translator-hostpath0
-        - hostPath:
-            path: /opt/5gcatalogue-app/manoStorage
-          name: translator-hostpath1

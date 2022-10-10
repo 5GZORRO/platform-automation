@@ -374,7 +374,7 @@ custom-resource-5gzorro:
             xrmcatalogueappadmin: xrmcatalogueappadmin
             xrmtranslatoradmin: xrmtranslatoradmin
           postgresql:
-            version: "14"
+            version: "10"
       - name: zorro5g-psqldb-xrm-regulator
         spec:
           teamId: zorro5g
@@ -393,7 +393,7 @@ custom-resource-5gzorro:
             xrmcatalogueappregulator: xrmcatalogueappregulator
             xrmtranslatorregulator: xrmtranslatorregulator
           postgresql:
-            version: "14"
+            version: "10"
       - name: zorro5g-psqldb-xrm-consumer
         spec:
           teamId: zorro5g
@@ -412,7 +412,7 @@ custom-resource-5gzorro:
             xrmcatalogueappconsumer: xrmcatalogueappconsumer
             xrmtranslatorconsumer: xrmtranslatorconsumer
           postgresql:
-            version: "14"
+            version: "10"
       - name: zorro5g-psqldb-xrm-trader
         spec:
           teamId: zorro5g
@@ -431,7 +431,7 @@ custom-resource-5gzorro:
             xrmcatalogueapptrader: xrmcatalogueapptrader
             xrmtranslatortrader: xrmtranslatortrader
           postgresql:
-            version: "14"
+            version: "10"
       - name: zorro5g-psqldb-mda-admin
         spec:
           teamId: zorro5g
@@ -683,25 +683,6 @@ external-dns:
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
   domainFilters: ["*.${HOSTED_ZONE_NAME} "]
-
-vault:
-  enabled: false
-  ui:
-    enabled: true
-    serviceType: "LoadBalancer"
-    serviceNodePort: null
-    externalPort: 8200
-    annotations: 
-      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it.'
-  server:
-    standalone:
-      enabled: true
-    extraArgs: "-dev-kv-v1"
-    dev:
-      enabled: true
-      devRootToken: "root"
-  injector:
-    enabled: false
 
 kube-prometheus-stack:
   enabled: true
@@ -2131,3 +2112,36 @@ xrm-consumer:
       existingSecret: "xrmtranslatorconsumer.zorro5g-psqldb-xrm-consumer.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
+
+issm-trader:
+  enabled: true 
+  role: "trader"
+  orchestrator: "nsso"
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.5gzorro.smartcommunitylab.it"
+    
+issm-consumer:
+  enabled: true 
+  role: "consumer"
+  orchestrator: "nsso"
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.5gzorro.smartcommunitylab.it"
+
+issm-admin:
+  enabled: true 
+  role: "admin"
+  orchestrator: "nsso"
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.5gzorro.smartcommunitylab.it"

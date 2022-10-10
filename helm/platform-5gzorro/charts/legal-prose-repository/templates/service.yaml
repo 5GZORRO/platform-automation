@@ -4,7 +4,7 @@ metadata:
 {{- if .Values.service.name }}
   name: {{ .Values.service.name }}
 {{- else }}
-  name: {{ include "governance-manager-api.fullname" . }}
+  name: {{ include "legal-prose-repository-api.fullname" . }}
 {{- end }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"

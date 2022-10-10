@@ -1,0 +1,80 @@
+{{- if ne .Values.role "admin" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "issm.fullname" . }}-api
+  namespace: {{ .Chart.Name }}
+  labels:
+    {{- include "issm.labels" . | nindent 4 }}
+    issm/component: "api"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "issm.selectorLabels" . | nindent 6 }}
+      issm/component: "api"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "issm.selectorLabels" . | nindent 8 }}
+        issm/component: "api"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "issm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ISSM_KAFKA_HOST
+              value: {{ .Values.kafka.url }}
+            - name: ISSM_KAFKA_PORT
+              value: {{ .Values.kafka.port | quote }}
+            - name: ARGO_SERVER
+              value: {{ .Values.argo.internal }}
+            - name: LB_ARGO_SERVER
+              value: {{ .Values.argo.external }}
+          {{- if .Values.livenessProbe }}    
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}  
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.startupProbe }}  
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
