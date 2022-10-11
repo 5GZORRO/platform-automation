@@ -2187,6 +2187,7 @@ issm-admin:
 nsso-admin:
   enabled: true
   role: admin
+  operatorName: operatora
   postgres:
     url: jdbc:postgresql://zorro5g-psqldb-nsso-admin:5432/sebastian
     existingSecret: "nssoadmin.zorro5g-psqldb-nsso-admin.credentials.postgresql.acid.zalan.do"
@@ -2208,6 +2209,7 @@ nsso-admin:
 nsso-trader:
   enabled: true
   role: trader
+  operatorName: operatorb
   postgres:
     url: jdbc:postgresql://zorro5g-psqldb-nsso-trader:5432/sebastian
     existingSecret: "nssotrader.zorro5g-psqldb-nsso-trader.credentials.postgresql.acid.zalan.do"
