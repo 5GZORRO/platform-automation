@@ -47,7 +47,7 @@ spec:
               name: {{ .Values.postgres.existingSecret }}
               key: {{ .Values.postgres.userKey }}
             {{- else }}
-              name: nsso-db-credentials
+              name: {{ include "nsso.fullname" . }}
               key: username
             {{- end }}
         - name: SPRING_DATASOURCE_PASSWORD
@@ -57,7 +57,7 @@ spec:
               name: {{ .Values.postgres.existingSecret }}
               key: {{ .Values.postgres.passwordKey }}
             {{- else }}
-              name: nsso-db-credentials
+              name: {{ include "nsso.fullname" . }}
               key: password
             {{- end }}
         - name: SPRING_RABBITMQ_HOST
