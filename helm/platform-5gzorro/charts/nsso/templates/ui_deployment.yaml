@@ -18,8 +18,15 @@ spec:
     metadata:
       labels:
         {{- include "nsso.selectorLabels" . | nindent 8 }}
-        nsso/component: "nsso-ui"
+        nsso/component: "nsso"
     spec:
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "nsso.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: nssoui
           image: "{{ .Values.uiimage.repository }}:{{ .Values.uiimage.tag }}"
