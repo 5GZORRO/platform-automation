@@ -9,7 +9,7 @@ data "template_file" "valuesfile" {
     EAB_KID                     = var.zerossl_kid
     REGISTRY_URL                = var.registry_url
     REGISTRY_PASSWORD           = var.registry_password
-    REGISTRY_URL                = var.registry_url
+    REGISTRY_USERNAME           = var.registry_username
   }
 }
 
