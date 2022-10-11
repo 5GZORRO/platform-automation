@@ -130,6 +130,9 @@ module "helm" {
   client_id           = module.commons.identity_client_id
   azure_tenant_id     = var.azure_tenant_id
   zerossl_kid         = var.zerossl_kid
+  registry_password   = var.registry_password
+  registry_url        = var.registry_url
+  registry_username   = var.registry_username
   depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config, null_resource.install_osm]
 }
 

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nsso.fullname" . }}-ui
+  labels:
+    app.kubernetes.io/name: nssoui
+spec:
+  type: {{ .Values.uiservice.type }}
+  ports:
+    - port: {{ .Values.uiservice.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: nssoui

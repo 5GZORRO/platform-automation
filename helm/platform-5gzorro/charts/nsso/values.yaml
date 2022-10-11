@@ -1,0 +1,66 @@
+# Default values for gui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+uiimage:
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nssoui
+  tag: latest
+  pullPolicy: Always
+
+image:
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nsso
+  tag: latest
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+uiservice:
+  type: NodePort
+  port: 80
+
+service:
+  type: ClusterIP
+  appPort: 8080
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+postgres:
+  url: jdbc:postgresql://postgres:5432/sebastian
+  existingSecret: ""
+  userKey: ""
+  passwordKey: ""
+
+rabbitmq:
+  host: rabbitmq
+
+nfvo:
+  catalogue:
+    type: OSM10
+    address: http://localhost
+  lcm:
+    type: OSM10
+    address: http://localhost
+    project: admin
+    existingSecret: ""
+    userKey: ""
+    passwordKey: ""
+    username: ""
+    password: ""
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

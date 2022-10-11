@@ -7,6 +7,9 @@ data "template_file" "valuesfile" {
     MANAGEND_IDENTITY_CLIENT_ID = var.client_id
     AZURE_TENANT_ID             = var.azure_tenant_id
     EAB_KID                     = var.zerossl_kid
+    REGISTRY_URL                = var.registry_url
+    REGISTRY_PASSWORD           = var.registry_password
+    REGISTRY_URL                = var.registry_url
   }
 }
 

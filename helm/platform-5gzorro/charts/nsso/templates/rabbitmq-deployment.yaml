@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nsso.fullname" . }}
+  labels:
+    {{- include "nsso.labels" . | nindent 4 }}
+    nsso/component: "nsso"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "nsso.selectorLabels" . | nindent 6 }}
+      nsso/component: "nsso"
+  template:
+    metadata:
+      labels:
+        app: {{ include "nsso.fullname" . }}
+        {{- include "nsso.selectorLabels" . | nindent 8 }}
+        nsso/component: "nsso"
+    spec:
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "nsso.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}-rabbitmq
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "rabbitmq:3-management"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: 5672
+            protocol: TCP
+          - containerPort: 15672
+            protocol: TCP
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nsso.fullname" . }}-rabbitmq
+  labels:
+    app: {{ include "nsso.fullname" . }}
+    {{- include "nsso.selectorLabels" . | nindent 4 }}
+    nsso/component: "nsso"
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: app
+    port: 5672
+    protocol: TCP
+  - name: gui
+    port: 15672
+    protocol: TCP
+  selector:
+    app: {{ include "nsso.fullname" . }}
+    {{- include "nsso.selectorLabels" . | nindent 4 }}
+    nsso/component: "nsso"

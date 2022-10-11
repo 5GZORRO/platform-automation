@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nsso.fullname" . }}-ui
+  labels:
+    {{- include "nsso.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "nsso.selectorLabels" . | nindent 6 }}
+      nsso/component: "nsso-ui"
+  template:
+    metadata:
+      labels:
+        {{- include "nsso.selectorLabels" . | nindent 8 }}
+        nsso/component: "nsso-ui"
+    spec:
+      containers:
+        - name: nssoui
+          image: "{{ .Values.uiimage.repository }}:{{ .Values.uiimage.tag }}"
+          imagePullPolicy: {{ .Values.uiimage.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - name:  operator-nssoui-config-volume
+              mountPath: /var/www/html/assets/env.js
+              subPath: env.js
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: operator-nssoui-config-volume
+          configMap:
+            name: {{ .Release.Name }}-operator-nssoui-config-{{ .Values.role }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

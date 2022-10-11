@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.service.name }}
+  name: {{ .Values.service.name }}
+{{- else }}
+  name: {{ include "nsso.fullname" . }}
+{{- end }}
+  labels:
+    {{- include "nsso.selectorLabels" . | nindent 4 }}
+    nsso/component: "nsso"
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: http
+    port: {{ .Values.service.appPort }}
+    protocol: TCP
+    targetPort: {{ .Values.service.appPort }}
+    # nodePort: {{ .Values.service.extAppPort }}
+  selector:
+    {{- include "nsso.selectorLabels" . | nindent 4 }}
+    nsso/component: "nsso"

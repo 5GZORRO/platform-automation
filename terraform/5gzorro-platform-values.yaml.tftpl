@@ -9,6 +9,11 @@ tags:
 global:
   imagePullSecrets: 
     - name: registry-credentials
+  imageCredentials:
+    registry: ${REGISTRY_URL}
+    username: ${REGISTRY_USERNAME}
+    password: ${REGISTRY_PASSWORD}
+
   
 
 ingress-nginx:
@@ -281,6 +286,36 @@ custom-resource-5gzorro:
   postgres-operator:
     enabled: true
     postgresqlClusters:
+      - name: zorro5g-psqldb-nsso-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            nssoadmin:
+              - superuser
+              - createdb
+          databases:
+            nssoadmin: nssoadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-nsso-trader
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            nssotrader:
+              - superuser
+              - createdb
+          databases:
+            nssotrader: nssotrader
+          postgresql:
+            version: "14"
       - name: zorro5g-psqldb-datalake
         spec:
           teamId: zorro5g
@@ -854,6 +889,8 @@ redis:
 
 argo-workflows:
   enabled: true
+  crds:
+    install: false
   controller:
     metricsConfig:
       enabled: true
@@ -881,7 +918,8 @@ argo-workflows:
 
 argo-events:
   enabled: true
-
+  crds:
+    install: false
 elma-admin:
   enabled: true
   role: admin
@@ -2145,3 +2183,45 @@ issm-admin:
   argo:
     internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
     external: "https://argo.5gzorro.smartcommunitylab.it"
+
+nsso-admin:
+  enabled: true
+  role: admin
+  postgres:
+    url: jdbc:postgresql://zorro5g-psqldb-nsso-admin:5432/sebastian
+    existingSecret: "nssoadmin.zorro5g-psqldb-nsso-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  nfvo:
+    catalogue:
+      type: OSM10
+      address: http://osm.5gzorro.smartcommunitylab.it
+    lcm:
+      type: OSM10
+      address: http://osm.5gzorro.smartcommunitylab.it
+      project: admin
+      username: "admin"
+      password: "admin"
+  rabbitmq:
+    host: zorro5g-nsso-admin-rabbitmq
+
+nsso-trader:
+  enabled: true
+  role: trader
+  postgres:
+    url: jdbc:postgresql://zorro5g-psqldb-nsso-trader:5432/sebastian
+    existingSecret: "nssotrader.zorro5g-psqldb-nsso-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  nfvo:
+    catalogue:
+      type: OSM10
+      address: http://osm.5gzorro.smartcommunitylab.it
+    lcm:
+      type: OSM10
+      address: http://osm.5gzorro.smartcommunitylab.it
+      project: admin
+      username: "admin"
+      password: "admin"
+  rabbitmq:
+    host: zorro5g-nsso-trader-rabbitmq

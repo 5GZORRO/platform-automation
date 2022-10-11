@@ -106,13 +106,13 @@ dependencies:
     tags:
       - base
   - name: argo-workflows
-    version: "0.19.*"
+    version: "0.19.1"
     repository: https://argoproj.github.io/argo-helm
     condition: argo-workflows.enabled
     tags:
       - base
   - name: argo-events
-    version: "2.0.*"
+    version: "2.0.5"
     repository: https://argoproj.github.io/argo-helm
     condition: argo-events.enabled
     tags:
@@ -393,3 +393,16 @@ dependencies:
     condition: issm-consumer.enabled
     tags:
       - consumer
+  - name: nsso
+    alias: nsso-admin
+    version: "0.1.*"
+    condition: nsso-admin.enabled
+    tags:
+      - admin
+      - base
+  - name: nsso
+    alias: nsso-trader
+    version: "0.1.*"
+    condition: nsso-trader.enabled
+    tags:
+      - trader

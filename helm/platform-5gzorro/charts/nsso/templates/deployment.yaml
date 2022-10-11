@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nsso.fullname" . }}
+  labels:
+    {{- include "nsso.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "nsso.selectorLabels" . | nindent 6 }}
+      nsso/component: "nsso"
+  template:
+    metadata:
+      labels:
+        {{- include "nsso.selectorLabels" . | nindent 8 }}
+        nsso/component: "nsso"
+    spec:
+    {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "nsso.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+        # [SQL Configuration]
+        - name: SPRING_DATASOURCE_URL
+          value: {{ .Values.postgres.host }}
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+            {{- if .Values.postgres.existingSecret }}
+              name: {{ .Values.postgres.existingSecret }}
+              key: {{ .Values.postgres.userKey }}
+            {{- else }}
+              name: nsso-db-credentials
+              key: username
+            {{- end }}
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+            {{- if .Values.postgres.existingSecret }}
+              name: {{ .Values.postgres.existingSecret }}
+              key: {{ .Values.postgres.passwordKey }}
+            {{- else }}
+              name: nsso-db-credentials
+              key: password
+            {{- end }}
+        - name: SPRING_RABBITMQ_HOST
+          value: {{ .Values.rabbitmq.host }}
+        - name: NFVO_CATALOGUE_TYPE
+          value: {{ .Values.nfvo.catalogue.type }}
+        - name: NFVO_CATALOGUE_ADDRESS
+          value: {{ .Values.nfvo.catalogue.address }}
+        - name: NFVO_LCM_TYPE
+          value: {{ .Values.nfvo.lcm.type }}
+        - name: NFVO_LCM_ADDRESS
+          value: {{ .Values.nfvo.lcm.address }}
+        - name: NFVO_LCM_VIM
+          value: {{ .Values.nfvo.lcm.vim }}
+        - name: NFVO_LCM_PROJECT
+          value: {{ .Values.nfvo.lcm.project }}
+        - name: NFVO_LCM_USERNAME
+          valueFrom:
+            secretKeyRef:
+            {{- if .Values.nfvo.lcm.existingSecret }}
+              name: {{ .Values.nfvo.lcm.existingSecret }}
+              key: {{ .Values.nfvo.lcm.userKey }}
+            {{- else }}
+              name: nsso-lcm-credentials
+              key: username
+            {{- end }}
+        - name: NFVO_LCM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+            {{- if .Values.nfvo.lcm.existingSecret }}
+              name: {{ .Values.nfvo.lcm.existingSecret }}
+              key: {{ .Values.nfvo.lcm.passwordKey }}
+            {{- else }}
+              name: nsso-lcm-credentials
+              key: password
+            {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

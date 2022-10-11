@@ -125,3 +125,18 @@ variable "zerossl_kid" {
   type    = string
   default = ""
 }
+
+variable "registry_url" {
+  type    = string
+  default = ""
+}
+
+variable "registry_username" {
+  type    = string
+  default = ""
+}
+
+variable "registry_password" {
+  type    = string
+  default = ""
+}
