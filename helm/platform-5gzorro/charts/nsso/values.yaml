@@ -6,7 +6,7 @@ replicaCount: 1
 
 uiimage:
   repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nssoui
-  tag: latest
+  tag: fix
   pullPolicy: Always
 
 image:

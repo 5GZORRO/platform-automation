@@ -75,6 +75,8 @@ spec:
           value: {{ .Values.nfvo.lcm.vim }}
         - name: NFVO_LCM_PROJECT
           value: {{ .Values.nfvo.lcm.project }}
+        - name: NFVO_LCM_MONITORING_URL
+          value: {{ .Values.nfvo.lcm.address }}
         - name: NFVO_LCM_USERNAME
           valueFrom:
             secretKeyRef:
