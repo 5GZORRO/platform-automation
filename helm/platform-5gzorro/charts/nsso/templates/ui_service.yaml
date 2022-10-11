@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: {{ include "nsso.fullname" . }}-ui
   labels:
-    app.kubernetes.io/name: nssoui
+    {{- include "nsso.labels" . | nindent 4 }}
+    nsso/component: "nsso-ui"
 spec:
   type: {{ .Values.uiservice.type }}
   ports:
@@ -12,4 +13,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: nssoui
+    {{- include "nsso.labels" . | nindent 4 }}
+    nsso/component: "nsso-ui"

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "nsso.fullname" . }}
   labels:
     {{- include "nsso.labels" . | nindent 4 }}
+    nsso/component: "nsso"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
