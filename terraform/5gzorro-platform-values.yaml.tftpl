@@ -14,9 +14,7 @@ global:
     username: ${REGISTRY_USERNAME}
     password: ${REGISTRY_PASSWORD}
 
-  
-
-ingress-nginx:
+  ingress-nginx:
   enabled: true
   controller:
     service:
@@ -2191,7 +2189,7 @@ nsso-admin:
   enabled: true
   role: admin
   postgres:
-    url: jdbc:postgresql://zorro5g-psqldb-nsso-admin:5432/sebastian
+    url: jdbc:postgresql://zorro5g-psqldb-nsso-admin:5432/nssoadmin?sslmode=require
     existingSecret: "nssoadmin.zorro5g-psqldb-nsso-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
@@ -2212,7 +2210,7 @@ nsso-trader:
   enabled: true
   role: trader
   postgres:
-    url: jdbc:postgresql://zorro5g-psqldb-nsso-trader:5432/sebastian
+    url: jdbc:postgresql://zorro5g-psqldb-nsso-trader:5432/nssotrader?sslmode=require
     existingSecret: "nssotrader.zorro5g-psqldb-nsso-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"

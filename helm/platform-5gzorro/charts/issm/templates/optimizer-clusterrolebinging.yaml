@@ -1,0 +1,14 @@
+{{- if eq .Values.role "admin" }}
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: issm-optimizer
+subjects:
+- kind: ServiceAccount
+  name: {{ include "issm.serviceAccountName" . }}-optimizer
+  namespace: {{ .Chart.Name }}
+roleRef:
+  kind: ClusterRole
+  name: issm-optimizer
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

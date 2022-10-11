@@ -4,11 +4,19 @@
 
 replicaCount: 1
 
-image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-api
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "586364c"
+api:
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "586364c"
+
+optimizer:
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-optimizer
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "temp"
 
 imagePullSecrets: []
 

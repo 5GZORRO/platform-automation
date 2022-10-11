@@ -1,12 +1,12 @@
-{{- if ne .Values.role "admin" }}
+{{- if eq .Values.role "admin" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "issm.fullname" . }}-api
+  name: {{ include "issm.fullname" . }}-optimizer
   namespace: {{ .Chart.Name }}
   labels:
     {{- include "issm.labels" . | nindent 4 }}
-    issm/component: "api"
+    issm/component: "optimizer"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -14,7 +14,7 @@ spec:
   selector:
     matchLabels:
       {{- include "issm.selectorLabels" . | nindent 6 }}
-      issm/component: "api"
+      issm/component: "optimizer"
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -23,34 +23,30 @@ spec:
       {{- end }}
       labels:
         {{- include "issm.selectorLabels" . | nindent 8 }}
-        issm/component: "api"
+        issm/component: "optimizer"
     spec:
       {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "issm.serviceAccountName" . }}
+      serviceAccountName: {{ include "issm.serviceAccountName" . }}-optimizer
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-api
+        - name: {{ .Chart.Name }}-optimizer
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          image: "{{ .Values.optimizer.image.repository }}:{{ .Values.optimizer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.optimizer.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           env:
-            - name: ISSM_KAFKA_HOST
+            - name: KAFKA_HOST
               value: {{ .Values.kafka.url }}
-            - name: ISSM_KAFKA_PORT
+            - name: KAFKA_PORT
               value: {{ .Values.kafka.port | quote }}
-            - name: ARGO_SERVER
-              value: {{ .Values.argo.internal }}
-            - name: LB_ARGO_SERVER
-              value: {{ .Values.argo.external }}
           {{- if .Values.livenessProbe }}    
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}

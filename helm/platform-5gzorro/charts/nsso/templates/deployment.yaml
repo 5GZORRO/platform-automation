@@ -40,7 +40,7 @@ spec:
         env:
         # [SQL Configuration]
         - name: SPRING_DATASOURCE_URL
-          value: {{ .Values.postgres.host }}
+          value: {{ .Values.postgres.url }}
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
@@ -48,7 +48,7 @@ spec:
               name: {{ .Values.postgres.existingSecret }}
               key: {{ .Values.postgres.userKey }}
             {{- else }}
-              name: {{ include "nsso.fullname" . }}
+              name: {{ include "nsso.fullname" . }}-db-creds
               key: username
             {{- end }}
         - name: SPRING_DATASOURCE_PASSWORD
@@ -58,7 +58,7 @@ spec:
               name: {{ .Values.postgres.existingSecret }}
               key: {{ .Values.postgres.passwordKey }}
             {{- else }}
-              name: {{ include "nsso.fullname" . }}
+              name: {{ include "nsso.fullname" . }}-db-creds
               key: password
             {{- end }}
         - name: SPRING_RABBITMQ_HOST
@@ -82,7 +82,7 @@ spec:
               name: {{ .Values.nfvo.lcm.existingSecret }}
               key: {{ .Values.nfvo.lcm.userKey }}
             {{- else }}
-              name: nsso-lcm-credentials
+              name: {{ include "nsso.fullname" . }}
               key: username
             {{- end }}
         - name: NFVO_LCM_PASSWORD
@@ -92,7 +92,7 @@ spec:
               name: {{ .Values.nfvo.lcm.existingSecret }}
               key: {{ .Values.nfvo.lcm.passwordKey }}
             {{- else }}
-              name: nsso-lcm-credentials
+              name: {{ include "nsso.fullname" . }}
               key: password
             {{- end }}
         resources:

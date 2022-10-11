@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nsso.fullname" . }}
+  name: {{ include "nsso.fullname" . }}-rabbitmq
   labels:
     {{- include "nsso.labels" . | nindent 4 }}
-    nsso/component: "nsso"
+    nsso/component: "rabbitmq"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -14,13 +14,13 @@ spec:
   selector:
     matchLabels:
       {{- include "nsso.selectorLabels" . | nindent 6 }}
-      nsso/component: "nsso"
+      nsso/component: "rabbitmq"
   template:
     metadata:
       labels:
         app: {{ include "nsso.fullname" . }}
         {{- include "nsso.selectorLabels" . | nindent 8 }}
-        nsso/component: "nsso"
+        nsso/component: "rabbitmq"
     spec:
     {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:

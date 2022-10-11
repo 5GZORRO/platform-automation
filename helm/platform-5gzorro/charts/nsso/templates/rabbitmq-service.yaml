@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ include "nsso.fullname" . }}
     {{- include "nsso.selectorLabels" . | nindent 4 }}
-    nsso/component: "nsso"
+    nsso/component: "rabbitmq"
 {{- if .Values.service.annotations }}
   annotations:
 {{ toYaml .Values.service.annotations | indent 4 }}
@@ -22,4 +22,4 @@ spec:
   selector:
     app: {{ include "nsso.fullname" . }}
     {{- include "nsso.selectorLabels" . | nindent 4 }}
-    nsso/component: "nsso"
+    nsso/component: "rabbitmq"

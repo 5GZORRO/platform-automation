@@ -63,10 +63,6 @@ dependencies:
     repository: https://charts.jetstack.io
     alias: cert-manager
     condition: cert-manager.enabled
-  - name: vault
-    version: "0.18.0"
-    repository: https://helm.releases.hashicorp.com
-    condition: vault.enabled
     tags:
       - base
   - name: "loki-stack"
