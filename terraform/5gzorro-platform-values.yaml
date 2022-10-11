@@ -9,6 +9,11 @@ tags:
 global:
   imagePullSecrets: 
     - name: registry-credentials
+  imageCredentials:
+    registry: ${REGISTRY_URL}
+    username: ${REGISTRY_USERNAME}
+    password: ${REGISTRY_PASSWORD}
+
   
 
 ingress-nginx:
@@ -2169,6 +2174,7 @@ issm-trader:
   enabled: true 
   role: "trader"
   orchestrator: "nsso"
+  operatorName: operatorc
   kafka:
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
     port: "9092"
@@ -2180,6 +2186,7 @@ issm-consumer:
   enabled: true 
   role: "consumer"
   orchestrator: "nsso"
+  operatorName: operatorb
   kafka:
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
     port: "9092"
@@ -2191,6 +2198,7 @@ issm-admin:
   enabled: true 
   role: "admin"
   orchestrator: "nsso"
+  operatorName: operatora
   kafka:
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
     port: "9092"
