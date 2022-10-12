@@ -370,6 +370,25 @@ dependencies:
     condition: xrm-consumer.enabled
     tags:
       - consumer
+  - name: trmf
+    alias: trmf-admin
+    version: "1.0.*"
+    condition: trmf-admin.enabled
+    tags:
+      - admin
+      - base
+  - name: trmf
+    alias: trmf-trader
+    version: "1.0.*"
+    condition: trmf-trader.enabled
+    tags:
+      - trader
+  - name: trmf
+    alias: trmf-consumer
+    version: "1.0.*"
+    condition: trmf-consumer.enabled
+    tags:
+      - consumer
   - name: issm
     alias: issm-admin
     version: "0.1.*"
@@ -402,3 +421,9 @@ dependencies:
     condition: nsso-trader.enabled
     tags:
       - trader
+  - name: sla-breach-predictor
+    version: "0.1.*"
+    condition: sla-breach-predictor.enabled
+    tags:
+      - admin
+      - base

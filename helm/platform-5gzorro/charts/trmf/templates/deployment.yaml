@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "trmf.fullname" . }}
+  labels:
+    {{- include "trmf.labels" . | nindent 4 }}
+    trmf/component: trmf
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "trmf.selectorLabels" . | nindent 6 }}
+      trmf/component: trmf
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "trmf.selectorLabels" . | nindent 8 }}
+        trmf/component: trmf
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "trmf.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - envFrom:
+          - configMapRef:
+              name: {{ include "trmf.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["/bin/bash"]
+          args: ["-c", "python3 /peer_Trust_Model/requestTrustScores.py 5001"]
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ .Chart.Name }}-request
+          ports:
+            - containerPort: 5001
+          resources: {}
+        - envFrom:
+          - configMapRef:
+              name: {{ include "trmf.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["/bin/bash"]
+          args: ["-c", "python3 /peer_Trust_Model/trustManagementFramework.py 5002"]
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ .Chart.Name }}-trust
+          ports:
+            - containerPort: 5002
+          resources: {}
+      restartPolicy: Always
+      

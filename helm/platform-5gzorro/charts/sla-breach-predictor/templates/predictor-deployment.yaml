@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sla-breach-predictor.fullname" . }}-predictor
+  labels:
+    {{- include "sla-breach-predictor.labels" . | nindent 4 }}
+    sla-breach-predictor/component: predictor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "sla-breach-predictor.selectorLabels" . | nindent 6 }}
+      sla-breach-predictor/component: predictor
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sla-breach-predictor.selectorLabels" . | nindent 8 }}
+        sla-breach-predictor/component: predictor
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sla-breach-predictor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.predictor.image.repository }}:{{ .Values.predictor.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.predictor.image.pullPolicy }}
+          command: ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8001"]
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: shared-test
+              mountPath: /data/
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: shared-test
+          persistentVolumeClaim:
+            claimName: {{ include "sla-breach-predictor.fullname" . }}-pvc

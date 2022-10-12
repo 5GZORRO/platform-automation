@@ -284,34 +284,47 @@ custom-resource-5gzorro:
   postgres-operator:
     enabled: true
     postgresqlClusters:
-      - name: zorro5g-psqldb-nsso-admin
+      - name: zorro5g-psqldb-admin
         spec:
           teamId: zorro5g
           volume:
-            size: 16Gi
+            size: 256Gi
             storageClass: "managed-premium"
           numberOfInstances: 1
           users:
             nssoadmin:
               - superuser
               - createdb
-          databases:
-            nssoadmin: nssoadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-nsso-trader
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            nssotrader:
+            sclmadmin:
+              - superuser
+              - createdb
+            xrmcatalogueappadmin:
+              - superuser
+              - createdb
+            xrmtranslatoradmin:
+              - superuser
+              - createdb
+            mdaadmin:
+              - superuser
+              - createdb
+            legalproseadmin:
+              - superuser
+              - createdb
+            governancemanageradmin:
+              - superuser
+              - createdb
+            rsocadmin:
               - superuser
               - createdb
           databases:
-            nssotrader: nssotrader
+            nssoadmin: nssoadmin
+            sclmadmin: sclmadmin
+            xrmcatalogueappadmin: xrmcatalogueappadmin
+            xrmtranslatoradmin: xrmtranslatoradmin
+            mdaadmin: mdaadmin
+            legalproseadmin: legalproseadmin
+            governancemanageradmin: governancemanageradmin
+            rsocadmin: rsocadmin
           postgresql:
             version: "14"
       - name: zorro5g-psqldb-datalake
@@ -329,52 +342,77 @@ custom-resource-5gzorro:
             datalake: datalake
           postgresql:
             version: "14"
-      - name: zorro5g-psqldb-sclm-admin
+      - name: zorro5g-psqldb-regulator
         spec:
           teamId: zorro5g
           volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            sclmadmin:
-              - superuser
-              - createdb
-          databases:
-            sclmadmin: sclmadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-sclm-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
+            size: 256Gi
             storageClass: "managed-premium"
           numberOfInstances: 1
           users:
             sclmregulator:
               - superuser
               - createdb
+            xrmcatalogueappregulator:
+              - superuser
+              - createdb
+            xrmtranslatorregulator:
+              - superuser
+              - createdb
+            mdaregulator:
+              - superuser
+              - createdb
+            legalproseregulator:
+              - superuser
+              - createdb
+            governancemanagerregulator:
+              - superuser
+              - createdb
+            rsocregulator:
+              - superuser
+              - createdb
           databases:
             sclmregulator: sclmregulator
+            xrmcatalogueappregulator: xrmcatalogueappregulator
+            xrmtranslatorregulator: xrmtranslatorregulator
+            mdaregulator: mdaregulator
+            legalproseregulator: legalproseregulator
+            governancemanagerregulator: governancemanagerregulator
+            rsocregulator: rsocregulator
           postgresql:
             version: "14"
-      - name: zorro5g-psqldb-sclm-consumer
+      - name: zorro5g-psqldb-consumer
         spec:
           teamId: zorro5g
           volume:
-            size: 16Gi
+            size: 256Gi
             storageClass: "managed-premium"
           numberOfInstances: 1
           users:
             sclmconsumer:
               - superuser
               - createdb
+            xrmcatalogueappconsumer:
+              - superuser
+              - createdb
+            xrmtranslatorconsumer:
+              - superuser
+              - createdb
+            mdaconsumer:
+              - superuser
+              - createdb
+            rsocconsumer:
+              - superuser
+              - createdb
           databases:
             sclmconsumer: sclmconsumer
+            xrmcatalogueappconsumer: xrmcatalogueappconsumer
+            xrmtranslatorconsumer: xrmtranslatorconsumer
+            mdaconsumer: mdaconsumer
+            rsocconsumer: rsocconsumer
           postgresql:
             version: "14"
-      - name: zorro5g-psqldb-sclm-trader
+      - name: zorro5g-psqldb-trader
         spec:
           teamId: zorro5g
           volume:
@@ -385,323 +423,27 @@ custom-resource-5gzorro:
             sclmtrader:
               - superuser
               - createdb
-          databases:
-            sclmtrader: sclmtrader
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-xrm-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            xrmcatalogueappadmin:
+            nssotrader:
               - superuser
               - createdb
-            xrmtranslatoradmin:
-              - superuser
-              - createdb
-          databases:
-            xrmcatalogueappadmin: xrmcatalogueappadmin
-            xrmtranslatoradmin: xrmtranslatoradmin
-          postgresql:
-            version: "10"
-      - name: zorro5g-psqldb-xrm-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            xrmcatalogueappregulator:
-              - superuser
-              - createdb
-            xrmtranslatorregulator:
-              - superuser
-              - createdb
-          databases:
-            xrmcatalogueappregulator: xrmcatalogueappregulator
-            xrmtranslatorregulator: xrmtranslatorregulator
-          postgresql:
-            version: "10"
-      - name: zorro5g-psqldb-xrm-consumer
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            xrmcatalogueappconsumer:
-              - superuser
-              - createdb
-            xrmtranslatorconsumer:
-              - superuser
-              - createdb
-          databases:
-            xrmcatalogueappconsumer: xrmcatalogueappconsumer
-            xrmtranslatorconsumer: xrmtranslatorconsumer
-          postgresql:
-            version: "10"
-      - name: zorro5g-psqldb-xrm-trader
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
             xrmcatalogueapptrader:
               - superuser
               - createdb
             xrmtranslatortrader:
               - superuser
               - createdb
-          databases:
-            xrmcatalogueapptrader: xrmcatalogueapptrader
-            xrmtranslatortrader: xrmtranslatortrader
-          postgresql:
-            version: "10"
-      - name: zorro5g-psqldb-mda-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            mdaadmin:
-              - superuser
-              - createdb
-          databases:
-            mdaadmin: mdaadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-mda-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            mdaregulator:
-              - superuser
-              - createdb
-          databases:
-            mdaregulator: mdaregulator
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-mda-consumer
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            mdaconsumer:
-              - superuser
-              - createdb
-          databases:
-            mdaconsumer: mdaconsumer
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-mda-trader
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
             mdatrader:
               - superuser
               - createdb
-          databases:
-            mdatrader: mdatrader
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-legalprose-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            legalproseadmin:
-              - superuser
-              - createdb
-          databases:
-            legalproseadmin: legalproseadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-legalprose-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            legalproseregulator:
-              - superuser
-              - createdb
-          databases:
-            legalproseregulator: legalproseregulator
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-governancemanager-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            governancemanageradmin:
-              - superuser
-              - createdb
-          databases:
-            governancemanageradmin: governancemanageradmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-governancemanager-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            governancemanagerregulator:
-              - superuser
-              - createdb
-          databases:
-            governancemanagerregulator: governancemanagerregulator
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-srsd-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            srsdadmin:
-              - superuser
-              - createdb
-          databases:
-            srsdadmin: srsdadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-srsd-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            srsdregulator:
-              - superuser
-              - createdb
-          databases:
-            srsdregulator: srsdregulator
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-srsd-consumer
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            srsdconsumer:
-              - superuser
-              - createdb
-          databases:
-            srsdconsumer: srsdconsumer
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-srsd-trader
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            srsdtrader:
-              - superuser
-              - createdb
-          databases:
-            srsdtrader: srsdtrader
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-rsoc-admin
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            rsocadmin:
-              - superuser
-              - createdb
-          databases:
-            rsocadmin: rsocadmin
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-rsoc-regulator
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            rsocregulator:
-              - superuser
-              - createdb
-          databases:
-            rsocregulator: rsocregulator
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-rsoc-consumer
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
-            rsocconsumer:
-              - superuser
-              - createdb
-          databases:
-            rsocconsumer: rsocconsumer
-          postgresql:
-            version: "14"
-      - name: zorro5g-psqldb-rsoc-trader
-        spec:
-          teamId: zorro5g
-          volume:
-            size: 16Gi
-            storageClass: "managed-premium"
-          numberOfInstances: 1
-          users:
             rsoctrader:
               - superuser
               - createdb
           databases:
+            sclmtrader: sclmtrader
+            nssotrader: nssotrader
+            xrmcatalogueapptrader: xrmcatalogueapptrader
+            xrmtranslatortrader: xrmtranslatortrader
+            mdatrader: mdatrader
             rsoctrader: rsoctrader
           postgresql:
             version: "14"
@@ -1230,10 +972,10 @@ identity-and-permissions-manager-consumer:  # verifier
 governance-manager-api-admin:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-governancemanager-admin
+    host: zorro5g-psqldb-admin
     port: 5432
     name: governancemanageradmin
-    existingSecret: "governancemanageradmin.zorro5g-psqldb-governancemanager-admin.credentials.postgresql.acid.zalan.do"
+    existingSecret: "governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1260,10 +1002,10 @@ governance-manager-api-admin:
 governance-manager-api-regulator:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-governancemanager-regulator
+    host: zorro5g-psqldb-regulator
     port: 5432
     name: governancemanagerregulator
-    existingSecret: "governancemanagerregulator.zorro5g-psqldb-governancemanager-regulator.credentials.postgresql.acid.zalan.do"
+    existingSecret: "governancemanagerregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1290,10 +1032,10 @@ governance-manager-api-regulator:
 legal-prose-repository-admin:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-legalprose-admin
+    host: zorro5g-psqldb-admin
     port: 5432
     name: legalproseadmin
-    existingSecret: "legalproseadmin.zorro5g-psqldb-legalprose-admin.credentials.postgresql.acid.zalan.do"
+    existingSecret: "legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1320,10 +1062,10 @@ legal-prose-repository-admin:
 legal-prose-repository-regulator:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-legalprose-regulator
+    host: zorro5g-psqldb-regulator
     port: 5432
     name: legalproseregulator
-    existingSecret: "legalproseregulator.zorro5g-psqldb-legalprose-regulator.credentials.postgresql.acid.zalan.do"
+    existingSecret: "legalproseregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1351,10 +1093,10 @@ legal-prose-repository-regulator:
 smart-contract-lifecycle-manager-admin:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-sclm-admin
+    host: zorro5g-psqldb-admin
     port: 5432
     name: sclmadmin
-    existingSecret: "sclmadmin.zorro5g-psqldb-sclm-admin.credentials.postgresql.acid.zalan.do"
+    existingSecret: "sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1389,10 +1131,10 @@ smart-contract-lifecycle-manager-admin:
 smart-contract-lifecycle-manager-regulator:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-sclm-regulator
+    host: zorro5g-psqldb-regulator
     port: 5432
     name: sclmregulator
-    existingSecret: "sclmregulator.zorro5g-psqldb-sclm-regulator.credentials.postgresql.acid.zalan.do"
+    existingSecret: "sclmregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1427,10 +1169,10 @@ smart-contract-lifecycle-manager-regulator:
 smart-contract-lifecycle-manager-consumer:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-sclm-consumer
+    host: zorro5g-psqldb-consumer
     port: 5432
     name: sclmconsumer
-    existingSecret: "sclmconsumer.zorro5g-psqldb-sclm-consumer.credentials.postgresql.acid.zalan.do"
+    existingSecret: "sclmconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1465,10 +1207,10 @@ smart-contract-lifecycle-manager-consumer:
 smart-contract-lifecycle-manager-trader:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-sclm-trader
+    host: zorro5g-psqldb-trader
     port: 5432
     name: sclmtrader
-    existingSecret: "sclmtrader.zorro5g-psqldb-sclm-trader.credentials.postgresql.acid.zalan.do"
+    existingSecret: "sclmtrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1504,10 +1246,10 @@ resource-and-service-offer-catalog-admin:
   enable: true
   operatorName: operatora
   postgres:
-    host: zorro5g-psqldb-rsoc-admin
+    host: zorro5g-psqldb-admin
     port: 5432
     name: rsocadmin
-    existingSecret: "rsocadmin.zorro5g-psqldb-rsoc-admin.credentials.postgresql.acid.zalan.do"
+    existingSecret: "rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   kafka:
@@ -1552,10 +1294,10 @@ resource-and-service-offer-catalog-regulator:
   enable: true
   operatorName: regulatora
   postgres:
-    host: zorro5g-psqldb-rsoc-regulator
+    host: zorro5g-psqldb-regulator
     port: 5432
     name: rsocregulator
-    existingSecret: "rsocregulator.zorro5g-psqldb-rsoc-regulator.credentials.postgresql.acid.zalan.do"
+    existingSecret: "rsocregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   kafka:
@@ -1600,10 +1342,10 @@ resource-and-service-offer-catalog-trader:
   enable: true
   operatorName: operatorb
   postgres:
-    host: zorro5g-psqldb-rsoc-trader
+    host: zorro5g-psqldb-trader
     port: 5432
     name: rsoctrader
-    existingSecret: "rsoctrader.zorro5g-psqldb-rsoc-trader.credentials.postgresql.acid.zalan.do"
+    existingSecret: "rsoctrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   kafka:
@@ -1648,10 +1390,10 @@ resource-and-service-offer-catalog-consumer:
   enable: true
   operatorName: operatorc
   postgres:
-    host: zorro5g-psqldb-rsoc-consumer
+    host: zorro5g-psqldb-consumer
     port: 5432
     name: rsocconsumer
-    existingSecret: "rsocconsumer.zorro5g-psqldb-rsoc-consumer.credentials.postgresql.acid.zalan.do"
+    existingSecret: "rsocconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   kafka:
@@ -1908,10 +1650,10 @@ smart-resource-and-service-discovery-consumer:
 monitoring-data-aggregator-admin:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-mda-admin
+    host: zorro5g-psqldb-admin
     port: 5432
     name: mdaadmin
-    existingSecret: "mdaadmin.zorro5g-psqldb-mda-admin.credentials.postgresql.acid.zalan.do"
+    existingSecret: "mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1924,10 +1666,10 @@ monitoring-data-aggregator-admin:
 monitoring-data-aggregator-regulator:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-mda-regulator
+    host: zorro5g-psqldb-regulator
     port: 5432
     name: mdaregulator
-    existingSecret: "mdaregulator.zorro5g-psqldb-mda-regulator.credentials.postgresql.acid.zalan.do"
+    existingSecret: "mdaregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1940,10 +1682,10 @@ monitoring-data-aggregator-regulator:
 monitoring-data-aggregator-trader:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-mda-trader
+    host: zorro5g-psqldb-trader
     port: 5432
     name: mdatrader
-    existingSecret: "mdatrader.zorro5g-psqldb-mda-trader.credentials.postgresql.acid.zalan.do"
+    existingSecret: "mdatrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1956,10 +1698,10 @@ monitoring-data-aggregator-trader:
 monitoring-data-aggregator-consumer:
   enabled: true
   postgres:
-    host: zorro5g-psqldb-mda-consumer
+    host: zorro5g-psqldb-consumer
     port: 5432
     name: mdaconsumer
-    existingSecret: "mdaconsumer.zorro5g-psqldb-mda-consumer.credentials.postgresql.acid.zalan.do"
+    existingSecret: "mdaconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   ingress:
@@ -1973,10 +1715,10 @@ xrm-admin:
   role: "admin"
   catalogueapp: 
     postgres:
-      host: zorro5g-psqldb-xrm-admin
+      host: zorro5g-psqldb-admin
       port: 5432
       name: xrmcatalogueappadmin
-      existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-xrm-admin.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
     mano:
@@ -2007,10 +1749,10 @@ xrm-admin:
       uri: "mongodb-xrm-admin-admin-admin"
   translator:
     postgres:
-      host: zorro5g-psqldb-xrm-admin
+      host: zorro5g-psqldb-admin
       port: 5432
       name: xrmtranslatoradmin
-      existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-xrm-admin.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
 
@@ -2018,10 +1760,10 @@ xrm-regulator:
   role: "regulator"
   catalogueapp: 
     postgres:
-      host: zorro5g-psqldb-xrm-regulator
+      host: zorro5g-psqldb-regulator
       port: 5432
       name: xrmcatalogueappregulator
-      existingSecret: "xrmcatalogueappregulator.zorro5g-psqldb-xrm-regulator.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmcatalogueappregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
     mano:
@@ -2052,10 +1794,10 @@ xrm-regulator:
       uri: "mongodb-xrm-regulator-admin-regulator"
   translator:
     postgres:
-      host: zorro5g-psqldb-xrm-regulator
+      host: zorro5g-psqldb-regulator
       port: 5432
       name: xrmtranslatorregulator
-      existingSecret: "xrmtranslatorregulator.zorro5g-psqldb-xrm-regulator.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmtranslatorregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
 
@@ -2063,10 +1805,10 @@ xrm-trader:
   role: "trader"
   catalogueapp: 
     postgres:
-      host: zorro5g-psqldb-xrm-trader
+      host: zorro5g-psqldb-trader
       port: 5432
       name: xrmcatalogueapptrader
-      existingSecret: "xrmcatalogueapptrader.zorro5g-psqldb-xrm-trader.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmcatalogueapptrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
     mano:
@@ -2108,10 +1850,10 @@ xrm-consumer:
   role: "consumer"
   catalogueapp: 
     postgres:
-      host: zorro5g-psqldb-xrm-consumer
+      host: zorro5g-psqldb-consumer
       port: 5432
       name: xrmcatalogueappconsumer
-      existingSecret: "xrmcatalogueappconsumer.zorro5g-psqldb-xrm-consumer.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmcatalogueappconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
     mano:
@@ -2142,10 +1884,10 @@ xrm-consumer:
       uri: "mongodb-xrm-consumer-admin-consumer"
   translator:
     postgres:
-      host: zorro5g-psqldb-xrm-consumer
+      host: zorro5g-psqldb-consumer
       port: 5432
       name: xrmtranslatorconsumer
-      existingSecret: "xrmtranslatorconsumer.zorro5g-psqldb-xrm-consumer.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmtranslatorconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
 
@@ -2189,8 +1931,8 @@ nsso-admin:
   enabled: true
   role: admin
   postgres:
-    url: jdbc:postgresql://zorro5g-psqldb-nsso-admin:5432/nssoadmin?sslmode=require
-    existingSecret: "nssoadmin.zorro5g-psqldb-nsso-admin.credentials.postgresql.acid.zalan.do"
+    url: jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require
+    existingSecret: "nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   nfvo:
@@ -2210,8 +1952,8 @@ nsso-trader:
   enabled: true
   role: trader
   postgres:
-    url: jdbc:postgresql://zorro5g-psqldb-nsso-trader:5432/nssotrader?sslmode=require
-    existingSecret: "nssotrader.zorro5g-psqldb-nsso-trader.credentials.postgresql.acid.zalan.do"
+    url: jdbc:postgresql://zorro5g-psqldb-trader:5432/nssotrader?sslmode=require
+    existingSecret: "nssotrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
     userKey: "username"
     passwordKey: "password"
   nfvo:
@@ -2226,3 +1968,58 @@ nsso-trader:
       password: "admin"
   rabbitmq:
     host: zorro5g-nsso-trader-rabbitmq
+
+trmf-admin:
+  enabled: true
+  role: "admin"
+  trmfdb:
+    persistence:
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-admin-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+
+trmf-trader:
+  enabled: true
+  role: "trader"
+  trmfdb:
+    persistence:
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-trader:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-trader-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+
+trmf-consumer:
+  enabled: true
+  role: "consumer"
+  trmfdb:
+    persistence:
+      enabled: true
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-consumer:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-consumer-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+
+sla-breach-predictor:
+  enabled: true
+  persistence:
+    storageClassName: "azurefile"
+    size: 128Gi
+  kafka:
+    host: kafka-cluster-kafka-bootstrap
+    port: 9092
+    monTopic: ""
+  datalakeHost: zorro5g-datalake:8080
+  lcmHost: smart-contract-lifecycle-manager-admin:8087

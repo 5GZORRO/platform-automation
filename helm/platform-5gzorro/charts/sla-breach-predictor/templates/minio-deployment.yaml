@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sla-breach-predictor.fullname" . }}-minio
+  labels:
+    {{- include "sla-breach-predictor.labels" . | nindent 4 }}
+    sla-breach-predictor/component: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "sla-breach-predictor.selectorLabels" . | nindent 6 }}
+      sla-breach-predictor/component: minio
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sla-breach-predictor.selectorLabels" . | nindent 8 }}
+        sla-breach-predictor/component: minio
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sla-breach-predictor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          command:
+          - minio
+          - server
+          - /data
+          env:
+          - name: MINIO_ROOT_USER
+            value: isbp
+          - name: MINIO_ROOT_PASSWORD
+            value: isbpminio
+          image: minio/minio
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - mkdir
+                - -p
+                - /data/models
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

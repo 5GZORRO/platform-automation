@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: file
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: predict-dep
+      eventSourceName: file
+      eventName: predict
+    - name: train-dep
+      eventSourceName: file
+      eventName: train
+  triggers:
+    - template:
+        conditions: "predict-dep"
+        name: predict-workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: predict-watcher-
+              spec:
+                entrypoint: predict
+                arguments:
+                  parameters:
+                  - name: message
+                    # the value will get overridden by event payload from test-dep
+                    value: hey world
+                templates:
+                  - name: predict
+                    inputs:
+                      parameters:
+                      - name: message
+                    container:
+                      image: dimitrislask/isbp:predict
+                      imagePullPolicy: Always
+                      command: ["python", "predict.py"]
+                      args: ["{{`{{inputs.parameters.message}}`}}"]
+                      volumeMounts:
+                      - name: shared-test
+                        mountPath: /data/
+                    volumes:
+                      - name: shared-test
+                        persistentVolumeClaim:
+                          claimName: {{ include "sla-breach-predictor.fullname" . }}-pvc
+          parameters:
+              - src:
+                  dependencyName: predict-dep
+                  dataKey: name
+                dest: spec.arguments.parameters.0.value
+              
+                  
+    - template:
+        conditions: "train-dep"
+        name: train-workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: train-watcher-
+              spec:
+                entrypoint: train
+                templates:
+                - name: train
+                  container:
+                    image: dimitrislask/isbp:train
+                    imagePullPolicy: Always
+                    command: ["python", "train.py"]
+                    volumeMounts:
+                    - name: test-data
+                      mountPath: /data/
+                  volumes:
+                    - name: test-data
+                      persistentVolumeClaim:
+                        claimName: {{ include "sla-breach-predictor.fullname" . }}-pvc
+                  

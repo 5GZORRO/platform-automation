@@ -1,0 +1,36 @@
+image:
+  tag: fix
+  app: trmf
+  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/trmf
+  pullPolicy: Always
+  pullSecrets: ""
+
+role: ""
+
+trmfdb:
+  persistence:
+    storageClassName: "default"
+    size: 100Mi
+    
+catalogue:
+  uri: http://172.28.3.103:31080/tmf-api/
+
+
+elk:
+  uri: http://192.168.1.210:9200/
+
+datalake:
+  kafka: 172.28.3.196:9092
+
+service:
+  type: ClusterIP
+  port: 5001
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
