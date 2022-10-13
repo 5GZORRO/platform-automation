@@ -1,6 +1,6 @@
 include:
   - template: Security/SAST-IaC.latest.gitlab-ci.yml
-  
+
 stages:
   - validate
   - test
@@ -27,9 +27,9 @@ fmt:
     - gitlab-terraform fmt -check
   allow_failure: true
   rules:
-    - if: $DEPLOY != "true"
+    - if: $DEPLOY == "true"
       when: never
-    - if: $DESTROY != "true"
+    - if: $DESTROY == "true"
       when: never
 
 validate:
@@ -38,25 +38,25 @@ validate:
     - cd "${TF_ROOT}"
     - gitlab-terraform validate
   rules:
-    - if: $DEPLOY != "true"
+    - if: $DEPLOY == "true"
       when: never
-    - if: $DESTROY != "true"
+    - if: $DESTROY == "true"
       when: never
       
 iac-sast:
   stage: test
   rules:
-    - if: $DEPLOY != "true"
+    - if: $DEPLOY == "true"
       when: never
-    - if: $DESTROY != "true"
+    - if: $DESTROY == "true"
       when: never
 
 kics-iac-sast:
   extends: iac-sast
   rules:
-    - if: $DEPLOY != "true"
+    - if: $DEPLOY == "true"
       when: never
-    - if: $DESTROY != "true"
+    - if: $DESTROY == "true"
       when: never
 
 
