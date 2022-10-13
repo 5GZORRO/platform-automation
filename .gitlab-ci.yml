@@ -51,7 +51,7 @@ build:
       - ${TF_ROOT}/plan.cache
     reports:
       terraform: ${TF_ROOT}/plan.json
-
+    expire_in: 1 week
 deploy:
   stage: deploy
   before_script:
@@ -65,6 +65,7 @@ deploy:
   artifacts:
     paths:
       - ${TF_ROOT}/
+    expire_in: 1 week
 
 destroy:
   stage: cleanup

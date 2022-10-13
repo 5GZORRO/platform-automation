@@ -89,11 +89,11 @@ custom-resource-5gzorro:
     community-operator-crds:
       enabled: false
     mongodbClusters:
-      - name: mongodb-idp-admin
+      - name: mongodb-admin
         replicas: 1
         version: "4.2.6"
         users:
-          - name: admin
+          - name: idp-admin
             db: admin
             passwordSecretRef: 
               name: 5gzorro-mongodb-idp-admin-password
@@ -103,11 +103,27 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
-      - name: mongodb-idp-trader
+          - name: xrm-admin
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-admin-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-admin-scram
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-admin-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-admin-scram
+      - name: mongodb-trader
         replicas: 1
         version: "4.2.6"
         users:
-          - name: trader
+          - name: idp-trader
             db: admin
             passwordSecretRef: 
               name: 5gzorro-mongodb-idp-trader-password
@@ -115,11 +131,27 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-trader-scram
-      - name: mongodb-idp-regulator
+          - name: xrm-trader
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-trader-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-trader-scram
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-trader-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-trader-scram
+      - name: mongodb-regulator
         replicas: 1
         version: "4.2.6"
         users:
-          - name: regulator
+          - name: idp-regulator
             db: admin
             passwordSecretRef: 
               name: 5gzorro-mongodb-idp-regulator-password
@@ -129,86 +161,14 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-regulator-scram
-      - name: mongodb-idp-consumer
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: consumer
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-idp-consumer-password
-            roles:
-              - name: readWrite
-                db: provider
-            scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
-      - name: mongodb-xrm-admin
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: admin
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-admin-password
-            roles:
-              - name: readWrite
-                db: administrator
-              - name: readWrite
-                db: provider
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-admin-scram
-      - name: mongodb-xrm-trader
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: trader
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-trader-password
-            roles:
-              - name: readWrite
-                db: provider
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-trader-scram
-      - name: mongodb-xrm-regulator
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: regulator
+          - name: xrm-regulator
             db: admin
             passwordSecretRef: 
               name: 5gzorro-mongodb-xrm-regulator-password
             roles:
               - name: readWrite
-                db: regulator
-              - name: readWrite
-                db: provider
+                db: gravitee
             scramCredentialsSecretName: 5gzorro-mongodb-xrm-regulator-scram
-      - name: mongodb-xrm-consumer
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: consumer
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-consumer-password
-            roles:
-              - name: readWrite
-                db: provider
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-consumer-scram
-      - name: mongodb-srsd-admin
-        replicas: 1
-        version: "4.2.6"
-        users:
-          - name: srsd
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-srsd-admin-password
-            roles:
-              - name: readWrite
-                db: srsd
-            scramCredentialsSecretName: 5gzorro-mongodb-srsd-admin-scram
-      - name: mongodb-srsd-regulator
-        replicas: 1
-        version: "4.2.6"
-        users:
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -216,23 +176,27 @@ custom-resource-5gzorro:
             roles:
               - name: readWrite
                 db: srsd
-            scramCredentialsSecretName: 5gzorro-mongodb-srsd-regulator-scram        
-      - name: mongodb-srsd-trader
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-regulator-scram   
+      - name: mongodb-consumer
         replicas: 1
         version: "4.2.6"
         users:
-          - name: srsd
+          - name: idp-consumer
             db: admin
             passwordSecretRef: 
-              name: 5gzorro-mongodb-srsd-trader-password
+              name: 5gzorro-mongodb-idp-consumer-password
             roles:
               - name: readWrite
-                db: srsd
-            scramCredentialsSecretName: 5gzorro-mongodb-srsd-trader-scram
-      - name: mongodb-srsd-consumer
-        replicas: 1
-        version: "4.2.6"
-        users:
+                db: provider
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
+          - name: xrm-consumer
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-consumer-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-consumer-scram  
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -844,7 +808,7 @@ aries-cloudagent-consumer:
 identity-and-permissions-manager-admin:
   enabled: true
   database:
-    connectionString: "mongodb-idp-admin-admin-admin"
+    connectionString: "mongodb-admin-admin-idp-admin"
     port: "27017"
   ingress:
     enabled: true
@@ -877,7 +841,7 @@ identity-and-permissions-manager-admin:
 identity-and-permissions-manager-regulator:
   enabled: true
   database:
-    connectionString: "mongodb-idp-regulator-admin-regulator"
+    connectionString: "mongodb-regulator-admin-idp-regulator"
     port: ""
   ingress:
     enabled: true
@@ -908,7 +872,7 @@ identity-and-permissions-manager-regulator:
 identity-and-permissions-manager-trader: # holder
   enabled: true
   database:
-    connectionString: "mongodb-idp-trader-admin-trader"
+    connectionString: "mongodb-trader-admin-idp-trader"
     port: ""
   ingress:
     enabled: true
@@ -940,7 +904,7 @@ identity-and-permissions-manager-trader: # holder
 identity-and-permissions-manager-consumer:  # verifier
   enabled: true
   database:
-    connectionString: "mongodb-idp-consumer-admin-consumer"
+    connectionString: "mongodb-consumer-admin-idp-consumer"
     port: ""
   ingress:
     enabled: true
@@ -1605,7 +1569,7 @@ smart-resource-and-service-discovery-regulator:
        hosts:
          - regulator-srsd.5gzorro.smartcommunitylab.it
   mongo:
-    uri: "mongodb-srsd-regulator-admin-srsd"
+    uri: "mongodb-regulator-admin-srsd"
 
 smart-resource-and-service-discovery-trader:
   enabled: true
@@ -1625,7 +1589,7 @@ smart-resource-and-service-discovery-trader:
        hosts:
          - trader-srsd.5gzorro.smartcommunitylab.it
   mongo:
-    uri: "mongodb-srsd-trader-admin-srsd"
+    uri: "mongodb-trader-admin-srsd"
 
 smart-resource-and-service-discovery-consumer:
   enabled: true
@@ -1645,7 +1609,7 @@ smart-resource-and-service-discovery-consumer:
        hosts:
          - consumer-srsd.5gzorro.smartcommunitylab.it
   mongo:
-    uri: "mongodb-srsd-consumer-admin-srsd"
+    uri: "mongodb-consumer-admin-srsd"
     
 monitoring-data-aggregator-admin:
   enabled: true
@@ -1743,10 +1707,10 @@ xrm-admin:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "mongodb-xrm-admin-admin-admin"
+      uri: "mongodb-admin-admin-xrm-admin"
   managementapi:
     mongo:
-      uri: "mongodb-xrm-admin-admin-admin"
+      uri: "mongodb-admin-admin-xrm-admin"
   translator:
     postgres:
       host: zorro5g-psqldb-admin
@@ -1788,10 +1752,10 @@ xrm-regulator:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "mongodb-xrm-regulator-admin-regulator"
+      uri: "mongodb-regulator-admin-xrm-regulator"
   managementapi:
     mongo:
-      uri: "mongodb-xrm-regulator-admin-regulator"
+      uri: "mongodb-regulator-admin-xrm-regulator"
   translator:
     postgres:
       host: zorro5g-psqldb-regulator
@@ -1833,16 +1797,16 @@ xrm-trader:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "mongodb-xrm-trader-admin-trader"
+      uri: "mongodb-trader-admin-xrm-trader"
   managementapi:
     mongo:
-      uri: "mongodb-xrm-trader-admin-trader"
+      uri: "mongodb-trader-admin-xrm-trader"
   translator:
     postgres:
       host: zorro5g-psqldb-xrm-trader
       port: 5432
       name: xrmtranslatortrader
-      existingSecret: "xrmtranslatortrader.zorro5g-psqldb-xrm-trader.credentials.postgresql.acid.zalan.do"
+      existingSecret: "xrmtranslatortrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
 
@@ -1878,10 +1842,10 @@ xrm-consumer:
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
-      uri: "mongodb-xrm-consumer-admin-consumer"
+      uri: "mongodb-consumer-admin-xrm-consumer"
   managementapi:
     mongo:
-      uri: "mongodb-xrm-consumer-admin-consumer"
+      uri: "mongodb-consumer-admin-xrm-consumer"
   translator:
     postgres:
       host: zorro5g-psqldb-consumer
