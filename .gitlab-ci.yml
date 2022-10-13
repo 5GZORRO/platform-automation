@@ -20,6 +20,11 @@ cache:
   paths:
     - ${TF_ROOT}/.terraform/
 
+test:
+  stage: test
+  rules:
+    - if: $DEPLOY != "true" && $DESTROY != "true"
+    
 fmt:
   stage: validate
   script:
@@ -27,8 +32,7 @@ fmt:
     - gitlab-terraform fmt -check
   allow_failure: true
   rules:
-    - if: $DEPLOY != "true"
-    - if: $DESTROY != "true"
+    - if: $DEPLOY != "true" && $DESTROY != "true"
     
 validate:
   stage: validate
@@ -36,8 +40,7 @@ validate:
     - cd "${TF_ROOT}"
     - gitlab-terraform validate
   rules:
-    - if: $DEPLOY != "true"
-    - if: $DESTROY != "true"
+    - if: $DEPLOY != "true" && $DESTROY != "true"
 
 build:
   stage: build
