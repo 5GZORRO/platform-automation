@@ -38,12 +38,6 @@ validate:
   rules:
     - if: $DEPLOY != "true"
     - if: $DESTROY != "true"
-      
-iac-sast:
-  stage: test
-  rules:
-    - if: $DEPLOY != "true"
-    - if: $DESTROY != "true"
 
 kics-iac-sast:
   extends: iac-sast
