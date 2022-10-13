@@ -27,10 +27,8 @@ fmt:
     - gitlab-terraform fmt -check
   allow_failure: true
   rules:
-    - if: $DEPLOY == "true"
-      when: never
-    - if: $DESTROY == "true"
-      when: never
+    - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
 
 validate:
   stage: validate
@@ -38,27 +36,20 @@ validate:
     - cd "${TF_ROOT}"
     - gitlab-terraform validate
   rules:
-    - if: $DEPLOY == "true"
-      when: never
-    - if: $DESTROY == "true"
-      when: never
+    - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
       
 iac-sast:
   stage: test
   rules:
-    - if: $DEPLOY == "true"
-      when: never
-    - if: $DESTROY == "true"
-      when: never
+    - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
 
 kics-iac-sast:
   extends: iac-sast
   rules:
-    - if: $DEPLOY == "true"
-      when: never
-    - if: $DESTROY == "true"
-      when: never
-
+    - if: $DEPLOY != "true"
+    - if: $DESTROY != "true"
 
 build:
   stage: build
