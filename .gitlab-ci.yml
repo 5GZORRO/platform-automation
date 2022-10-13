@@ -52,6 +52,11 @@ build:
     reports:
       terraform: ${TF_ROOT}/plan.json
     expire_in: 1 week
+  rules:
+    - if: $DESTROY == "true"
+    - if: $SCALE_DOWN == "true"
+    - if: $DEPLOY == "true"
+    
 deploy:
   stage: deploy
   before_script:
