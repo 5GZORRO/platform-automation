@@ -14,7 +14,7 @@ global:
     username: ${REGISTRY_USERNAME}
     password: ${REGISTRY_PASSWORD}
 
-  ingress-nginx:
+ingress-nginx:
   enabled: true
   controller:
     service:
@@ -1549,7 +1549,7 @@ smart-resource-and-service-discovery-admin:
        hosts:
          - admin-srsd.5gzorro.smartcommunitylab.it
   mongo:
-    uri: "mongodb-srsd-admin-admin-srsd"
+    uri: "mongodb-admin-admin-srsd"
 
 smart-resource-and-service-discovery-regulator:
   enabled: true
@@ -1979,6 +1979,7 @@ trmf-consumer:
 sla-breach-predictor:
   enabled: true
   persistence:
+    enabled: true
     storageClassName: "azurefile"
     size: 128Gi
   kafka:
