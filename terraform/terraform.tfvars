@@ -17,7 +17,7 @@ scale_node_pool_name    = "scale"
 scale_node_pool_size    = "Standard_D8s_v5"
 scale_node_pool_count   = 3
 
-kubernetes_version = "1.22.11"
+kubernetes_version = "1.22.15"
 max_pods           = 250
 domain_name        = "5gzorro.smartcommunitylab.it"
 
