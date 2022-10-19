@@ -14,6 +14,7 @@ global:
     username: ${REGISTRY_USERNAME}
     password: ${REGISTRY_PASSWORD}
 
+######################## START Base Profile Block ########################
 ingress-nginx:
   enabled: true
   controller:
@@ -555,16 +556,6 @@ community-operator:
   community-operator-crds:
     enabled: false
 
-redis:
-  enabled: false
-  architecture: standalone
-  replica:
-    replicaCount: 1
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-
 argo-workflows:
   enabled: true
   crds:
@@ -598,7 +589,8 @@ argo-events:
   enabled: true
   crds:
     install: false
-
+######################## END Base Profile Block ########################
+######################## START Admin Profile Block ########################
 datalake:
   enabled: true
   namespace: default
@@ -1037,7 +1029,8 @@ trmf-admin:
     uri: http://zorro5g-xrm-admin-elasticsearch:9200/
   datalake:
     kafka: kafka-cluster-kafka-bootstrap:9092
-
+######################## END Admin Profile Block ########################
+######################## START Regulator Profile Block ########################
 elma-regulator:
   enabled: true
   role: regulator
@@ -1373,7 +1366,8 @@ xrm-regulator:
       existingSecret: "xrmtranslatorregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
       userKey: "username"
       passwordKey: "password"
-
+######################## END Regulator Profile Block ########################
+######################## START Trader Profile Block ########################
 elma-trader:
   enabled: true
   role: trader
@@ -1712,7 +1706,8 @@ issm-trader:
   argo:
     internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
     external: "https://argo.5gzorro.smartcommunitylab.it"
-    
+######################## END Trader Profile Block ########################
+######################## START Consumer Profile Block ########################
 elma-consumer:
   enabled: true
   role: consumer
@@ -2031,3 +2026,4 @@ trmf-consumer:
     uri: http://zorro5g-xrm-consumer-elasticsearch:9200/
   datalake:
     kafka: kafka-cluster-kafka-bootstrap:9092
+######################## END Consumer Profile Block ########################

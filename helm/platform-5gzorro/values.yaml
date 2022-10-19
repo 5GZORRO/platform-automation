@@ -1,34 +1,477 @@
-global:
-  imagePullSecrets: []
+# -- tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping)
+tags:
+  # -- Enable all compontens in basic profile 
+  base: true
+  # -- Enable all compontens in admin profile
+  admin: true 
+  # -- Enable all compontens in trader profile
+  trader: true
+  # -- Enable all compontens in regulator profile
+  regulator: true
+  # -- Enable monitoring profile
+  monitoring: true
 
-external-dns:  
+global:
+  imagePullSecrets: 
+    # -- Name of the registry credentials secrets manually created
+    - name: registry-credentials
+  imageCredentials:
+    # -- URL of the repository where all the images are stored
+    registry: ""
+    # -- Username
+    username: ""
+    # -- Password
+    password: ""
+
+######################## START Base Profile Block ########################
+ingress-nginx:
+  # -- Enable ingress-nginx controller. See [ingress-nginx](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx) documentation for more datails.
   enabled: true
+  # -- Set it with your domain
+  controller:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: ""
+
+cert-manager: 
+  # -- Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails.
+  enabled: true
+  # -- Namespace name where cert-manager will be installed.
+  namespace: cert-manager
+
+rabbitmq-cluster-operator:
+  # -- Enable rabbitmq operator. See [rabbitmq-cluster-operator](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator) documentation for more datails.
+  enabled: true
+
+custom-resource-5gzorro:
+  # -- Enable 5GZORRO custom resource like rabbitmq, mongodb and postgresSQL clusters.
+  enabled: true
+  rabbitmq-cluster-operator:
+    # -- Enable custom resource for rabbitmq-cluster
+    enabled: true
+    # -- RabbitMQ cluster configurations 
+    rabbitmqClusters:
+      - name: rabbitmq-elma-admin
+        replicas: 1
+      - name: rabbitmq-elma-regulator
+        replicas: 1
+      - name: rabbitmq-elma-trader
+        replicas: 1
+      - name: rabbitmq-elma-consumer
+        replicas: 1
+  certmanager:
+    # -- email address used for notifications about certificate status
+    email: ""
+    zerossl:
+      # -- Enable zerossl certficate provider account is needed.
+      enabled: false
+      # -- EABK ID available in zeroSSL developer console 
+      eabKid: ${EAB_KID} 
+      eabHmac:
+        # -- HMAC secrets name 
+        secretName: "zerossl-eabsecret"
+        # -- HMAC secrets name 
+        secretKey: "secret"
+    letsencrypt:
+      # -- Enable letsencrypt certificate provider
+      enabled: true
+    # -- Azure DNS configurations 
+    azureDns:
+      subscriptionID: ${SUBSCRIPTION_ID} 
+      resourceGroupName: ${RESOURCE_GROUP_NAME} 
+      hostedZoneName: ${HOSTED_ZONE_NAME} 
+      clientID: ${MANAGEND_IDENTITY_CLIENT_ID} 
+  kube-prometheus-stack:
+    # -- Enable prometues to scrape some custom metrics
+    enabled: true
+  community-operator:
+    # -- Enable MongoDB custom resource
+    enabled: true
+    community-operator-crds:
+      enabled: false
+    # -- MongoDB clusters list
+    # @notationType -- list
+    mongodbClusters:
+      # -- MongoDB clusters configurations example
+      - name: mongodb-admin
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: idp-admin
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-idp-admin-password
+            roles:
+              - name: readWrite
+                db: administrator
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
+          - name: xrm-admin
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-admin-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-admin-scram
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-admin-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-admin-scram
+      - name: mongodb-trader
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: idp-trader
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-idp-trader-password
+            roles:
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-trader-scram
+          - name: xrm-trader
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-trader-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-trader-scram
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-trader-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-trader-scram
+      - name: mongodb-regulator
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: idp-regulator
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-idp-regulator-password
+            roles:
+              - name: readWrite
+                db: regulator
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-regulator-scram
+          - name: xrm-regulator
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-regulator-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-regulator-scram
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-regulator-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-regulator-scram   
+      - name: mongodb-consumer
+        replicas: 1
+        version: "4.2.6"
+        users:
+          - name: idp-consumer
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-idp-consumer-password
+            roles:
+              - name: readWrite
+                db: provider
+            scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
+          - name: xrm-consumer
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-xrm-consumer-password
+            roles:
+              - name: readWrite
+                db: gravitee
+            scramCredentialsSecretName: 5gzorro-mongodb-xrm-consumer-scram  
+          - name: srsd
+            db: admin
+            passwordSecretRef: 
+              name: 5gzorro-mongodb-srsd-consumer-password
+            roles:
+              - name: readWrite
+                db: srsd
+            scramCredentialsSecretName: 5gzorro-mongodb-srsd-consumer-scram 
+  strimzi:
+    # -- Enable kafka custom resource
+    enabled: true
+    # -- kafka clusters list
+    # @notationType -- list
+    kafkaClusters:
+      # -- Kafka clusters configurations example
+      - name: kafka-cluster
+        replicas: 3
+        version: 3.2.0
+        config:
+          offsets.topic.replication.factor: 3
+          transaction.state.log.replication.factor: 3
+          transaction.state.log.min.isr: 2
+          default.replication.factor: 3
+          min.insync.replicas: 1
+          inter.broker.protocol.version: "3.2"
+        storage:
+          type: jbod
+          volumes:
+          - id: 0
+            type: persistent-claim
+            size: 32Gi
+            deleteClaim: false
+          - id: 1
+            type: persistent-claim
+            size: 32Gi
+            deleteClaim: false
+        zookeeper:
+          replicas: 3
+          storage:
+            type: persistent-claim
+            size: 32Gi
+    # -- kafka topic list
+    # @notationType -- list
+    kafkaTopics:
+      # -- Kafka topic configurations example
+      - name: dlt-product-offerings
+        clusterName: kafka-cluster
+        spec:
+          partitions: 3
+          replicas: 1
+      - name: dlt-product-order
+        clusterName: kafka-cluster
+        spec:
+          partitions: 3
+          replicas: 1
+
+  postgres-operator:
+    # -- Enable PostgresSQL custom resource
+    enabled: true
+    # -- PostgresSQL clusters list
+    # @notationType -- list
+    postgresqlClusters:
+      # -- PostgresSQL clusters configurations example
+      - name: zorro5g-psqldb-admin
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 256Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            nssoadmin:
+              - superuser
+              - createdb
+            sclmadmin:
+              - superuser
+              - createdb
+            xrmcatalogueappadmin:
+              - superuser
+              - createdb
+            xrmtranslatoradmin:
+              - superuser
+              - createdb
+            mdaadmin:
+              - superuser
+              - createdb
+            legalproseadmin:
+              - superuser
+              - createdb
+            governancemanageradmin:
+              - superuser
+              - createdb
+            rsocadmin:
+              - superuser
+              - createdb
+          databases:
+            nssoadmin: nssoadmin
+            sclmadmin: sclmadmin
+            xrmcatalogueappadmin: xrmcatalogueappadmin
+            xrmtranslatoradmin: xrmtranslatoradmin
+            mdaadmin: mdaadmin
+            legalproseadmin: legalproseadmin
+            governancemanageradmin: governancemanageradmin
+            rsocadmin: rsocadmin
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-datalake
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            datalake:
+              - superuser
+              - createdb
+          databases:
+            datalake: datalake
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-regulator
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 256Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmregulator:
+              - superuser
+              - createdb
+            xrmcatalogueappregulator:
+              - superuser
+              - createdb
+            xrmtranslatorregulator:
+              - superuser
+              - createdb
+            mdaregulator:
+              - superuser
+              - createdb
+            legalproseregulator:
+              - superuser
+              - createdb
+            governancemanagerregulator:
+              - superuser
+              - createdb
+            rsocregulator:
+              - superuser
+              - createdb
+          databases:
+            sclmregulator: sclmregulator
+            xrmcatalogueappregulator: xrmcatalogueappregulator
+            xrmtranslatorregulator: xrmtranslatorregulator
+            mdaregulator: mdaregulator
+            legalproseregulator: legalproseregulator
+            governancemanagerregulator: governancemanagerregulator
+            rsocregulator: rsocregulator
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-consumer
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 256Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmconsumer:
+              - superuser
+              - createdb
+            xrmcatalogueappconsumer:
+              - superuser
+              - createdb
+            xrmtranslatorconsumer:
+              - superuser
+              - createdb
+            mdaconsumer:
+              - superuser
+              - createdb
+            rsocconsumer:
+              - superuser
+              - createdb
+          databases:
+            sclmconsumer: sclmconsumer
+            xrmcatalogueappconsumer: xrmcatalogueappconsumer
+            xrmtranslatorconsumer: xrmtranslatorconsumer
+            mdaconsumer: mdaconsumer
+            rsocconsumer: rsocconsumer
+          postgresql:
+            version: "14"
+      - name: zorro5g-psqldb-trader
+        spec:
+          teamId: zorro5g
+          volume:
+            size: 16Gi
+            storageClass: "managed-premium"
+          numberOfInstances: 1
+          users:
+            sclmtrader:
+              - superuser
+              - createdb
+            nssotrader:
+              - superuser
+              - createdb
+            xrmcatalogueapptrader:
+              - superuser
+              - createdb
+            xrmtranslatortrader:
+              - superuser
+              - createdb
+            mdatrader:
+              - superuser
+              - createdb
+            rsoctrader:
+              - superuser
+              - createdb
+          databases:
+            sclmtrader: sclmtrader
+            nssotrader: nssotrader
+            xrmcatalogueapptrader: xrmcatalogueapptrader
+            xrmtranslatortrader: xrmtranslatortrader
+            mdatrader: mdatrader
+            rsoctrader: rsoctrader
+          postgresql:
+            version: "14"
+
+external-dns:
+  # -- Enable external-dns controller. See [external-dns](https://github.com/kubernetes-sigs/external-dns/tree/master/charts/external-dns) documentation for more datails.
+  enabled: true
+  # -- Select DNS provider
   provider: azure
+  # -- Azure provider configuration
   azure:
-    resourceGroup: ""
-    tenantId: ""
-    subscriptionId: ""
+    resourceGroup: ${RESOURCE_GROUP_NAME} 
+    tenantId: ${AZURE_TENANT_ID}
+    subscriptionId: ${SUBSCRIPTION_ID} 
     useManagedIdentityExtension: true
-  txtOwnerId: ""
-  domainFilters: []
+  txtOwnerId: "external-dns"
+  # -- Set this filter according to your dns configuration
+  domainFilters: ["*.${HOSTED_ZONE_NAME} "]
 
 kube-prometheus-stack:
-  enabled: false
+  # -- Enable kube-prometheus-stack. See [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) documentation for more datails.
+  enabled: true
+  # @ignored
   defaultRules:
     etcd: false
     kubeScheduler: false
+  # @ignored
   grafana:
     defaultDashboardsTimezone: Europe/Rome
     adminPassword: 5gzorro-metrics
+  # @ignored
   kubeControllerManager:
     enabled: false
+  # @ignored
   kubeEtcd:
     enabled: false
+  # @ignored
   kubeScheduler:
     enabled: false
+  # prometheusOperator:
+  #   logLevel: debug
+  # @ignored
   prometheus:
     prometheusSpec:
       serviceMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
       retention: 180d
       retentionSize: "30GB"
       storageSpec:
@@ -41,7 +484,9 @@ kube-prometheus-stack:
                 storage: 32Gi
 
 loki-stack:
-  enabled: false
+  # -- Enable loki-stack. See [loki-stack](https://github.com/grafana/helm-charts/tree/main/charts/loki-stack) documentation for more datails.
+  enabled: true
+  # @ignored
   loki:
     enabled: true
     isDefault: true
@@ -54,10 +499,9 @@ loki-stack:
       subPath: "loki"
       storageClassName: managed-premium
     serviceMonitor:
-      enabled: false
+      enabled: true
       prometheusRule:
-        enabled: false
-        additionalLabels: {}
+        enabled: true
         rules: 
         #  Some examples from https://awesome-prometheus-alerts.grep.to/rules.html#loki
         - alert: LokiProcessTooManyRestarts
@@ -92,125 +536,105 @@ loki-stack:
           annotations:
             summary: Loki request latency (instance {{ $labels.instance }})
             description: "The {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf \"%.2f\" $value }}s 99th percentile latency\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  # @ignored
   promtail:
     enabled: true
     config:
       lokiAddress: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push
     serviceMonitor:
-      enabled: false
+      enabled: true
 
 minio:
+# -- Enable minio. See [minio](https://github.com/minio/operator/tree/master/helm/operator) documentation for more datails.
   enabled: true
+   # @ignored
   fullnameOverride: "minio"
+   # @ignored
   mode: standalone
+   # @ignored
   replicas: 1
+   # @ignored
   DeploymentUpdate:
     type: Recreate
-  rootUser: ""
-  rootPassword: ""
+  # @ignored
   resources:
     requests:
       memory: 2Gi
+  # @ignored
   persistence:
     enabled: true
     storageClass: ""
     accessModes: "ReadWriteOnce"
     size: 32Gi
-  metrics:
-    serviceMonitor:
-      enabled: false
-
-postgres-operator:
-  enabled: true
-  postgresqlClusters:
-    - name: zorro5g-global-db
-      spec:
-        teamId: 5gzorro
-        volume:
-          size: 1Gi
-          storageClass: ""
-        numberOfInstances: 1
-        users:
-          zorro5g:
-            - superuser
-            - createdb
-        databases:
-          global: zorro5g
-        postgresql:
-          version: "14"
-
-strimzi:
-  enabled: true
-  watchAnyNamespace: true
-  kafkaClusters:
-    - name: kafka-cluster
-      replicas: 3
-      version: 3.2.0
-      config:
-        offsets.topic.replication.factor: 3
-        transaction.state.log.replication.factor: 3
-        transaction.state.log.min.isr: 2
-        default.replication.factor: 3
-        min.insync.replicas: 1
-        inter.broker.protocol.version: "3.2"
-      storage:
-        type: jbod
-        volumes:
-        - id: 0
-          type: persistent-claim
-          size: 32Gi
-          deleteClaim: false
-        - id: 1
-          type: persistent-claim
-          size: 32Gi
-          deleteClaim: false
-      zookeeper:
-        replicas: 3
-        storage:
-          type: persistent-claim
-          size: 32Gi
-  kafkaTopics:
-    - name: test1
-      clusterName: kafka-cluster
-      spec:
-        partitions: 3
-        replicas: 1
-    - name: test2
-      clusterName: kafka-cluster
-      spec:
-        partitions: 3
-        replicas: 1
-  
-community-operator:
-  enabled: false
-  community-operator-crds:
-    enabled: false
-  mongodbClusters:
-    - name: mongo-test
-      replicas: 3
-      version: "4.2.6"
-      users:
-        - name: test-user
-          db: admin
-          passwordSecretRef: 
-            name: test-password
-          roles:
-            - name: readWrite
-              db: test-db
-          scramCredentialsSecretName: my-scram
-
-redis:
-  enabled: true
-  architecture: standalone
-  replica:
-    replicaCount: 1
-  metrics:
+  # @ignored
+  ingress:
     enabled: true
+    ingressClassName: "nginx"
+    annotations:
+      helm.sh/resource-policy: keep
+    path: /
+    hosts:
+      - minio.${HOSTED_ZONE_NAME}
+    tls:
+     - secretName: 5gzorro-wildcard-cert
+       hosts:
+         - minio.${HOSTED_ZONE_NAME}
+  # @ignored
+  metrics:
     serviceMonitor:
       enabled: true
+  # @ignored
+  users:
+    - accessKey: zorro5g
+      secretKey: zorro5g2022
+      policy: consoleAdmin
+    - accessKey: datalake
+      secretKey: datalake2022
+      policy: datalakereadwrite
+  # @ignored
+  buckets:
+    - name: datalake
+      policy: none
+      purge: false
+      versioning: false
+      objectlocking: false
+  # @ignored
+  policies:
+    - name: datalakereadwrite
+      statements:
+        - resources:
+            - 'arn:aws:s3:::datalake/*'
+          actions:
+            - "s3:AbortMultipartUpload"
+            - "s3:GetObject"
+            - "s3:DeleteObject"
+            - "s3:PutObject"
+            - "s3:ListMultipartUploadParts"
+
+postgres-operator:
+  # -- Enable postgres-operator. See [postgres-operator](https://github.com/zalando/postgres-operator) documentation for more datails.
+  enabled: true
+
+strimzi:
+  # -- Enable Kafka Strimzi Operator. See [kafka-strimzi](https://github.com/strimzi/strimzi-kafka-operator) documentation for more datails.
+  enabled: true
+  # -- Watch for CR in all namespaces
+  watchAnyNamespace: true
+          
+community-operator:
+  # -- Enable MongoDB Community Operator. See [mongodb-community](https://github.com/mongodb/mongodb-kubernetes-operator) documentation for more datails.
+  enabled: true
+  community-operator-crds:
+  # -- Disable CRD creation that can cause problems with umbrella charts
+    enabled: false
 
 argo-workflows:
+  # -- Enable Argo Workflow. See [argo-workflows](https://github.com/argoproj/argo-helm/tree/main/charts/argo-workflows) documentation for more datails.
   enabled: true
+  crds:
+    # -- Disable CRD creation that can cause problems with umbrella charts
+    install: false
+  # @ignored
   controller:
     metricsConfig:
       enabled: true
@@ -218,109 +642,147 @@ argo-workflows:
       enabled: true
     serviceMonitor:
       enabled: true
+  # @ignored
+  server:
+    extraArgs: 
+      - --auth-mode=server
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      annotations: 
+        helm.sh/resource-policy: keep
+      hosts:
+        - argo.${HOSTED_ZONE_NAME}
+      paths:
+        - /
+      pathType: Prefix
+      tls: 
+        - secretName: 5gzorro-wildcard-cert
+          hosts:
+            - argo.${HOSTED_ZONE_NAME}
 
-governance-manager-api:
+argo-events:
+  # -- Enable Argo Events. See [argo-events](https://github.com/argoproj/argo-helm/tree/main/charts/argo-events) documentation for more datails.
   enabled: true
-  service:
-    prefix: /zorro/governance
-  postgres:
-    username: postgres
-    password: postgres
-    name: postgres
-    host: postgres
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: http://10.4.2.214:6800
-  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
-  callbacks:
-    updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
-  dockerTag: v0.1.23
-
-legal-prose-repository:
+  crds:
+    # -- Disable CRD creation that can cause problems with umbrella charts
+    install: false
+######################## END Base Profile Block ########################
+######################## START Admin Profile Block ########################
+datalake:
+  # -- Enable 5GZORRO datalake 
   enabled: true
-  service:
-    prefix: /zorro/legal-prose-repository
-  postgres:
-    username: postgres
-    password: postgres
-    name: postgres
-    host: postgres
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: http://10.4.2.214:6800
-  legalProseRepositoryBaseUrl: http://10.4.2.27/zorro/legal-prose-repository/api/v1
-  callbacks:
-     updateProposal: http://10.4.2.102/zorro/governance/api/v1/governance-actions/%s/identity
-  dockerTag: v0.1.23
-
-smart-contract-lifecycle-manager:
-  enabled: true
-  hostname: "172.28.3.6:31080/smart-contract-lifecycle-manager"
-  dockerTag: "5gzorro-core-1.23-rc"
-  postgres:
-    username: postgres             
-    password: postgres             
-    name: operator_a_sclm
-    existingSecret: ""
-    userKey: ""
-    passwordKey: ""
-  identityBaseUrl: "http://172.28.3.153:6200"
-  callbacks:
-    updateSlaIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
-    updateAgreementIdentity: "http://172.28.3.6:31080/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
-  corda:
-    username: operatoraoperations
-    password: usera
-    host: operatora.operatora-ns.svc.cluster.local
-  operatorName: opa
-
-elma-core:
-  enabled: false
   image:
-    tag: gitlab-ci
-    app: elma
-    image: ghcr.io/5gzorro/elicensing-manager-agent/elma
-    pullPolicy: Always
-    pullSecrets: elmaregsecret
-  elmarest:
-    nodePort: 30880
-  elmadb:
-    nodePort: 30881
-  rabbitmq:
-    nodePort: 30882
+    # -- Docker image repository
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/datalake
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "fix-psql1"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Namespace name where datalake will be deployed 
+  namespace: default
+  postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
+    host: "zorro5g-psqldb-datalake"
+    # -- PostgreSQL port
+    port: 5432
+    # -- PostgreSQL database name
+    name: "datalake"
+    # -- PostgreSQL table name
+    table: "datalake_metrics"
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
+    existingSecret: "datalake.zorro5g-psqldb-datalake.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
+    userKey: "username"
+    # -- PostgreSQL secret password key
+    passwordKey: "password"
+  kafka:
+    # -- Kafka hostname (service name if it's in the same namespace, FQDN if NOT)
+    host: "kafka-cluster-kafka-bootstrap"
+    # -- Kafka port
+    port: "9092"
+  minio:
+    # -- Minio hostname (service name if it's in the same namespace, FQDN if NOT)
+    host: "minio"
+    # -- Minio port
+    port: "8080"
+    # -- Minio username
+    username: "datalake"
+    # -- Minio password
+    password: "datalake2022"
+    # -- Minio secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
+    existingSecret: ""
+    # -- Minio secret username key
+    userKey: ""
+    # -- Minio secret password key
+    passwordKey: ""
+  datalake:
+    # -- Datalake Docker image tag
+    imageVersion: "latest"
+    # -- Datalake dicker image repository
+    imageRepository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro"
 
-elma-agent:
-  enabled: false
+sla-breach-predictor:
+  # -- Enable 5GZORRO SLA Breach Predictor
+  enabled: true
+  persistence:
+    # -- Enable persistence
+    enabled: true
+    # -- StorageClassName
+    storageClassName: "dafault"
+    # -- Persistent Volume Claim size
+    size: 128Gi
+  kafka:
+    # -- Kafka hostname (service name if it's in the same namespace, FQDN if NOT)
+    host: kafka-cluster-kafka-bootstrap
+    # -- Kafka port
+    port: 9092
+    # -- Kafka monitoring Topic
+    monTopic: ""
+  # -- Datalake hostname and port (service name if it's in the same namespace, FQDN if NOT)
+  datalakeHost: zorro5g-datalake:8080
+  # -- Smart Contract Lifecycle Manager hostname and port (service name if it's in the same namespace, FQDN if NOT)
+  lcmHost: smart-contract-lifecycle-manager-admin:8087
+
+elma-admin:
+  enabled: true
+  role: admin
+  domainId: "admin"
+  catalog:
+    url: "zorro5g-resource-and-service-offer-catalog-admin"
+    port: "8080"
+    resources: "None"
+  netSlice:
+    url: "172.28.3.15"
+    port: "31082"
+    endpoint: "portal/elicensing/"
+  datalake:
+    url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    auth: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
+    kafka: "kafka-cluster-kafka-bootstrap:9092"
   image:
-    tag: gitlab-ci
+    tag: latest
     app: elma
-    image: ghcr.io/5gzorro/elicensing-manager-agent/elma
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
     pullPolicy: Always
-    pullSecrets: elmaregsecret
-  elmarest:
-    nodePort: 30880
-  elmadb:
-    nodePort: 30881
+    pullSecrets: registry-credentials
   rabbitmq:
-    nodePort: 30882
-
-monitoring-data-aggregator:
-  enabled: false
+    url: "rabbitmq-elma-admin"
+    existingSecret: "rabbitmq-elma-admin-default-user"
+    userKey: "username"
+    passwordKey: "password"
 
 aries-cloudagent-admin:
   enable: true
   agent:
-    role: ""  # Admin, Regulator, Holder, Verifier
-    label: "" # AgentRegulator
-    seed: "" # AgentRegulator00000000000000000
-    did: ""
-    walletName: "" # AgentRegulator
-    walletKey: "" # secret
-
-  vonUrl: "" # http://10.241.0.4:9000
-
+    role: "admin"  # Admin, Regulator, Holder, Verifier
+    label: "AgentAdmin" # AgentRegulator
+    seed: "AgentAdmin0000000000000000000000" # AgentRegulator00000000000000000
+    did: "RGQ8DpoASL9rZZp69i7wJ8"
+    walletName: "AgentAdmin" # AgentRegulator
+    walletKey: "AgentAdminKey" # secret
+  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
   persistence:
     enabled: false
     # storageClassName: default
@@ -328,22 +790,1355 @@ aries-cloudagent-admin:
       - ReadWriteOnce
     size: 10Gi
 
-identity-and-permissions-manager:
-  enabled: false
-
+identity-and-permissions-manager-admin:
+  enabled: true
   database:
-    connectionString: ""
-    port: ""
-
+    connectionString: "mongodb-admin-admin-idp-admin"
+    port: "27017"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-idp.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
+       hosts:
+         - admin-idp.${HOSTED_ZONE_NAME}
   idp:
-    role: ""
-    whitelist: ""
-    holderAgent: ""
-    issuerAgentUrl: ""
-    tradingProviderAgentControllerUrl: ""
-    otherIdpControllers: ""
-    regulatorAgentControllerUrl: ""
-    adminAgentControllerUrl: ""
-    adminCatalogueUrl: ""
+    role: "admin"
+    whitelist: '["*"]'
+    holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
+    adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
     key: ""
     vpnaasKey: ""
+    adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
+
+governance-manager-api-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-admin
+    port: 5432
+    name: governancemanageradmin
+    existingSecret: "governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-gm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-gm-letsencrypt-tls
+       hosts:
+         - admin-gm.${HOSTED_ZONE_NAME}
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"
+  callbacks:
+    updateProposal: "https://admin-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"
+
+legal-prose-repository-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-admin
+    port: 5432
+    name: legalproseadmin
+    existingSecret: "legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-lpr.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-lpr-letsencrypt-tls
+       hosts:
+         - admin-lpr.${HOSTED_ZONE_NAME}
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  callbacks:
+    updateTemplateIdentity: "https://admin-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+
+smart-contract-lifecycle-manager-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-admin
+    port: 5432
+    name: sclmadmin
+    existingSecret: "sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-sclm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-sclm-letsencrypt-tls
+       hosts:
+         - admin-sclm.${HOSTED_ZONE_NAME}
+  role: "admin"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
+  corda:
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10012"
+  operatorName: operatora
+  hostname: "smart-contract-lifecycle-manager-admin:8087"
+
+resource-and-service-offer-catalog-admin:
+  enable: true
+  operatorName: operatora
+  postgres:
+    host: zorro5g-psqldb-admin
+    port: 5432
+    name: rsocadmin
+    existingSecret: "rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-rsoc.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-rsoc-letsencrypt-tls
+       hosts:
+         - admin-rsoc.${HOSTED_ZONE_NAME}
+  role: "admin"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-admin"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-admin"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-admin"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-admin"
+
+gui-admin:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-gui.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-gui-letsencrypt-tls
+       hosts:
+         - admin-gui.${HOSTED_ZONE_NAME}
+  role: "admin"
+  marketPlaceUrl: 'https://admin-rsoc.${HOSTED_ZONE_NAME}/tmf-api'
+  legalProseUrl: 'https://admin-lpr.${HOSTED_ZONE_NAME}'
+  governanceUrl: 'https://admin-gm.${HOSTED_ZONE_NAME}'
+  identityPermissionsUrl: 'https://admin-idp.${HOSTED_ZONE_NAME}'
+  smartContractUrl: 'https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB'
+  srsdUrl: 'https://admin-srsd.${HOSTED_ZONE_NAME}'
+  issmUrl: 'https://admin-issm.${HOSTED_ZONE_NAME}'
+  rappUrl: 'http://172.28.3.242:2626'
+
+smart-resource-and-service-discovery-admin:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-srsd.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #admin-srsd-letsencrypt-tls
+       hosts:
+         - admin-srsd.${HOSTED_ZONE_NAME}
+  mongo:
+    uri: "mongodb-admin-admin-srsd"
+    
+monitoring-data-aggregator-admin:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-admin
+    port: 5432
+    name: mdaadmin
+    existingSecret: "mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: false
+  role: "admin"
+  kafka:
+    host: kafka-cluster-kafka-bootstrap
+    port: 9092
+
+xrm-admin:
+  role: "admin"
+  catalogueapp: 
+    postgres:
+      host: zorro5g-psqldb-admin
+      port: 5432
+      name: xrmcatalogueappadmin
+      existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.${HOSTED_ZONE_NAME}"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "admin"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-admin:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
+  kafka:
+    host: "kafka-cluster-kafka-bootstrap:9092"
+  gateway:
+    mongo:
+      uri: "mongodb-admin-admin-xrm-admin"
+  managementapi:
+    mongo:
+      uri: "mongodb-admin-admin-xrm-admin"
+  translator:
+    postgres:
+      host: zorro5g-psqldb-admin
+      port: 5432
+      name: xrmtranslatoradmin
+      existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+
+issm-admin:
+  enabled: true 
+  role: "admin"
+  orchestrator: "nsso"
+  operatorName: operatora
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-issm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - admin-issm.${HOSTED_ZONE_NAME}
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.${HOSTED_ZONE_NAME}"
+
+nsso-admin:
+  enabled: true
+  role: admin
+  postgres:
+    url: jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require
+    existingSecret: "nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  nfvo:
+    catalogue:
+      type: OSM10
+      address: http://osm.${HOSTED_ZONE_NAME}
+    lcm:
+      type: OSM10
+      address: http://osm.${HOSTED_ZONE_NAME}
+      project: admin
+      username: "admin"
+      password: "admin"
+  rabbitmq:
+    host: zorro5g-nsso-admin-rabbitmq
+
+trmf-admin:
+  enabled: true
+  role: "admin"
+  trmfdb:
+    persistence:
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-admin-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+######################## END Admin Profile Block ########################
+######################## START Regulator Profile Block ########################
+elma-regulator:
+  enabled: true
+  role: regulator
+  domainId: "regulator"
+  catalog:
+    url: "zorro5g-resource-and-service-offer-catalog-regulator"
+    port: "8080"
+    resources: "None"
+  netSlice:
+    url: "172.28.3.15"
+    port: "31082"
+    endpoint: "portal/elicensing/"
+  datalake:
+    url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    auth: '{"userInfo": {"userId": "operator-b", "authToken": "blah"}}'
+    kafka: "kafka-cluster-kafka-bootstrap:9092"
+  image:
+    tag: latest
+    app: elma
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
+    pullPolicy: Always
+    pullSecrets: registry-credentials
+  rabbitmq:
+    url: "rabbitmq-elma-regulator"
+    existingSecret: "rabbitmq-elma-regulator-default-user"
+    userKey: "username"
+    passwordKey: "password"
+
+aries-cloudagent-regulator:
+  enable: true
+  agent:
+    role: "regulator"  # Admin, Regulator, Holder, Verifier
+    label: "AgentRegualtor" # AgentRegulator
+    seed: "AgentRegulator000000000000000000" # AgentRegulator00000000000000000
+    did: "KhgK8deVdK93xbTqkVMzVs"
+    walletName: "AgentRegualtor" # AgentRegulator
+    walletKey: "AgentRegulatorKey" # secret
+  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
+  persistence:
+    enabled: false
+    # storageClassName: default
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+identity-and-permissions-manager-regulator:
+  enabled: true
+  database:
+    connectionString: "mongodb-regulator-admin-idp-regulator"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-idp.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-idp-letsencrypt-tls
+       hosts:
+         - regulator-idp.${HOSTED_ZONE_NAME}
+  idp:
+    role: "regulator"
+    whitelist: '["*"]'
+    holderAgent: "http://zorro5g-aries-cloudagent-regulator:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-regulator:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
+    key: ""
+    vpnaasKey: ""
+
+governance-manager-api-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-regulator
+    port: 5432
+    name: governancemanagerregulator
+    existingSecret: "governancemanagerregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-gm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-gm-letsencrypt-tls
+       hosts:
+         - regulator-gm.${HOSTED_ZONE_NAME}
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-regulator:8080/legal-prose-repository/api/v1"
+  callbacks:
+    updateProposal: "https://regulator-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"
+
+legal-prose-repository-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-regulator
+    port: 5432
+    name: legalproseregulator
+    existingSecret: "legalproseregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-lpr.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-lpr-letsencrypt-tls
+       hosts:
+         - regulator-lpr.${HOSTED_ZONE_NAME}
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+  callbacks:
+    updateTemplateIdentity: "https://regulator-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+
+smart-contract-lifecycle-manager-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-regulator
+    port: 5432
+    name: sclmregulator
+    existingSecret: "sclmregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-sclm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-sclm-letsencrypt-tls
+       hosts:
+         - regulator-sclm.${HOSTED_ZONE_NAME}
+  role: "regulator"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-regulator:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
+  corda:
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10015"
+  operatorName: regualtora
+  hostname: "smart-contract-lifecycle-manager-regulator:8087"
+
+resource-and-service-offer-catalog-regulator:
+  enable: true
+  operatorName: regulatora
+  postgres:
+    host: zorro5g-psqldb-regulator
+    port: 5432
+    name: rsocregulator
+    existingSecret: "rsocregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-rsoc.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-rsoc-letsencrypt-tls
+       hosts:
+         - regulator-rsoc.${HOSTED_ZONE_NAME}
+  role: "regulator"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-regulator"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-regulator"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-regulator"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-regulator"
+
+gui-regulator:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-gui.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-gui-letsencrypt-tls
+       hosts:
+         - regulator-gui.${HOSTED_ZONE_NAME}
+  role: "regulator"
+  marketPlaceUrl: 'https://regulator-rsoc.${HOSTED_ZONE_NAME}/tmf-api'
+  legalProseUrl: 'https://regulator-lpr.${HOSTED_ZONE_NAME}'
+  governanceUrl: 'https://regulator-gm.${HOSTED_ZONE_NAME}'
+  identityPermissionsUrl: 'https://regulator-idp.${HOSTED_ZONE_NAME}'
+  smartContractUrl: 'https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'O=Regulator,L=New York,C=US'
+  srsdUrl: 'https://regulator-srsd.${HOSTED_ZONE_NAME}'
+  issmUrl: 'https://regulator-issm.${HOSTED_ZONE_NAME}'
+  rappUrl: 'http://172.28.3.242:2626'
+
+smart-resource-and-service-discovery-regulator:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-srsd.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #regulator-srsd-letsencrypt-tls
+       hosts:
+         - regulator-srsd.${HOSTED_ZONE_NAME}
+  mongo:
+    uri: "mongodb-regulator-admin-srsd"
+
+monitoring-data-aggregator-regulator:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-regulator
+    port: 5432
+    name: mdaregulator
+    existingSecret: "mdaregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: false
+  role: "regulator"
+  kafka:
+    host: kafka-cluster-kafka-bootstrap
+    port: 9092
+
+xrm-regulator:
+  role: "regulator"
+  catalogueapp: 
+    postgres:
+      host: zorro5g-psqldb-regulator
+      port: 5432
+      name: xrmcatalogueappregulator
+      existingSecret: "xrmcatalogueappregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.${HOSTED_ZONE_NAME}"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "regulator"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-regulator:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
+  kafka:
+    host: "kafka-cluster-kafka-bootstrap:9092"
+  gateway:
+    mongo:
+      uri: "mongodb-regulator-admin-xrm-regulator"
+  managementapi:
+    mongo:
+      uri: "mongodb-regulator-admin-xrm-regulator"
+  translator:
+    postgres:
+      host: zorro5g-psqldb-regulator
+      port: 5432
+      name: xrmtranslatorregulator
+      existingSecret: "xrmtranslatorregulator.zorro5g-psqldb-regulator.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+######################## END Regulator Profile Block ########################
+######################## START Trader Profile Block ########################
+elma-trader:
+  enabled: true
+  role: trader
+  domainId: "trader"
+  catalog:
+    url: "zorro5g-resource-and-service-offer-catalog-trader"
+    port: "8080"
+    resources: "None"
+  netSlice:
+    url: "172.28.3.15"
+    port: "31082"
+    endpoint: "portal/elicensing/"
+  datalake:
+    url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    auth: '{"userInfo": {"userId": "operator-c", "authToken": "blah"}}'
+    kafka: "kafka-cluster-kafka-bootstrap:9092"
+  image:
+    tag: latest
+    app: elma
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
+    pullPolicy: Always
+    pullSecrets: registry-credentials
+  rabbitmq:
+    url: "rabbitmq-elma-trader"
+    existingSecret: "rabbitmq-elma-trader-default-user"
+    userKey: "username"
+    passwordKey: "password"
+
+aries-cloudagent-trader:
+  enable: true
+  agent:
+    role: "trader"  # Admin, Regulator, Holder, Verifier
+    label: "AgentHolder" # AgentRegulator
+    seed: "AgentHolder000000000000000000000" # AgentRegulator00000000000000000
+    did: "5YhRzG3iwWi195vHuxMJPy"
+    walletName: "AgentHolder" # AgentRegulator
+    walletKey: "AgentHolderKey" # secret
+  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
+  persistence:
+    enabled: false
+    # storageClassName: default
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+identity-and-permissions-manager-trader: # holder
+  enabled: true
+  database:
+    connectionString: "mongodb-trader-admin-idp-trader"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-idp.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-idp-letsencrypt-tls
+       hosts:
+         - trader-idp.${HOSTED_ZONE_NAME}
+  idp:
+    role: "trader"
+    whitelist: '["*"]'
+    holderAgent: "http://zorro5g-aries-cloudagent-trader:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-trader:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
+    key: ""
+    vpnaasKey: ""
+
+smart-contract-lifecycle-manager-trader:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-trader
+    port: 5432
+    name: sclmtrader
+    existingSecret: "sclmtrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-sclm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-sclm-letsencrypt-tls
+       hosts:
+         - trader-sclm.${HOSTED_ZONE_NAME}
+  role: "trader"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-trader:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
+  corda:
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10009"
+  operatorName: operatorb
+  hostname: "smart-contract-lifecycle-manager-trader:8087"
+
+resource-and-service-offer-catalog-trader:
+  enable: true
+  operatorName: operatorb
+  postgres:
+    host: zorro5g-psqldb-trader
+    port: 5432
+    name: rsoctrader
+    existingSecret: "rsoctrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-rsoc.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-rsoc-letsencrypt-tls
+       hosts:
+         - trader-rsoc.${HOSTED_ZONE_NAME}
+  role: "trader"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-trader"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-trader"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-trader"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-trader"
+
+gui-trader:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-gui.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-gui-letsencrypt-tls
+       hosts:
+         - trader-gui.${HOSTED_ZONE_NAME}
+  role: "trader"
+  marketPlaceUrl: 'https://trader-rsoc.${HOSTED_ZONE_NAME}/tmf-api'
+  legalProseUrl: 'https://trader-lpr.${HOSTED_ZONE_NAME}'
+  governanceUrl: 'https://trader-gm.${HOSTED_ZONE_NAME}'
+  identityPermissionsUrl: 'https://trader-idp.${HOSTED_ZONE_NAME}'
+  smartContractUrl: 'https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'CN=OperatorC,OU=DLT,O=DLT2,L=London,C=GB'
+  srsdUrl: 'https://trader-srsd.${HOSTED_ZONE_NAME}'
+  issmUrl: 'https://trader-issm.${HOSTED_ZONE_NAME}'
+  rappUrl: 'http://172.28.3.242:2626'
+
+smart-resource-and-service-discovery-trader:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-srsd.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #trader-srsd-letsencrypt-tls
+       hosts:
+         - trader-srsd.${HOSTED_ZONE_NAME}
+  mongo:
+    uri: "mongodb-trader-admin-srsd"
+
+monitoring-data-aggregator-trader:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-trader
+    port: 5432
+    name: mdatrader
+    existingSecret: "mdatrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: false
+  role: "trader"
+  kafka:
+    host: kafka-cluster-kafka-bootstrap
+    port: 9092
+
+xrm-trader:
+  role: "trader"
+  catalogueapp: 
+    postgres:
+      host: zorro5g-psqldb-trader
+      port: 5432
+      name: xrmcatalogueapptrader
+      existingSecret: "xrmcatalogueapptrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.${HOSTED_ZONE_NAME}"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "trader"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-trader:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
+  kafka:
+    host: "kafka-cluster-kafka-bootstrap:9092"
+  gateway:
+    mongo:
+      uri: "mongodb-trader-admin-xrm-trader"
+  managementapi:
+    mongo:
+      uri: "mongodb-trader-admin-xrm-trader"
+  translator:
+    postgres:
+      host: zorro5g-psqldb-xrm-trader
+      port: 5432
+      name: xrmtranslatortrader
+      existingSecret: "xrmtranslatortrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+
+nsso-trader:
+  enabled: true
+  role: trader
+  postgres:
+    url: jdbc:postgresql://zorro5g-psqldb-trader:5432/nssotrader?sslmode=require
+    existingSecret: "nssotrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  nfvo:
+    catalogue:
+      type: OSM10
+      address: http://osm.${HOSTED_ZONE_NAME}
+    lcm:
+      type: OSM10
+      address: http://osm.${HOSTED_ZONE_NAME}
+      project: admin
+      username: "admin"
+      password: "admin"
+  rabbitmq:
+    host: zorro5g-nsso-trader-rabbitmq
+
+trmf-trader:
+  enabled: true
+  role: "trader"
+  trmfdb:
+    persistence:
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-trader:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-trader-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+
+issm-trader:
+  enabled: true 
+  role: "trader"
+  orchestrator: "nsso"
+  operatorName: operatorc
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-issm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - trader-issm.${HOSTED_ZONE_NAME}
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.${HOSTED_ZONE_NAME}"
+######################## END Trader Profile Block ########################
+######################## START Consumer Profile Block ########################
+elma-consumer:
+  enabled: true
+  role: consumer
+  domainId: "consumer"
+  catalog:
+    url: "zorro5g-resource-and-service-offer-catalog-consumer"
+    port: "8080"
+    resources: "None"
+  netSlice:
+    url: "172.28.3.15"
+    port: "31082"
+    endpoint: "portal/elicensing/"
+  datalake:
+    url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    auth: '{"userInfo": {"userId": "operator-d", "authToken": "blah"}}'
+    kafka: "kafka-cluster-kafka-bootstrap:9092"
+  image:
+    tag: latest
+    app: elma
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
+    pullPolicy: Always
+    pullSecrets: registry-credentials
+  rabbitmq:
+    url: "rabbitmq-elma-consumer"
+    existingSecret: "rabbitmq-elma-consumer-default-user"
+    userKey: "username"
+    passwordKey: "password"
+
+aries-cloudagent-consumer:
+  enable: true
+  agent:
+    role: "consumer"  # Admin, Regulator, Holder, Verifier
+    label: "AgentVerifier" # AgentRegulator
+    seed: "AgentVerifier0000000000000000000" # AgentRegulator00000000000000000
+    did: "2ramRjDFUSwWnn4JJ5MDpC"
+    walletName: "AgentVerifier" # AgentRegulator
+    walletKey: "AgentVerifierKey" # secret
+  vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
+  persistence:
+    enabled: false
+    # storageClassName: default
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+identity-and-permissions-manager-consumer:  # verifier
+  enabled: true
+  database:
+    connectionString: "mongodb-consumer-admin-idp-consumer"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-idp.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - consumer-idp.${HOSTED_ZONE_NAME}
+  idp:
+    role: "consumer"
+    whitelist: '["*"]'
+    holderAgent: "http://zorro5g-aries-cloudagent-consumer:8001"
+    issuerAgentUrl: "http://zorro5g-aries-cloudagent-consumer:8001"
+    tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
+    adminAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
+    key: ""
+    vpnaasKey: ""
+
+smart-contract-lifecycle-manager-consumer:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-consumer
+    port: 5432
+    name: sclmconsumer
+    existingSecret: "sclmconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-sclm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-sclm-letsencrypt-tls
+       hosts:
+         - consumer-sclm.${HOSTED_ZONE_NAME}
+  role: "consumer"
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-consumer:8000"
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-consumer:8080/api/v1"
+  callbacks:
+    updateSlaIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
+    updateAgreementIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
+  corda:
+    username: user1           
+    password: test             
+    host: 10.241.0.10
+    port: "10006"
+  operatorName: operatorc
+  hostname: "smart-contract-lifecycle-manager-consumer:8087"
+
+resource-and-service-offer-catalog-consumer:
+  enable: true
+  operatorName: operatorc
+  postgres:
+    host: zorro5g-psqldb-consumer
+    port: 5432
+    name: rsocconsumer
+    existingSecret: "rsocconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  kafka:
+    bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    offeringsTopic: dlt-product-offerings
+    ordersTopic: dlt-product-orders
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-rsoc.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-rsoc-letsencrypt-tls
+       hosts:
+         - consumer-rsoc.${HOSTED_ZONE_NAME}
+  role: "consumer"
+  did:
+    host: "http://zorro5g-identity-and-permissions-manager-consumer"
+    port: "8000"
+  lcm:
+    host: "smart-contract-lifecycle-manager-consumer"
+    port: "8087"
+    offerPath: "/product-offer/"
+    orderPath: "/product_order/"
+    issuePath: "/spectoken/derivative/issue"
+    slaPath: "/api/v1/service-level-agreement/"
+    skipPost: "false"
+  srsd:
+    host: "zorro5g-smart-resource-and-service-discovery-consumer"
+    port: "5000"
+    requestPath: "/classifyOffer"
+    skipPost: "false"
+  hostname: "resource-and-service-offer-catalog-consumer"
+
+gui-consumer:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-gui.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-gui-letsencrypt-tls
+       hosts:
+         - consumer-gui.${HOSTED_ZONE_NAME}
+  role: "consumer"
+  marketPlaceUrl: 'https://consumer-rsoc.${HOSTED_ZONE_NAME}/tmf-api'
+  legalProseUrl: 'https://consumer-lpr.${HOSTED_ZONE_NAME}'
+  governanceUrl: 'https://consumer-gm.${HOSTED_ZONE_NAME}'
+  identityPermissionsUrl: 'https://consumer-idp.${HOSTED_ZONE_NAME}'
+  smartContractUrl: 'https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
+  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  ledgerIdentity: 'CN=OperatorB,OU=DLT,O=DLT2,L=London,C=GB'
+  srsdUrl: 'https://consumer-srsd.${HOSTED_ZONE_NAME}'
+  issmUrl: 'https://consumer-issm.${HOSTED_ZONE_NAME}'
+  rappUrl: 'http://172.28.3.242:2626'
+
+smart-resource-and-service-discovery-consumer:
+  enabled: true
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-srsd.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-srsd-letsencrypt-tls
+       hosts:
+         - consumer-srsd.${HOSTED_ZONE_NAME}
+  mongo:
+    uri: "mongodb-consumer-admin-srsd"
+
+monitoring-data-aggregator-consumer:
+  enabled: true
+  postgres:
+    host: zorro5g-psqldb-consumer
+    port: 5432
+    name: mdaconsumer
+    existingSecret: "mdaconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
+    userKey: "username"
+    passwordKey: "password"
+  ingress:
+    enabled: false
+  role: "consumer"
+  kafka:
+    host: kafka-cluster-kafka-bootstrap
+    port: 9092
+
+xrm-consumer:
+  role: "consumer"
+  catalogueapp: 
+    postgres:
+      host: zorro5g-psqldb-consumer
+      port: 5432
+      name: xrmcatalogueappconsumer
+      existingSecret: "xrmcatalogueappconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+    mano:
+      id: "ZORRO_OSMR10"
+      type: "OSMR10"
+      site: "ZORRO_OSM"
+      ip: "osm.${HOSTED_ZONE_NAME}"
+      port: "80"
+      username: "admin"
+      password: "admin"
+      project: "consumer"
+    catalogue:
+      id: "DEFAULT_CAT"
+      url: "http://zorro5g-resource-and-service-offer-catalog-consumer:8080"
+  catalogueui:
+    keycloak:
+      enabled: false
+    catalogue:
+      port: "80"
+      scope: "PUBLIC" 
+  kafka:
+    host: "kafka-cluster-kafka-bootstrap:9092"
+  gateway:
+    mongo:
+      uri: "mongodb-consumer-admin-xrm-consumer"
+  managementapi:
+    mongo:
+      uri: "mongodb-consumer-admin-xrm-consumer"
+  translator:
+    postgres:
+      host: zorro5g-psqldb-consumer
+      port: 5432
+      name: xrmtranslatorconsumer
+      existingSecret: "xrmtranslatorconsumer.zorro5g-psqldb-consumer.credentials.postgresql.acid.zalan.do"
+      userKey: "username"
+      passwordKey: "password"
+
+issm-consumer:
+  enabled: true 
+  role: "consumer"
+  orchestrator: "nsso"
+  operatorName: operatorb
+  kafka:
+    url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    port: "9092"
+  argo:
+    internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    external: "https://argo.${HOSTED_ZONE_NAME}"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-issm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - consumer-issm.${HOSTED_ZONE_NAME}
+
+trmf-consumer:
+  enabled: true
+  role: "consumer"
+  trmfdb:
+    persistence:
+      enabled: true
+      storageClassName: "default"
+      size: 8Gi
+  catalogue:
+    uri: http://zorro5g-resource-and-service-offer-catalog-consumer:8080/tmf-api/
+  elk:
+    uri: http://zorro5g-xrm-consumer-elasticsearch:9200/
+  datalake:
+    kafka: kafka-cluster-kafka-bootstrap:9092
+######################## END Consumer Profile Block ########################

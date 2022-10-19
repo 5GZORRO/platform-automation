@@ -95,12 +95,6 @@ dependencies:
     condition: strimzi.enabled
     tags:
       - base
-  - name: redis
-    version: "16.13.*"
-    repository: https://charts.bitnami.com/bitnami
-    condition: redis.enabled
-    tags:
-      - base
   - name: argo-workflows
     version: "0.19.1"
     repository: https://argoproj.github.io/argo-helm
@@ -143,8 +137,7 @@ dependencies:
     tags:
       - admin
       - treder
-      - regulator
-###### Da verificare profili #######      
+      - regulator 
   - name: aries-cloudagent
     alias: aries-cloudagent-admin
     version: "0.1.*"
@@ -172,8 +165,7 @@ dependencies:
     condition: aries-cloudagent-consumer.enabled
     tags:
       - consumer
-      - aries
-###### Da verificare profili #######   
+      - aries  
   - name: identity-and-permissions-manager
     alias: identity-and-permissions-manager-admin
     version: "0.1.*"
