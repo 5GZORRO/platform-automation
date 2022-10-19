@@ -69,6 +69,8 @@ the documentation of each componet for more details.
 
 ### Base profile parameters
 
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | ingress-nginx.enabled | bool | `true` | Enable ingress-nginx controller. See [ingress-nginx](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx) documentation for more datails. |
 | ingress-nginx.controller | object | `{"service":{"annotations":{"external-dns.alpha.kubernetes.io/hostname":""}}}` | Set it with your domain |
 | cert-manager.enabled | bool | `true` | Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails. |
