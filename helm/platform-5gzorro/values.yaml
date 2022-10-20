@@ -726,6 +726,14 @@ datalake:
 sla-breach-predictor:
   # -- Enable 5GZORRO SLA Breach Predictor
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/isbp
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   persistence:
     # -- Enable persistence
     enabled: true
@@ -746,179 +754,283 @@ sla-breach-predictor:
   lcmHost: smart-contract-lifecycle-manager-admin:8087
 
 elma-admin:
+  # -- Enable 5GZORRO e-License Manager
   enabled: true
+  image:
+    # -- Docker image tag
+    tag: latest
+    app: elma
+    # -- Docker image repository
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
+    # -- Image pull policy
+    pullPolicy: Always
+  # -- Define component role/profile
   role: admin
+  # -- e-License Manager domainID
   domainId: "admin"
   catalog:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     url: "zorro5g-resource-and-service-offer-catalog-admin"
+    # -- Port of the Resource and Service Offer Catalog instance specific for this profile
     port: "8080"
     resources: "None"
   netSlice:
+    # -- Slice Manager API URL
     url: "172.28.3.15"
+    # -- Slice Manager API Port
     port: "31082"
+    # -- Slice Manager API endpoint
     endpoint: "portal/elicensing/"
   datalake:
+    # -- Datalake URL
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    # -- Datalake Auth
     auth: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
+    # -- Kafka URL
     kafka: "kafka-cluster-kafka-bootstrap:9092"
-  image:
-    tag: latest
-    app: elma
-    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
-    pullPolicy: Always
-    pullSecrets: registry-credentials
   rabbitmq:
+    # -- URL of the RabbitMQ instance specific for this profile
     url: "rabbitmq-elma-admin"
+    # -- RabbitMQ secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "rabbitmq-elma-admin-default-user"
+    # -- RabbitMQ secret username key
     userKey: "username"
+    # -- RabbitMQ secret password key
     passwordKey: "password"
 
 aries-cloudagent-admin:
+  # -- Enable Aries Cloud Agent 
   enable: true
+  image:
+    # -- Docker image repository
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/aries-cloudagent
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.6.0"
   agent:
+    # -- Define component role/profile
     role: "admin"  # Admin, Regulator, Holder, Verifier
+    # -- Define agent label 
     label: "AgentAdmin" # AgentRegulator
+    # -- Define agent seed
     seed: "AgentAdmin0000000000000000000000" # AgentRegulator00000000000000000
+    # -- Define agent did
     did: "RGQ8DpoASL9rZZp69i7wJ8"
+    # -- Define agent wallet name 
     walletName: "AgentAdmin" # AgentRegulator
+    # -- Define agent wallet key
     walletKey: "AgentAdminKey" # secret
+  # -- VON network API URL 
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
   persistence:
-    enabled: false
-    # storageClassName: default
+    enabled: true
+    storageClassName: default
     accessModes:
       - ReadWriteOnce
     size: 10Gi
 
 identity-and-permissions-manager-admin:
+  # -- Enable 5GZORRO Identity and Permissions Manger
   enabled: true
   database:
+    # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     connectionString: "mongodb-admin-admin-idp-admin"
+    # -- MongoDB port
     port: "27017"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-idp.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+     # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
        hosts:
          - admin-idp.${HOSTED_ZONE_NAME}
   idp:
+    # -- Define component role/profile
     role: "admin"
+    # -- List of all IDP allowed 
     whitelist: '["*"]'
+    # -- Holder Agent URL
     holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
+    # -- Issuer Agent URL
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
+    # -- Trading Provider URL
     tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    # -- Regualator Provider URL
     regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    # -- URLs of other IDP controllers
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
     key: ""
     vpnaasKey: ""
+    # -- Admin DID used for the VON registration
     adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
 
 governance-manager-api-admin:
+  # -- Enable 5GZORRO Governance Manager
   enabled: true
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: governancemanageradmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-gm.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-gm-letsencrypt-tls
        hosts:
          - admin-gm.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Legal Prose Repository instance specific for this profile
   legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"
   callbacks:
+    # -- URL for Governace Manager callback
     updateProposal: "https://admin-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"
 
 legal-prose-repository-admin:
+  # -- Enable 5GZORRO Legal Prose Repository
   enabled: true
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: legalproseadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-lpr.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-lpr-letsencrypt-tls
        hosts:
          - admin-lpr.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Governance Manager instance specific for this profile
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
   callbacks:
+    # -- URL for Legal Prose Template callback
     updateTemplateIdentity: "https://admin-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
 smart-contract-lifecycle-manager-admin:
+  # -- Enable 5GZORRO Smart Contract Lifecycle Manager
   enabled: true
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: sclmadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+    # -- Domain used to expose the service outside the cluster
       - host: admin-sclm.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-sclm-letsencrypt-tls
        hosts:
          - admin-sclm.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Governance Manager instance specific for this profile
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  # -- URL for Smart Contract Lifecycle Manager callback
   callbacks:
     updateSlaIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
+    # -- Corda username
+    username: user1    
+    # -- Corda password       
+    password: test     
+    # -- Corda hostname        
     host: 10.241.0.10
+    # -- Corda port
     port: "10012"
+  # -- Operator name 
   operatorName: operatora
+  # -- Smart Contract Lifecycle Manager exposed URL
   hostname: "smart-contract-lifecycle-manager-admin:8087"
 
 resource-and-service-offer-catalog-admin:

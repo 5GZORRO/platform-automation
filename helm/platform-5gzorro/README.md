@@ -2,9 +2,23 @@
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+5GZORRO will develop these envisaged solutions for zero-touch service, network and security management in multi-stakeholder environments (ubiquitous), making use of Smart contracts based on Distributed Ledgers Technologies to implement required business agility.
+
+**Homepage:** <https://www.5gzorro.eu/>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Fabio Fais | <ffais@fbk.eu> |  |
+
+## Source Code
+
+* <https://github.com/5GZORRO>
 
 ## Requirements
+
+Kubernetes: `>=1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
@@ -156,6 +170,9 @@ A Helm chart for Kubernetes
 | datalake.datalake.imageVersion | string | `"latest"` | Datalake Docker image tag |
 | datalake.datalake.imageRepository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro"` | Datalake dicker image repository |
 | sla-breach-predictor.enabled | bool | `true` | Enable 5GZORRO SLA Breach Predictor |
+| sla-breach-predictor.image.repository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/isbp"` | Docker image repository |
+| sla-breach-predictor.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| sla-breach-predictor.image.tag | string | `"latest"` | Docker image tag Overrides the image tag whose default is the chart appVersion. |
 | sla-breach-predictor.persistence.enabled | bool | `true` | Enable persistence |
 | sla-breach-predictor.persistence.storageClassName | string | `"dafault"` | StorageClassName |
 | sla-breach-predictor.persistence.size | string | `"128Gi"` | Persistent Volume Claim size |
@@ -164,124 +181,114 @@ A Helm chart for Kubernetes
 | sla-breach-predictor.kafka.monTopic | string | `""` | Kafka monitoring Topic |
 | sla-breach-predictor.datalakeHost | string | `"zorro5g-datalake:8080"` | Datalake hostname and port (service name if it's in the same namespace, FQDN if NOT) |
 | sla-breach-predictor.lcmHost | string | `"smart-contract-lifecycle-manager-admin:8087"` | Smart Contract Lifecycle Manager hostname and port (service name if it's in the same namespace, FQDN if NOT) |
-| elma-admin.enabled | bool | `true` |  |
-| elma-admin.role | string | `"admin"` |  |
-| elma-admin.domainId | string | `"admin"` |  |
-| elma-admin.catalog.url | string | `"zorro5g-resource-and-service-offer-catalog-admin"` |  |
-| elma-admin.catalog.port | string | `"8080"` |  |
-| elma-admin.catalog.resources | string | `"None"` |  |
-| elma-admin.netSlice.url | string | `"172.28.3.15"` |  |
-| elma-admin.netSlice.port | string | `"31082"` |  |
-| elma-admin.netSlice.endpoint | string | `"portal/elicensing/"` |  |
-| elma-admin.datalake.url | string | `"http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"` |  |
-| elma-admin.datalake.auth | string | `"{\"userInfo\": {\"userId\": \"operator-a\", \"authToken\": \"blah\"}}"` |  |
-| elma-admin.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
-| elma-admin.image.tag | string | `"latest"` |  |
+| elma-admin.enabled | bool | `true` | Enable 5GZORRO e-License Manager |
+| elma-admin.image.tag | string | `"latest"` | Docker image tag |
 | elma-admin.image.app | string | `"elma"` |  |
-| elma-admin.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` |  |
-| elma-admin.image.pullPolicy | string | `"Always"` |  |
-| elma-admin.image.pullSecrets | string | `"registry-credentials"` |  |
-| elma-admin.rabbitmq.url | string | `"rabbitmq-elma-admin"` |  |
-| elma-admin.rabbitmq.existingSecret | string | `"rabbitmq-elma-admin-default-user"` |  |
-| elma-admin.rabbitmq.userKey | string | `"username"` |  |
-| elma-admin.rabbitmq.passwordKey | string | `"password"` |  |
-| aries-cloudagent-admin.enable | bool | `true` |  |
-| aries-cloudagent-admin.agent.role | string | `"admin"` |  |
-| aries-cloudagent-admin.agent.label | string | `"AgentAdmin"` |  |
-| aries-cloudagent-admin.agent.seed | string | `"AgentAdmin0000000000000000000000"` |  |
-| aries-cloudagent-admin.agent.did | string | `"RGQ8DpoASL9rZZp69i7wJ8"` |  |
-| aries-cloudagent-admin.agent.walletName | string | `"AgentAdmin"` |  |
-| aries-cloudagent-admin.agent.walletKey | string | `"AgentAdminKey"` |  |
-| aries-cloudagent-admin.vonUrl | string | `"http://10.241.0.10:9000"` |  |
-| aries-cloudagent-admin.persistence.enabled | bool | `false` |  |
+| elma-admin.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` | Docker image repository |
+| elma-admin.image.pullPolicy | string | `"Always"` | Image pull policy |
+| elma-admin.role | string | `"admin"` | Define component role/profile |
+| elma-admin.domainId | string | `"admin"` | e-License Manager domainID |
+| elma-admin.catalog.url | string | `"zorro5g-resource-and-service-offer-catalog-admin"` | URL of the Resource and Service Offer Catalog instance specific for this profile |
+| elma-admin.catalog.port | string | `"8080"` | Port of the Resource and Service Offer Catalog instance specific for this profile |
+| elma-admin.catalog.resources | string | `"None"` |  |
+| elma-admin.netSlice.url | string | `"172.28.3.15"` | Slice Manager API URL |
+| elma-admin.netSlice.port | string | `"31082"` | Slice Manager API Port |
+| elma-admin.netSlice.endpoint | string | `"portal/elicensing/"` | Slice Manager API endpoint |
+| elma-admin.datalake.url | string | `"http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"` | Datalake URL |
+| elma-admin.datalake.auth | string | `"{\"userInfo\": {\"userId\": \"operator-a\", \"authToken\": \"blah\"}}"` | Datalake Auth |
+| elma-admin.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` | Kafka URL |
+| elma-admin.rabbitmq.url | string | `"rabbitmq-elma-admin"` | URL of the RabbitMQ instance specific for this profile |
+| elma-admin.rabbitmq.existingSecret | string | `"rabbitmq-elma-admin-default-user"` | RabbitMQ secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| elma-admin.rabbitmq.userKey | string | `"username"` | RabbitMQ secret username key |
+| elma-admin.rabbitmq.passwordKey | string | `"password"` | RabbitMQ secret password key |
+| aries-cloudagent-admin.enable | bool | `true` | Enable Aries Cloud Agent  |
+| aries-cloudagent-admin.image.repository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/aries-cloudagent"` | Docker image repository |
+| aries-cloudagent-admin.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| aries-cloudagent-admin.image.tag | string | `"0.6.0"` | Docker image tag Overrides the image tag whose default is the chart appVersion. |
+| aries-cloudagent-admin.agent.role | string | `"admin"` | Define component role/profile |
+| aries-cloudagent-admin.agent.label | string | `"AgentAdmin"` | Define agent label  |
+| aries-cloudagent-admin.agent.seed | string | `"AgentAdmin0000000000000000000000"` | Define agent seed |
+| aries-cloudagent-admin.agent.did | string | `"RGQ8DpoASL9rZZp69i7wJ8"` | Define agent did |
+| aries-cloudagent-admin.agent.walletName | string | `"AgentAdmin"` | Define agent wallet name  |
+| aries-cloudagent-admin.agent.walletKey | string | `"AgentAdminKey"` | Define agent wallet key |
+| aries-cloudagent-admin.vonUrl | string | `"http://10.241.0.10:9000"` | VON network API URL  |
+| aries-cloudagent-admin.persistence.enabled | bool | `true` |  |
+| aries-cloudagent-admin.persistence.storageClassName | string | `"default"` |  |
 | aries-cloudagent-admin.persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
 | aries-cloudagent-admin.persistence.size | string | `"10Gi"` |  |
-| identity-and-permissions-manager-admin.enabled | bool | `true` |  |
-| identity-and-permissions-manager-admin.database.connectionString | string | `"mongodb-admin-admin-idp-admin"` |  |
-| identity-and-permissions-manager-admin.database.port | string | `"27017"` |  |
-| identity-and-permissions-manager-admin.ingress.enabled | bool | `true` |  |
-| identity-and-permissions-manager-admin.ingress.className | string | `"nginx"` |  |
-| identity-and-permissions-manager-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| identity-and-permissions-manager-admin.ingress.hosts[0].host | string | `"admin-idp.${HOSTED_ZONE_NAME}"` |  |
-| identity-and-permissions-manager-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| identity-and-permissions-manager-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| identity-and-permissions-manager-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| identity-and-permissions-manager-admin.ingress.tls[0].hosts[0] | string | `"admin-idp.${HOSTED_ZONE_NAME}"` |  |
-| identity-and-permissions-manager-admin.idp.role | string | `"admin"` |  |
-| identity-and-permissions-manager-admin.idp.whitelist | string | `"[\"*\"]"` |  |
-| identity-and-permissions-manager-admin.idp.holderAgent | string | `"http://zorro5g-aries-cloudagent-admin:8001"` |  |
-| identity-and-permissions-manager-admin.idp.issuerAgentUrl | string | `"http://zorro5g-aries-cloudagent-admin:8001"` |  |
-| identity-and-permissions-manager-admin.idp.tradingProviderAgentControllerUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` |  |
-| identity-and-permissions-manager-admin.idp.regulatorAgentControllerUrl | string | `"http://zorro5g-identity-and-permissions-manager-regulator:8000"` |  |
-| identity-and-permissions-manager-admin.idp.otherIdpControllers | string | `"[\"http://zorro5g-identity-and-permissions-manager-trader:8000\", \"http://zorro5g-identity-and-permissions-manager-regulator:8000\", \"http://zorro5g-identity-and-permissions-manager-consumer:8000\"]"` |  |
-| identity-and-permissions-manager-admin.idp.adminCatalogueUrl | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"` |  |
+| identity-and-permissions-manager-admin.enabled | bool | `true` | Enable 5GZORRO Identity and Permissions Manger |
+| identity-and-permissions-manager-admin.database.connectionString | string | `"mongodb-admin-admin-idp-admin"` | MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format) |
+| identity-and-permissions-manager-admin.database.port | string | `"27017"` | MongoDB port |
+| identity-and-permissions-manager-admin.ingress.enabled | bool | `true` | Expose the service outside the cluster using ingress |
+| identity-and-permissions-manager-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| identity-and-permissions-manager-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| identity-and-permissions-manager-admin.ingress.hosts[0] | object | `{"host":"admin-idp.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| identity-and-permissions-manager-admin.ingress.tls[0] | object | `{"hosts":["admin-idp.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate  |
+| identity-and-permissions-manager-admin.idp.role | string | `"admin"` | Define component role/profile |
+| identity-and-permissions-manager-admin.idp.whitelist | string | `"[\"*\"]"` | List of all IDP allowed  |
+| identity-and-permissions-manager-admin.idp.holderAgent | string | `"http://zorro5g-aries-cloudagent-admin:8001"` | Holder Agent URL |
+| identity-and-permissions-manager-admin.idp.issuerAgentUrl | string | `"http://zorro5g-aries-cloudagent-admin:8001"` | Issuer Agent URL |
+| identity-and-permissions-manager-admin.idp.tradingProviderAgentControllerUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` | Trading Provider URL |
+| identity-and-permissions-manager-admin.idp.regulatorAgentControllerUrl | string | `"http://zorro5g-identity-and-permissions-manager-regulator:8000"` | Regualator Provider URL |
+| identity-and-permissions-manager-admin.idp.otherIdpControllers | string | `"[\"http://zorro5g-identity-and-permissions-manager-trader:8000\", \"http://zorro5g-identity-and-permissions-manager-regulator:8000\", \"http://zorro5g-identity-and-permissions-manager-consumer:8000\"]"` | URLs of other IDP controllers |
+| identity-and-permissions-manager-admin.idp.adminCatalogueUrl | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"` | URL of the Resource and Service Offer Catalog instance specific for this profile |
 | identity-and-permissions-manager-admin.idp.key | string | `""` |  |
 | identity-and-permissions-manager-admin.idp.vpnaasKey | string | `""` |  |
-| identity-and-permissions-manager-admin.idp.adminDid | string | `"OD1ndI3xw0Pi6Sl4rgoa6F"` |  |
-| governance-manager-api-admin.enabled | bool | `true` |  |
-| governance-manager-api-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| governance-manager-api-admin.postgres.port | int | `5432` |  |
-| governance-manager-api-admin.postgres.name | string | `"governancemanageradmin"` |  |
-| governance-manager-api-admin.postgres.existingSecret | string | `"governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| governance-manager-api-admin.postgres.userKey | string | `"username"` |  |
-| governance-manager-api-admin.postgres.passwordKey | string | `"password"` |  |
-| governance-manager-api-admin.ingress.enabled | bool | `true` |  |
-| governance-manager-api-admin.ingress.className | string | `"nginx"` |  |
-| governance-manager-api-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| governance-manager-api-admin.ingress.hosts[0].host | string | `"admin-gm.${HOSTED_ZONE_NAME}"` |  |
-| governance-manager-api-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| governance-manager-api-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| governance-manager-api-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| governance-manager-api-admin.ingress.tls[0].hosts[0] | string | `"admin-gm.${HOSTED_ZONE_NAME}"` |  |
-| governance-manager-api-admin.role | string | `"admin"` |  |
-| governance-manager-api-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` |  |
-| governance-manager-api-admin.legalProseRepositoryBaseUrl | string | `"http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"` |  |
-| governance-manager-api-admin.callbacks.updateProposal | string | `"https://admin-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"` |  |
-| legal-prose-repository-admin.enabled | bool | `true` |  |
-| legal-prose-repository-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| legal-prose-repository-admin.postgres.port | int | `5432` |  |
-| legal-prose-repository-admin.postgres.name | string | `"legalproseadmin"` |  |
-| legal-prose-repository-admin.postgres.existingSecret | string | `"legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| legal-prose-repository-admin.postgres.userKey | string | `"username"` |  |
-| legal-prose-repository-admin.postgres.passwordKey | string | `"password"` |  |
-| legal-prose-repository-admin.ingress.enabled | bool | `true` |  |
-| legal-prose-repository-admin.ingress.className | string | `"nginx"` |  |
-| legal-prose-repository-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| legal-prose-repository-admin.ingress.hosts[0].host | string | `"admin-lpr.${HOSTED_ZONE_NAME}"` |  |
-| legal-prose-repository-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| legal-prose-repository-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| legal-prose-repository-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| legal-prose-repository-admin.ingress.tls[0].hosts[0] | string | `"admin-lpr.${HOSTED_ZONE_NAME}"` |  |
-| legal-prose-repository-admin.role | string | `"admin"` |  |
-| legal-prose-repository-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` |  |
-| legal-prose-repository-admin.governanceBaseUrl | string | `"http://zorro5g-governance-manager-api-admin:8080/api/v1"` |  |
-| legal-prose-repository-admin.callbacks.updateTemplateIdentity | string | `"https://admin-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"` |  |
-| smart-contract-lifecycle-manager-admin.enabled | bool | `true` |  |
-| smart-contract-lifecycle-manager-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| smart-contract-lifecycle-manager-admin.postgres.port | int | `5432` |  |
-| smart-contract-lifecycle-manager-admin.postgres.name | string | `"sclmadmin"` |  |
-| smart-contract-lifecycle-manager-admin.postgres.existingSecret | string | `"sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| smart-contract-lifecycle-manager-admin.postgres.userKey | string | `"username"` |  |
-| smart-contract-lifecycle-manager-admin.postgres.passwordKey | string | `"password"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.enabled | bool | `true` |  |
-| smart-contract-lifecycle-manager-admin.ingress.className | string | `"nginx"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.hosts[0].host | string | `"admin-sclm.${HOSTED_ZONE_NAME}"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| smart-contract-lifecycle-manager-admin.ingress.tls[0].hosts[0] | string | `"admin-sclm.${HOSTED_ZONE_NAME}"` |  |
-| smart-contract-lifecycle-manager-admin.role | string | `"admin"` |  |
-| smart-contract-lifecycle-manager-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` |  |
-| smart-contract-lifecycle-manager-admin.governanceBaseUrl | string | `"http://zorro5g-governance-manager-api-admin:8080/api/v1"` |  |
-| smart-contract-lifecycle-manager-admin.callbacks.updateSlaIdentity | string | `"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"` |  |
-| smart-contract-lifecycle-manager-admin.callbacks.updateAgreementIdentity | string | `"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"` |  |
-| smart-contract-lifecycle-manager-admin.corda.username | string | `"user1"` |  |
-| smart-contract-lifecycle-manager-admin.corda.password | string | `"test"` |  |
-| smart-contract-lifecycle-manager-admin.corda.host | string | `"10.241.0.10"` |  |
-| smart-contract-lifecycle-manager-admin.corda.port | string | `"10012"` |  |
-| smart-contract-lifecycle-manager-admin.operatorName | string | `"operatora"` |  |
-| smart-contract-lifecycle-manager-admin.hostname | string | `"smart-contract-lifecycle-manager-admin:8087"` |  |
+| identity-and-permissions-manager-admin.idp.adminDid | string | `"OD1ndI3xw0Pi6Sl4rgoa6F"` | Admin DID used for the VON registration |
+| governance-manager-api-admin.enabled | bool | `true` | Enable 5GZORRO Governance Manager |
+| governance-manager-api-admin.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| governance-manager-api-admin.postgres.port | int | `5432` | PostgreSQL port |
+| governance-manager-api-admin.postgres.name | string | `"governancemanageradmin"` | PostgreSQL database name |
+| governance-manager-api-admin.postgres.existingSecret | string | `"governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| governance-manager-api-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| governance-manager-api-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| governance-manager-api-admin.ingress.enabled | bool | `true` | Exposes the service outside the cluster using ingress |
+| governance-manager-api-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| governance-manager-api-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| governance-manager-api-admin.ingress.hosts[0] | object | `{"host":"admin-gm.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| governance-manager-api-admin.ingress.tls[0] | object | `{"hosts":["admin-gm.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate  |
+| governance-manager-api-admin.role | string | `"admin"` | Define component role/profile |
+| governance-manager-api-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` | URL of the Identity and Permissions Manager instance specific for this profile |
+| governance-manager-api-admin.legalProseRepositoryBaseUrl | string | `"http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"` | URL of the Legal Prose Repository instance specific for this profile |
+| governance-manager-api-admin.callbacks.updateProposal | string | `"https://admin-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"` | URL for Governace Manager callback |
+| legal-prose-repository-admin.enabled | bool | `true` | Enable 5GZORRO Legal Prose Repository |
+| legal-prose-repository-admin.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| legal-prose-repository-admin.postgres.port | int | `5432` | PostgreSQL port |
+| legal-prose-repository-admin.postgres.name | string | `"legalproseadmin"` | PostgreSQL database name |
+| legal-prose-repository-admin.postgres.existingSecret | string | `"legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| legal-prose-repository-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| legal-prose-repository-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| legal-prose-repository-admin.ingress.enabled | bool | `true` | Exposes the service outside the cluster using ingress |
+| legal-prose-repository-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| legal-prose-repository-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| legal-prose-repository-admin.ingress.hosts[0] | object | `{"host":"admin-lpr.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| legal-prose-repository-admin.ingress.tls[0] | object | `{"hosts":["admin-lpr.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate  |
+| legal-prose-repository-admin.role | string | `"admin"` | Define component role/profile |
+| legal-prose-repository-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` | URL of the Identity and Permissions Manager instance specific for this profile |
+| legal-prose-repository-admin.governanceBaseUrl | string | `"http://zorro5g-governance-manager-api-admin:8080/api/v1"` | URL of the Governance Manager instance specific for this profile |
+| legal-prose-repository-admin.callbacks.updateTemplateIdentity | string | `"https://admin-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"` | URL for Legal Prose Template callback |
+| smart-contract-lifecycle-manager-admin.enabled | bool | `true` | Enable 5GZORRO Smart Contract Lifecycle Manager |
+| smart-contract-lifecycle-manager-admin.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| smart-contract-lifecycle-manager-admin.postgres.port | int | `5432` | PostgreSQL port |
+| smart-contract-lifecycle-manager-admin.postgres.name | string | `"sclmadmin"` | PostgreSQL database name |
+| smart-contract-lifecycle-manager-admin.postgres.existingSecret | string | `"sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| smart-contract-lifecycle-manager-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| smart-contract-lifecycle-manager-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| smart-contract-lifecycle-manager-admin.ingress.enabled | bool | `true` | Exposes the service outside the cluster using ingress |
+| smart-contract-lifecycle-manager-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| smart-contract-lifecycle-manager-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| smart-contract-lifecycle-manager-admin.ingress.hosts[0] | object | `{"host":"admin-sclm.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| smart-contract-lifecycle-manager-admin.ingress.tls[0] | object | `{"hosts":["admin-sclm.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate  |
+| smart-contract-lifecycle-manager-admin.role | string | `"admin"` | Define component role/profile |
+| smart-contract-lifecycle-manager-admin.identityBaseUrl | string | `"http://zorro5g-identity-and-permissions-manager-admin:8000"` | URL of the Identity and Permissions Manager instance specific for this profile |
+| smart-contract-lifecycle-manager-admin.governanceBaseUrl | string | `"http://zorro5g-governance-manager-api-admin:8080/api/v1"` | URL of the Governance Manager instance specific for this profile |
+| smart-contract-lifecycle-manager-admin.callbacks | object | `{"updateAgreementIdentity":"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity","updateSlaIdentity":"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"}` | URL for Smart Contract Lifecycle Manager callback |
+| smart-contract-lifecycle-manager-admin.corda.username | string | `"user1"` | Corda username |
+| smart-contract-lifecycle-manager-admin.corda.password | string | `"test"` | Corda password        |
+| smart-contract-lifecycle-manager-admin.corda.host | string | `"10.241.0.10"` | Corda hostname         |
+| smart-contract-lifecycle-manager-admin.corda.port | string | `"10012"` | Corda port |
+| smart-contract-lifecycle-manager-admin.operatorName | string | `"operatora"` | Operator name  |
+| smart-contract-lifecycle-manager-admin.hostname | string | `"smart-contract-lifecycle-manager-admin:8087"` | Smart Contract Lifecycle Manager exposed URL |
 | resource-and-service-offer-catalog-admin.enable | bool | `true` |  |
 | resource-and-service-offer-catalog-admin.operatorName | string | `"operatora"` |  |
 | resource-and-service-offer-catalog-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
