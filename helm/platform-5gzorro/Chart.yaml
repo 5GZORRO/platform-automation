@@ -119,13 +119,6 @@ dependencies:
     tags:
       - consumer
     condition: elma-consumer.enabled
-  - name: monitoring-data-aggregator
-    version: "0.1.*"
-    condition: monitoring-data-aggregator.enabled
-    tags:
-      - admin
-      - treder
-      - regulator 
   - name: aries-cloudagent
     alias: aries-cloudagent-admin
     version: "0.1.*"

@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "xrm.fullname" . -}}
-{{- $svcPort := .Values.managementapi.service.port -}}
+{{- $fullName := (printf "%v%v" (include "xrm.fullname" . ) "-gateway") -}}
+{{- $svcPort := .Values.gateway.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -15,7 +15,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-management-api
+  name: {{ $fullName }}
   labels:
     {{- include "xrm.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
