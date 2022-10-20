@@ -3,7 +3,6 @@ image:
   app: elma
   image: ghcr.io/5gzorro/elicensing-manager-agent/elma
   pullPolicy: Always
-  pullSecrets: elmaregsecret
 
 elmarest:
   nodePort: 30880

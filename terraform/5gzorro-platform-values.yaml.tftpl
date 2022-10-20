@@ -631,11 +631,9 @@ sla-breach-predictor:
   lcmHost: smart-contract-lifecycle-manager-admin:8087
 
 elma-admin:
-
   enabled: true
   image:
     tag: latest
-    app: elma
     image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
     pullPolicy: Always
   role: admin
@@ -673,7 +671,7 @@ aries-cloudagent-admin:
     storageClassName: default
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 16Gi
 
 identity-and-permissions-manager-admin:
   enabled: true
@@ -1089,7 +1087,7 @@ aries-cloudagent-regulator:
     # storageClassName: default
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 16Gi
 
 identity-and-permissions-manager-regulator:
   enabled: true
@@ -1441,7 +1439,7 @@ aries-cloudagent-trader:
     # storageClassName: default
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 16Gi
 
 identity-and-permissions-manager-trader: # holder
   enabled: true
@@ -1796,7 +1794,7 @@ aries-cloudagent-consumer:
     # storageClassName: default
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 16Gi
 
 identity-and-permissions-manager-consumer:  # verifier
   enabled: true

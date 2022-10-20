@@ -5,7 +5,7 @@ metadata:
   name: {{ include "aries-cloudagent.fullname" . }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: {{ .Values.persistence.storageClassName }}
   resources:
     requests:
