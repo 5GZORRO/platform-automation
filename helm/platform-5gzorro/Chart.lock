@@ -35,9 +35,6 @@ dependencies:
 - name: strimzi-kafka-operator
   repository: https://strimzi.io/charts/
   version: 0.29.0
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.13.2
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.19.1
@@ -56,9 +53,6 @@ dependencies:
 - name: elma
   repository: ""
   version: 3.1.*
-- name: monitoring-data-aggregator
-  repository: ""
-  version: 0.1.*
 - name: aries-cloudagent
   repository: ""
   version: 0.1.*
@@ -194,5 +188,5 @@ dependencies:
 - name: sla-breach-predictor
   repository: ""
   version: 0.1.*
-digest: sha256:8151fed6a489acc88c417967de2a26eba0b96d01fa657f515e36f9eefb4a001d
-generated: "2022-10-14T11:02:43.06253939+02:00"
+digest: sha256:a3ed05dc3db78ce28955d2085b0e7df02a22de8b32ef2cbb019a3eece7bc6cae
+generated: "2022-10-20T15:46:37.235931336+02:00"
