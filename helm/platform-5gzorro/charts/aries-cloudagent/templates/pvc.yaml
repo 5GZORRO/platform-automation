@@ -9,9 +9,7 @@ spec:
   storageClassName: {{ .Values.persistence.storageClassName }}
   {{- end }}
   accessModes:
-    {{- range .Values.persistence.accessModes }}
-    - {{ . | quote }}
-    {{- end }}
+    - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.persistence.storage }}
