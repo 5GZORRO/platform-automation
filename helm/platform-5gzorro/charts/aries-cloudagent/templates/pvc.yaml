@@ -1,16 +1,13 @@
-{{- if .Values.persistence.enabled -}}
-{{- $fullName := include "aries-cloudagent.fullname" . -}}
+{{- if .Values.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "aries-cloudagent.fullname" . }}
 spec:
-  {{- if .Values.persistence.storageClassName -}}
-  storageClassName: {{ .Values.persistence.storageClassName }}
-  {{- end }}
   accessModes:
     - ReadWriteMany
+  storageClassName: {{ .Values.persistence.storageClassName }}
   resources:
     requests:
-      storage: {{ .Values.persistence.storage }}
-{{- end }}
+      storage: {{ .Values.persistence.size }}
+{{- end -}}
