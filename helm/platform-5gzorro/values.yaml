@@ -31,7 +31,7 @@ ingress-nginx:
   controller:
     service:
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: ""
+        external-dns.alpha.kubernetes.io/hostname: "*.${HOSTED_ZONE_NAME}"
 
 cert-manager: 
   # -- Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails.
@@ -1034,84 +1034,136 @@ smart-contract-lifecycle-manager-admin:
   hostname: "smart-contract-lifecycle-manager-admin:8087"
 
 resource-and-service-offer-catalog-admin:
+  # -- Enable 5GZORRO Resource and Service Offer Catalog
   enable: true
+  # -- Operator name
   operatorName: operatora
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: rsocadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   kafka:
+    # -- Kafka URL
     bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    # -- Kafka offerings topic
     offeringsTopic: dlt-product-offerings
+    # -- Kafka orders topic
     ordersTopic: dlt-product-orders
   ingress:
+  # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-rsoc.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #admin-rsoc-letsencrypt-tls
        hosts:
          - admin-rsoc.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
   role: "admin"
   did:
+    # -- Hostname of the Identity and Permissions Manager instance specific for this profile
     host: "http://zorro5g-identity-and-permissions-manager-admin"
+    # -- Port of the Identity and Permissions Manager instance specific for this profile
     port: "8000"
   lcm:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     host: "smart-contract-lifecycle-manager-admin"
+    # -- Port of the Resource and Service Offer Catalog instance specific for this profile
     port: "8087"
+    # -- Product offer API path
     offerPath: "/product-offer/"
+    # -- Product order API path
     orderPath: "/product_order/"
+    # -- Issue API path
     issuePath: "/spectoken/derivative/issue"
+    # -- Service level agreement path
     slaPath: "/api/v1/service-level-agreement/"
+    # -- Skip post 
     skipPost: "false"
   srsd:
+    # -- Hostname of the Smart Resource and Service Discovery instance specific for this profile
     host: "zorro5g-smart-resource-and-service-discovery-admin"
+    # -- Port of the Smart Resource and Service Discovery instance specific for this profile
     port: "5000"
+    # -- Request API path
     requestPath: "/classifyOffer"
+    # -- Skip post 
     skipPost: "false"
+  # -- Resource and Service Offer Catalog exposed URL
   hostname: "resource-and-service-offer-catalog-admin"
 
 gui-admin:
+  # -- Enable 5GZORRO GUI
   enabled: true
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-gui.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #admin-gui-letsencrypt-tls
        hosts:
          - admin-gui.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
   role: "admin"
+  # -- External URL of the Resource and Service Offer Catalog instance specific for this profile
   marketPlaceUrl: 'https://admin-rsoc.${HOSTED_ZONE_NAME}/tmf-api'
+  # -- External URL of the Legal Prose Repository instance specific for this profile
   legalProseUrl: 'https://admin-lpr.${HOSTED_ZONE_NAME}'
+  # -- External URL of the Governance Manager instance specific for this profile
   governanceUrl: 'https://admin-gm.${HOSTED_ZONE_NAME}'
+  # -- External URL of the Identity and Permissions Manager instance specific for this profile
   identityPermissionsUrl: 'https://admin-idp.${HOSTED_ZONE_NAME}'
+  # -- External URL of the Smart Contract Lifecycle Manager instance specific for this profile
   smartContractUrl: 'https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  # -- External URL of the xRM instance specific for this profile 
+  resourceManagerEndpoint: 'https://admin-xrm.${HOSTED_ZONE_NAME}'
+  # -- xRM discovery API key
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  # -- xRM translator API key
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  # -- RAPP discovery API key
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  # -- Intelligent slice and service manager discovery API key
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  # -- DLT ledger identity
   ledgerIdentity: 'CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB'
+  # -- URL of the Smart Resource and Service Discovery instance specific for this profile
   srsdUrl: 'https://admin-srsd.${HOSTED_ZONE_NAME}'
+  # -- URL of the Intelligent slice and service manager instance specific for this profile 
   issmUrl: 'https://admin-issm.${HOSTED_ZONE_NAME}'
+  # -- URL of the RAPP instance specific for this profile
   rappUrl: 'http://172.28.3.242:2626'
 
 smart-resource-and-service-discovery-admin:
@@ -1152,6 +1204,21 @@ monitoring-data-aggregator-admin:
 
 xrm-admin:
   role: "admin"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-xrm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - admin-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-admin
@@ -1551,6 +1618,21 @@ monitoring-data-aggregator-regulator:
 
 xrm-regulator:
   role: "regulator"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-xrm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - regulator-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-regulator
@@ -1829,6 +1911,21 @@ monitoring-data-aggregator-trader:
 
 xrm-trader:
   role: "trader"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-xrm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - trader-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-trader
@@ -2169,6 +2266,21 @@ monitoring-data-aggregator-consumer:
 
 xrm-consumer:
   role: "consumer"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-xrm.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - consumer-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-consumer

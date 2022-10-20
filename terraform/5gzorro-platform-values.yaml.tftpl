@@ -631,7 +631,13 @@ sla-breach-predictor:
   lcmHost: smart-contract-lifecycle-manager-admin:8087
 
 elma-admin:
+
   enabled: true
+  image:
+    tag: latest
+    app: elma
+    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
+    pullPolicy: Always
   role: admin
   domainId: "admin"
   catalog:
@@ -646,12 +652,6 @@ elma-admin:
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
     auth: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
     kafka: "kafka-cluster-kafka-bootstrap:9092"
-  image:
-    tag: latest
-    app: elma
-    image: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma
-    pullPolicy: Always
-    pullSecrets: registry-credentials
   rabbitmq:
     url: "rabbitmq-elma-admin"
     existingSecret: "rabbitmq-elma-admin-default-user"
@@ -669,8 +669,8 @@ aries-cloudagent-admin:
     walletKey: "AgentAdminKey" # secret
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
   persistence:
-    enabled: false
-    # storageClassName: default
+    enabled: true
+    storageClassName: default
     accessModes:
       - ReadWriteOnce
     size: 10Gi
@@ -877,7 +877,7 @@ gui-admin:
   governanceUrl: 'https://admin-gm.5gzorro.smartcommunitylab.it'
   identityPermissionsUrl: 'https://admin-idp.5gzorro.smartcommunitylab.it'
   smartContractUrl: 'https://admin-sclm.5gzorro.smartcommunitylab.it/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://admin-xrm.5gzorro.smartcommunitylab.it'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
@@ -925,6 +925,21 @@ monitoring-data-aggregator-admin:
 
 xrm-admin:
   role: "admin"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: admin-xrm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - admin-xrm.5gzorro.smartcommunitylab.it
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-admin
@@ -1324,6 +1339,21 @@ monitoring-data-aggregator-regulator:
 
 xrm-regulator:
   role: "regulator"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: regulator-xrm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - regulator-xrm.5gzorro.smartcommunitylab.it
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-regulator
@@ -1602,6 +1632,21 @@ monitoring-data-aggregator-trader:
 
 xrm-trader:
   role: "trader"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: trader-xrm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - trader-xrm.5gzorro.smartcommunitylab.it
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-trader
@@ -1942,6 +1987,21 @@ monitoring-data-aggregator-consumer:
 
 xrm-consumer:
   role: "consumer"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      - host: consumer-xrm.5gzorro.smartcommunitylab.it
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
+       hosts:
+         - consumer-xrm.5gzorro.smartcommunitylab.it
   catalogueapp: 
     postgres:
       host: zorro5g-psqldb-consumer
