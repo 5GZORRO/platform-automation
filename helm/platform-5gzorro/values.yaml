@@ -1,4 +1,4 @@
-# -- tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping)
+# -- Tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping)
 tags:
   # -- Enable all compontens in basic profile 
   base: true
@@ -1167,161 +1167,248 @@ gui-admin:
   rappUrl: 'http://172.28.3.242:2626'
 
 smart-resource-and-service-discovery-admin:
+  # -- Enable 5GZORRO Smart Resource and Service Discovery
   enabled: true
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-srsd.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-srsd-letsencrypt-tls
        hosts:
          - admin-srsd.${HOSTED_ZONE_NAME}
   mongo:
+    # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     uri: "mongodb-admin-admin-srsd"
     
 monitoring-data-aggregator-admin:
+  # -- Enable 5GZORRO Monitoring Data Aggregator
   enabled: true
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: mdaadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: false
   role: "admin"
+  # -- Define component role/profile
   kafka:
+    # -- Kafka Hostname
     host: kafka-cluster-kafka-bootstrap
+    # -- Kafka Port
     port: 9092
 
 xrm-admin:
+  # -- Enable 5GZORRO Any Resource Manager (xRM)
+  enabled: true
+  # -- Define component role/profile
   role: "admin"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-xrm.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
        hosts:
          - admin-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
     postgres:
+      # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
+      # -- PostgreSQL port
       port: 5432
+      # -- PostgreSQL database name
       name: xrmcatalogueappadmin
+      # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
       existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      # -- PostgreSQL secret username key
       userKey: "username"
+      # -- PostgreSQL secret password key
       passwordKey: "password"
     mano:
+      # -- Mano istance ID
       id: "ZORRO_OSMR10"
+      # -- Mano typr
       type: "OSMR10"
+      # -- Mano Site
       site: "ZORRO_OSM"
+      # -- Mano exposed URL 
       ip: "osm.${HOSTED_ZONE_NAME}"
+      # -- Mano port
       port: "80"
+      # -- Mano account username
       username: "admin"
+      # -- Mano account password
       password: "admin"
+      # -- Mano project name
       project: "admin"
     catalogue:
+      # -- Resource and Service Offer Catalog ID
       id: "DEFAULT_CAT"
+      # -- URL of the Resource and Service Offer Catalog instance specific for this profile
       url: "http://zorro5g-resource-and-service-offer-catalog-admin:8080"
   catalogueui:
     keycloak:
+      # -- Enable keycloak for xRM catalogue GUI
       enabled: false
     catalogue:
+      # -- xRM catalogue GUI port
       port: "80"
+      # -- xRM catalogue GUI scope
       scope: "PUBLIC" 
   kafka:
+    # -- Kafka URL
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
     mongo:
+      # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
   managementapi:
     mongo:
+      # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
   translator:
     postgres:
+      # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
+      # -- PostgreSQL port
       port: 5432
+      # -- PostgreSQL database name
       name: xrmtranslatoradmin
+      # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
       existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      # -- PostgreSQL secret username key
       userKey: "username"
+      # -- PostgreSQL secret password key
       passwordKey: "password"
 
 issm-admin:
+  # -- Enable 5GZORRO Intelligent Slice and Service Manager
   enabled: true 
+  # -- Define component role/profile
   role: "admin"
+  # -- ISSM orchestrator type
   orchestrator: "nsso"
+  # -- Operator name
   operatorName: operatora
   kafka:
+    # -- Kafka Hostname
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    # -- Kafka Port
     port: "9092"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
     hosts:
+      # -- Domain used to expose the service outside the cluster
       - host: admin-issm.${HOSTED_ZONE_NAME}
         paths:
           - path: /
             pathType: Prefix
     tls: 
+      # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
        hosts:
          - admin-issm.${HOSTED_ZONE_NAME}
   argo:
+    # -- Argo internal service URL
     internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
+    # -- Argo external service URL
     external: "https://argo.${HOSTED_ZONE_NAME}"
 
 nsso-admin:
+  # -- Enable 5GZORRO Network Slice and Service Orchestrator
   enabled: true
+  # -- Define component role/profile
   role: admin
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     url: jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   nfvo:
     catalogue:
+      # -- Mano type
       type: OSM10
+      # -- Mano exposed URL
       address: http://osm.${HOSTED_ZONE_NAME}
     lcm:
+      # -- Mano type
       type: OSM10
+      # -- Mano exposed URL
       address: http://osm.${HOSTED_ZONE_NAME}
+      # -- Mano project name
       project: admin
+      # -- Mano account username
       username: "admin"
+      # -- Mano account password
       password: "admin"
   rabbitmq:
+    # -- Rabbitmq cluster hostname
     host: zorro5g-nsso-admin-rabbitmq
 
 trmf-admin:
+  # -- Enable 5GZORRO Trust and Reputation Management Framework
   enabled: true
+  # -- Define component role/profile
   role: "admin"
   trmfdb:
+    # -- Persistence configuration for TRMF internal database
     persistence:
       storageClassName: "default"
       size: 8Gi
   catalogue:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     uri: http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/
   elk:
+    # -- URL of the ElasticSearch instance specific for this profile
     uri: http://zorro5g-xrm-admin-elasticsearch:9200/
   datalake:
+    # -- Kafka Hostname
     kafka: kafka-cluster-kafka-bootstrap:9092
 ######################## END Admin Profile Block ########################
 ######################## START Regulator Profile Block ########################
@@ -1617,6 +1704,7 @@ monitoring-data-aggregator-regulator:
     port: 9092
 
 xrm-regulator:
+  enabled: true
   role: "regulator"
   ingress:
     enabled: true
@@ -1910,6 +1998,7 @@ monitoring-data-aggregator-trader:
     port: 9092
 
 xrm-trader:
+  enabled: true
   role: "trader"
   ingress:
     enabled: true
@@ -2265,6 +2354,7 @@ monitoring-data-aggregator-consumer:
     port: 9092
 
 xrm-consumer:
+  enabled: true
   role: "consumer"
   ingress:
     enabled: true

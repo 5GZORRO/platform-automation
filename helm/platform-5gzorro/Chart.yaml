@@ -12,6 +12,7 @@ maintainers:
   - email: ffais@fbk.eu
     name: Fabio Fais
 dependencies:
+######################## START Base Profile Block ########################
   - name: community-operator
     version: "0.7.5"
     repository: https://mongodb.github.io/helm-charts
@@ -33,6 +34,12 @@ dependencies:
     version: "0.1.0"
     condition: datalake.enabled
     tags:
+      - base
+  - name: sla-breach-predictor
+    version: "0.1.*"
+    condition: sla-breach-predictor.enabled
+    tags:
+      - admin
       - base
   - name: external-dns
     version: "6.7.*"
@@ -95,57 +102,20 @@ dependencies:
     condition: argo-events.enabled
     tags:
       - base
+######################## END Base Profile Block ########################
+######################## START Admin Profile Block ########################
   - name: elma
     alias: elma-admin
     version: "3.1.*"
     tags:
       - admin
     condition: elma-admin.enabled
-  - name: elma
-    alias: elma-trader
-    version: "3.1.*"
-    tags:
-      - trader
-    condition: elma-trader.enabled
-  - name: elma
-    alias: elma-regulator
-    version: "3.1.*"
-    tags:
-      - regulator
-    condition: elma-regulator.enabled
-  - name: elma
-    alias: elma-consumer
-    version: "3.1.*"
-    tags:
-      - consumer
-    condition: elma-consumer.enabled
   - name: aries-cloudagent
     alias: aries-cloudagent-admin
     version: "0.1.*"
     condition: aries-cloudagent-admin.enabled
     tags:
       - admin
-      - aries
-  - name: aries-cloudagent
-    alias: aries-cloudagent-regulator
-    version: "0.1.*"
-    condition: aries-cloudagent-regulator.enabled
-    tags:
-      - regulator
-      - aries
-  - name: aries-cloudagent
-    alias: aries-cloudagent-trader
-    version: "0.1.*"
-    condition: aries-cloudagent-trader.enabled
-    tags:
-      - trader
-      - aries
-  - name: aries-cloudagent
-    alias: aries-cloudagent-consumer
-    version: "0.1.*"
-    condition: aries-cloudagent-consumer.enabled
-    tags:
-      - consumer
       - aries  
   - name: identity-and-permissions-manager
     alias: identity-and-permissions-manager-admin
@@ -154,6 +124,138 @@ dependencies:
     tags:
       - admin
       - idp
+  - name: governance-manager-api
+    alias: governance-manager-api-admin
+    version: "0.1.*"
+    condition: governance-manager-api-admin.enabled
+    tags:
+      - admin
+  - name: legal-prose-repository
+    alias: legal-prose-repository-admin
+    version: "0.1.*"
+    condition: legal-prose-repository-admin.enabled
+    tags:
+      - admin
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-admin
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-admin.enabled
+    tags:
+      - admin
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-admin
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-admin.enabled
+    tags:
+      - admin
+  - name: gui
+    alias: gui-admin
+    version: "0.1.*"
+    condition: gui-admin.enabled
+    tags:
+      - admin
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-admin
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-admin.enabled
+    tags:
+      - admin
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-admin
+    version: "0.1.*"
+    condition: monitoring-data-aggregator-admin.enabled
+    tags:
+      - admin
+  - name: xrm
+    alias: xrm-admin
+    version: "0.1.*"
+    condition: xrm-admin.enabled
+    tags:
+      - admin
+  - name: trmf
+    alias: trmf-admin
+    version: "1.0.*"
+    condition: trmf-admin.enabled
+    tags:
+      - admin
+      - base
+  - name: issm
+    alias: issm-admin
+    version: "0.1.*"
+    condition: issm-admin.enabled
+    tags:
+      - admin
+      - base
+  - name: nsso
+    alias: nsso-admin
+    version: "0.1.*"
+    condition: nsso-admin.enabled
+    tags:
+      - admin
+      - base
+######################## END Admin Profile Block ########################
+######################## START Trader Profile Block ########################
+  - name: elma
+    alias: elma-trader
+    version: "3.1.*"
+    tags:
+      - trader
+    condition: elma-trader.enabled
+  - name: aries-cloudagent
+    alias: aries-cloudagent-trader
+    version: "0.1.*"
+    condition: aries-cloudagent-trader.enabled
+    tags:
+      - trader
+      - aries
+  - name: smart-contract-lifecycle-manager
+    alias: smart-contract-lifecycle-manager-trader
+    version: "0.1.*"
+    condition: smart-contract-lifecycle-manager-trader.enabled
+    tags:
+      - trader
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-trader
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-trader.enabled
+    tags:
+      - trader
+  - name: gui
+    alias: gui-trader
+    version: "0.1.*"
+    condition: gui-trader.enabled
+    tags:
+      - trader
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-trader
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-trader.enabled
+    tags:
+      - trader
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-trader
+    version: "0.1.*"
+    condition: monitoring-data-aggregator-trader.enabled
+    tags:
+      - trader
+  - name: xrm
+    alias: xrm-trader
+    version: "0.1.*"
+    condition: xrm-trader.enabled
+    tags:
+      - trader
+  - name: trmf
+    alias: trmf-trader
+    version: "1.0.*"
+    condition: trmf-trader.enabled
+    tags:
+      - trader
+  - name: nsso
+    alias: nsso-trader
+    version: "0.1.*"
+    condition: nsso-trader.enabled
+    tags:
+      - trader
   - name: identity-and-permissions-manager
     alias: identity-and-permissions-manager-trader
     version: "0.1.*"
@@ -161,13 +263,21 @@ dependencies:
     tags:
       - trader
       - idp
-  - name: identity-and-permissions-manager
-    alias: identity-and-permissions-manager-consumer
-    version: "0.1.*"
-    condition: identity-and-permissions-manager-consumer.enabled
+######################## END Trader Profile Block ########################
+######################## START Regulator Profile Block ########################
+  - name: elma
+    alias: elma-regulator
+    version: "3.1.*"
     tags:
-      - consumer
-      - idp
+      - regulator
+    condition: elma-regulator.enabled
+  - name: aries-cloudagent
+    alias: aries-cloudagent-regulator
+    version: "0.1.*"
+    condition: aries-cloudagent-regulator.enabled
+    tags:
+      - regulator
+      - aries
   - name: identity-and-permissions-manager
     alias: identity-and-permissions-manager-regulator
     version: "0.1.*"
@@ -176,23 +286,11 @@ dependencies:
       - regulator
       - idp
   - name: governance-manager-api
-    alias: governance-manager-api-admin
-    version: "0.1.*"
-    condition: governance-manager-api-admin.enabled
-    tags:
-      - admin
-  - name: governance-manager-api
     alias: governance-manager-api-regulator
     version: "0.1.*"
     condition: governance-manager-api-regulator.enabled
     tags:
       - regulator
-  - name: legal-prose-repository
-    alias: legal-prose-repository-admin
-    version: "0.1.*"
-    condition: legal-prose-repository-admin.enabled
-    tags:
-      - admin
   - name: legal-prose-repository
     alias: legal-prose-repository-regulator
     version: "0.1.*"
@@ -200,23 +298,62 @@ dependencies:
     tags:
       - regulator
   - name: smart-contract-lifecycle-manager
-    alias: smart-contract-lifecycle-manager-admin
-    version: "0.1.*"
-    condition: smart-contract-lifecycle-manager-admin.enabled
-    tags:
-      - admin
-  - name: smart-contract-lifecycle-manager
-    alias: smart-contract-lifecycle-manager-trader
-    version: "0.1.*"
-    condition: smart-contract-lifecycle-manager-trader.enabled
-    tags:
-      - trader
-  - name: smart-contract-lifecycle-manager
     alias: smart-contract-lifecycle-manager-regulator
     version: "0.1.*"
     condition: smart-contract-lifecycle-manager-regulator.enabled
     tags:
       - regulator
+  - name: resource-and-service-offer-catalog
+    alias: resource-and-service-offer-catalog-regulator
+    version: "0.1.*"
+    condition: resource-and-service-offer-catalog-regulator.enabled
+    tags:
+      - regulator
+  - name: gui
+    alias: gui-regulator
+    version: "0.1.*"
+    condition: gui-regulator.enabled
+    tags:
+      - regulator
+  - name: smart-resource-and-service-discovery
+    alias: smart-resource-and-service-discovery-regulator
+    version: "0.1.*"
+    condition: smart-resource-and-service-discovery-regulator.enabled
+    tags:
+      - regulator
+  - name: monitoring-data-aggregator
+    alias: monitoring-data-aggregator-regulator
+    version: "0.1.*"
+    condition: monitoring-data-aggregator-regulator.enabled
+    tags:
+      - regulator
+  - name: xrm
+    alias: xrm-regulator
+    version: "0.1.*"
+    condition: xrm-regulator.enabled
+    tags:
+      - regulator
+######################## END Regulator Profile Block ########################
+######################## START Consumer Profile Block ########################
+  - name: elma
+    alias: elma-consumer
+    version: "3.1.*"
+    tags:
+      - consumer
+  - name: aries-cloudagent
+    alias: aries-cloudagent-consumer
+    version: "0.1.*"
+    condition: aries-cloudagent-consumer.enabled
+    tags:
+      - consumer
+      - aries
+  - name: identity-and-permissions-manager
+    alias: identity-and-permissions-manager-consumer
+    version: "0.1.*"
+    condition: identity-and-permissions-manager-consumer.enabled
+    tags:
+      - consumer
+      - idp
   - name: smart-contract-lifecycle-manager
     alias: smart-contract-lifecycle-manager-consumer
     version: "0.1.*"
@@ -224,47 +361,11 @@ dependencies:
     tags:
       - consumer
   - name: resource-and-service-offer-catalog
-    alias: resource-and-service-offer-catalog-admin
-    version: "0.1.*"
-    condition: resource-and-service-offer-catalog-admin.enabled
-    tags:
-      - admin
-  - name: resource-and-service-offer-catalog
-    alias: resource-and-service-offer-catalog-regulator
-    version: "0.1.*"
-    condition: resource-and-service-offer-catalog-regulator.enabled
-    tags:
-      - regulator
-  - name: resource-and-service-offer-catalog
-    alias: resource-and-service-offer-catalog-trader
-    version: "0.1.*"
-    condition: resource-and-service-offer-catalog-trader.enabled
-    tags:
-      - trader
-  - name: resource-and-service-offer-catalog
     alias: resource-and-service-offer-catalog-consumer
     version: "0.1.*"
     condition: resource-and-service-offer-catalog-consumer.enabled
     tags:
       - consumer
-  - name: gui
-    alias: gui-admin
-    version: "0.1.*"
-    condition: gui-admin.enabled
-    tags:
-      - admin
-  - name: gui
-    alias: gui-regulator
-    version: "0.1.*"
-    condition: gui-regulator.enabled
-    tags:
-      - regulator
-  - name: gui
-    alias: gui-trader
-    version: "0.1.*"
-    condition: gui-trader.enabled
-    tags:
-      - trader
   - name: gui
     alias: gui-consumer
     version: "0.1.*"
@@ -272,47 +373,11 @@ dependencies:
     tags:
       - consumer
   - name: smart-resource-and-service-discovery
-    alias: smart-resource-and-service-discovery-admin
-    version: "0.1.*"
-    condition: smart-resource-and-service-discovery-admin.enabled
-    tags:
-      - admin
-  - name: smart-resource-and-service-discovery
-    alias: smart-resource-and-service-discovery-regulator
-    version: "0.1.*"
-    condition: smart-resource-and-service-discovery-regulator.enabled
-    tags:
-      - regulator
-  - name: smart-resource-and-service-discovery
-    alias: smart-resource-and-service-discovery-trader
-    version: "0.1.*"
-    condition: smart-resource-and-service-discovery-trader.enabled
-    tags:
-      - trader
-  - name: smart-resource-and-service-discovery
     alias: smart-resource-and-service-discovery-consumer
     version: "0.1.*"
     condition: smart-resource-and-service-discovery-consumer.enabled
     tags:
       - consumer
-  - name: monitoring-data-aggregator
-    alias: monitoring-data-aggregator-admin
-    version: "0.1.*"
-    condition: monitoring-data-aggregator-admin.enabled
-    tags:
-      - admin
-  - name: monitoring-data-aggregator
-    alias: monitoring-data-aggregator-regulator
-    version: "0.1.*"
-    condition: monitoring-data-aggregator-regulator.enabled
-    tags:
-      - regulator
-  - name: monitoring-data-aggregator
-    alias: monitoring-data-aggregator-trader
-    version: "0.1.*"
-    condition: monitoring-data-aggregator-trader.enabled
-    tags:
-      - trader
   - name: monitoring-data-aggregator
     alias: monitoring-data-aggregator-consumer
     version: "0.1.*"
@@ -320,55 +385,17 @@ dependencies:
     tags:
       - consumer
   - name: xrm
-    alias: xrm-admin
-    version: "0.1.*"
-    condition: xrm-admin.enabled
-    tags:
-      - admin
-  - name: xrm
-    alias: xrm-regulator
-    version: "0.1.*"
-    condition: xrm-regulator.enabled
-    tags:
-      - regulator
-  - name: xrm
-    alias: xrm-trader
-    version: "0.1.*"
-    condition: xrm-trader.enabled
-    tags:
-      - trader
-  - name: xrm
     alias: xrm-consumer
     version: "0.1.*"
     condition: xrm-consumer.enabled
     tags:
       - consumer
   - name: trmf
-    alias: trmf-admin
-    version: "1.0.*"
-    condition: trmf-admin.enabled
-    tags:
-      - admin
-      - base
-  - name: trmf
-    alias: trmf-trader
-    version: "1.0.*"
-    condition: trmf-trader.enabled
-    tags:
-      - trader
-  - name: trmf
     alias: trmf-consumer
     version: "1.0.*"
     condition: trmf-consumer.enabled
     tags:
       - consumer
-  - name: issm
-    alias: issm-admin
-    version: "0.1.*"
-    condition: issm-admin.enabled
-    tags:
-      - admin
-      - base
   - name: issm
     alias: issm-trader
     version: "0.1.*"
@@ -381,22 +408,4 @@ dependencies:
     condition: issm-consumer.enabled
     tags:
       - consumer
-  - name: nsso
-    alias: nsso-admin
-    version: "0.1.*"
-    condition: nsso-admin.enabled
-    tags:
-      - admin
-      - base
-  - name: nsso
-    alias: nsso-trader
-    version: "0.1.*"
-    condition: nsso-trader.enabled
-    tags:
-      - trader
-  - name: sla-breach-predictor
-    version: "0.1.*"
-    condition: sla-breach-predictor.enabled
-    tags:
-      - admin
-      - base
+######################## END Consumer Profile Block ########################

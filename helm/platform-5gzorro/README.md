@@ -22,36 +22,35 @@ Kubernetes: `>=1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | aries-cloudagent-consumer(aries-cloudagent) | 0.1.* |
+|  | aries-cloudagent-regulator(aries-cloudagent) | 0.1.* |
 |  | aries-cloudagent-trader(aries-cloudagent) | 0.1.* |
 |  | aries-cloudagent-admin(aries-cloudagent) | 0.1.* |
-|  | aries-cloudagent-regulator(aries-cloudagent) | 0.1.* |
+|  | aries-cloudagent-consumer(aries-cloudagent) | 0.1.* |
 |  | custom-resource-5gzorro | 0.1.0 |
 |  | datalake | 0.1.0 |
 |  | elma-regulator(elma) | 3.1.* |
 |  | elma-consumer(elma) | 3.1.* |
-|  | elma-trader(elma) | 3.1.* |
 |  | elma-admin(elma) | 3.1.* |
+|  | elma-trader(elma) | 3.1.* |
 |  | governance-manager-api-admin(governance-manager-api) | 0.1.* |
 |  | governance-manager-api-regulator(governance-manager-api) | 0.1.* |
-|  | gui-regulator(gui) | 0.1.* |
-|  | gui-trader(gui) | 0.1.* |
-|  | gui-consumer(gui) | 0.1.* |
 |  | gui-admin(gui) | 0.1.* |
-|  | identity-and-permissions-manager-regulator(identity-and-permissions-manager) | 0.1.* |
-|  | identity-and-permissions-manager-consumer(identity-and-permissions-manager) | 0.1.* |
-|  | identity-and-permissions-manager-trader(identity-and-permissions-manager) | 0.1.* |
+|  | gui-consumer(gui) | 0.1.* |
+|  | gui-trader(gui) | 0.1.* |
+|  | gui-regulator(gui) | 0.1.* |
 |  | identity-and-permissions-manager-admin(identity-and-permissions-manager) | 0.1.* |
-|  | issm-trader(issm) | 0.1.* |
+|  | identity-and-permissions-manager-regulator(identity-and-permissions-manager) | 0.1.* |
+|  | identity-and-permissions-manager-trader(identity-and-permissions-manager) | 0.1.* |
+|  | identity-and-permissions-manager-consumer(identity-and-permissions-manager) | 0.1.* |
 |  | issm-admin(issm) | 0.1.* |
+|  | issm-trader(issm) | 0.1.* |
 |  | issm-consumer(issm) | 0.1.* |
 |  | legal-prose-repository-admin(legal-prose-repository) | 0.1.* |
 |  | legal-prose-repository-regulator(legal-prose-repository) | 0.1.* |
-|  | monitoring-data-aggregator | 0.1.* |
-|  | monitoring-data-aggregator-trader(monitoring-data-aggregator) | 0.1.* |
-|  | monitoring-data-aggregator-admin(monitoring-data-aggregator) | 0.1.* |
-|  | monitoring-data-aggregator-consumer(monitoring-data-aggregator) | 0.1.* |
 |  | monitoring-data-aggregator-regulator(monitoring-data-aggregator) | 0.1.* |
+|  | monitoring-data-aggregator-trader(monitoring-data-aggregator) | 0.1.* |
+|  | monitoring-data-aggregator-consumer(monitoring-data-aggregator) | 0.1.* |
+|  | monitoring-data-aggregator-admin(monitoring-data-aggregator) | 0.1.* |
 |  | nsso-admin(nsso) | 0.1.* |
 |  | nsso-trader(nsso) | 0.1.* |
 |  | resource-and-service-offer-catalog-regulator(resource-and-service-offer-catalog) | 0.1.* |
@@ -60,13 +59,13 @@ Kubernetes: `>=1.21.0-0`
 |  | resource-and-service-offer-catalog-admin(resource-and-service-offer-catalog) | 0.1.* |
 |  | sla-breach-predictor | 0.1.* |
 |  | smart-contract-lifecycle-manager-regulator(smart-contract-lifecycle-manager) | 0.1.* |
-|  | smart-contract-lifecycle-manager-admin(smart-contract-lifecycle-manager) | 0.1.* |
 |  | smart-contract-lifecycle-manager-trader(smart-contract-lifecycle-manager) | 0.1.* |
+|  | smart-contract-lifecycle-manager-admin(smart-contract-lifecycle-manager) | 0.1.* |
 |  | smart-contract-lifecycle-manager-consumer(smart-contract-lifecycle-manager) | 0.1.* |
-|  | smart-resource-and-service-discovery-consumer(smart-resource-and-service-discovery) | 0.1.* |
 |  | smart-resource-and-service-discovery-admin(smart-resource-and-service-discovery) | 0.1.* |
 |  | smart-resource-and-service-discovery-regulator(smart-resource-and-service-discovery) | 0.1.* |
 |  | smart-resource-and-service-discovery-trader(smart-resource-and-service-discovery) | 0.1.* |
+|  | smart-resource-and-service-discovery-consumer(smart-resource-and-service-discovery) | 0.1.* |
 |  | trmf-admin(trmf) | 1.0.* |
 |  | trmf-trader(trmf) | 1.0.* |
 |  | trmf-consumer(trmf) | 1.0.* |
@@ -91,7 +90,7 @@ Kubernetes: `>=1.21.0-0`
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| tags | object | `{"admin":true,"base":true,"monitoring":true,"regulator":true,"trader":true}` | tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping) |
+| tags | object | `{"admin":true,"base":true,"monitoring":true,"regulator":true,"trader":true}` | Tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping) |
 | tags.base | bool | `true` | Enable all compontens in basic profile  |
 | tags.admin | bool | `true` | Enable all compontens in admin profile |
 | tags.trader | bool | `true` | Enable all compontens in trader profile |
@@ -102,7 +101,7 @@ Kubernetes: `>=1.21.0-0`
 | global.imageCredentials.username | string | `""` | Username |
 | global.imageCredentials.password | string | `""` | Password |
 | ingress-nginx.enabled | bool | `true` | Enable ingress-nginx controller. See [ingress-nginx](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx) documentation for more datails. |
-| ingress-nginx.controller | object | `{"service":{"annotations":{"external-dns.alpha.kubernetes.io/hostname":""}}}` | Set it with your domain |
+| ingress-nginx.controller | object | `{"service":{"annotations":{"external-dns.alpha.kubernetes.io/hostname":"*.${HOSTED_ZONE_NAME}"}}}` | Set it with your domain |
 | cert-manager.enabled | bool | `true` | Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails. |
 | cert-manager.namespace | string | `"cert-manager"` | Namespace name where cert-manager will be installed. |
 | rabbitmq-cluster-operator.enabled | bool | `true` | Enable rabbitmq operator. See [rabbitmq-cluster-operator](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator) documentation for more datails. |
@@ -289,151 +288,145 @@ Kubernetes: `>=1.21.0-0`
 | smart-contract-lifecycle-manager-admin.corda.port | string | `"10012"` | Corda port |
 | smart-contract-lifecycle-manager-admin.operatorName | string | `"operatora"` | Operator name  |
 | smart-contract-lifecycle-manager-admin.hostname | string | `"smart-contract-lifecycle-manager-admin:8087"` | Smart Contract Lifecycle Manager exposed URL |
-| resource-and-service-offer-catalog-admin.enable | bool | `true` |  |
-| resource-and-service-offer-catalog-admin.operatorName | string | `"operatora"` |  |
-| resource-and-service-offer-catalog-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| resource-and-service-offer-catalog-admin.postgres.port | int | `5432` |  |
-| resource-and-service-offer-catalog-admin.postgres.name | string | `"rsocadmin"` |  |
-| resource-and-service-offer-catalog-admin.postgres.existingSecret | string | `"rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| resource-and-service-offer-catalog-admin.postgres.userKey | string | `"username"` |  |
-| resource-and-service-offer-catalog-admin.postgres.passwordKey | string | `"password"` |  |
-| resource-and-service-offer-catalog-admin.kafka.bootstrap | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
-| resource-and-service-offer-catalog-admin.kafka.offeringsTopic | string | `"dlt-product-offerings"` |  |
-| resource-and-service-offer-catalog-admin.kafka.ordersTopic | string | `"dlt-product-orders"` |  |
-| resource-and-service-offer-catalog-admin.ingress.enabled | bool | `true` |  |
-| resource-and-service-offer-catalog-admin.ingress.className | string | `"nginx"` |  |
-| resource-and-service-offer-catalog-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| resource-and-service-offer-catalog-admin.ingress.hosts[0].host | string | `"admin-rsoc.${HOSTED_ZONE_NAME}"` |  |
-| resource-and-service-offer-catalog-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| resource-and-service-offer-catalog-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| resource-and-service-offer-catalog-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| resource-and-service-offer-catalog-admin.ingress.tls[0].hosts[0] | string | `"admin-rsoc.${HOSTED_ZONE_NAME}"` |  |
-| resource-and-service-offer-catalog-admin.role | string | `"admin"` |  |
-| resource-and-service-offer-catalog-admin.did.host | string | `"http://zorro5g-identity-and-permissions-manager-admin"` |  |
-| resource-and-service-offer-catalog-admin.did.port | string | `"8000"` |  |
-| resource-and-service-offer-catalog-admin.lcm.host | string | `"smart-contract-lifecycle-manager-admin"` |  |
-| resource-and-service-offer-catalog-admin.lcm.port | string | `"8087"` |  |
-| resource-and-service-offer-catalog-admin.lcm.offerPath | string | `"/product-offer/"` |  |
-| resource-and-service-offer-catalog-admin.lcm.orderPath | string | `"/product_order/"` |  |
-| resource-and-service-offer-catalog-admin.lcm.issuePath | string | `"/spectoken/derivative/issue"` |  |
-| resource-and-service-offer-catalog-admin.lcm.slaPath | string | `"/api/v1/service-level-agreement/"` |  |
-| resource-and-service-offer-catalog-admin.lcm.skipPost | string | `"false"` |  |
-| resource-and-service-offer-catalog-admin.srsd.host | string | `"zorro5g-smart-resource-and-service-discovery-admin"` |  |
-| resource-and-service-offer-catalog-admin.srsd.port | string | `"5000"` |  |
-| resource-and-service-offer-catalog-admin.srsd.requestPath | string | `"/classifyOffer"` |  |
-| resource-and-service-offer-catalog-admin.srsd.skipPost | string | `"false"` |  |
-| resource-and-service-offer-catalog-admin.hostname | string | `"resource-and-service-offer-catalog-admin"` |  |
-| gui-admin.enabled | bool | `true` |  |
-| gui-admin.ingress.enabled | bool | `true` |  |
-| gui-admin.ingress.className | string | `"nginx"` |  |
-| gui-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| gui-admin.ingress.hosts[0].host | string | `"admin-gui.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| gui-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| gui-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| gui-admin.ingress.tls[0].hosts[0] | string | `"admin-gui.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.role | string | `"admin"` |  |
-| gui-admin.marketPlaceUrl | string | `"https://admin-rsoc.${HOSTED_ZONE_NAME}/tmf-api"` |  |
-| gui-admin.legalProseUrl | string | `"https://admin-lpr.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.governanceUrl | string | `"https://admin-gm.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.identityPermissionsUrl | string | `"https://admin-idp.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.smartContractUrl | string | `"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/"` |  |
-| gui-admin.resourceManagerEndpoint | string | `"http://172.28.3.15:31081"` |  |
-| gui-admin.resourceManagerDiscoveryApiKey | string | `"ce0b0017-843c-4811-bb76-1005733cf3ec"` |  |
-| gui-admin.resourceManagerTraslatorApiKey | string | `"fe6d588b-1d6b-4954-9e26-a334d0d09eed"` |  |
-| gui-admin.rappDiscoveryApiKey | string | `"fc7def3f-0490-4c17-931f-6f6e4c759890"` |  |
-| gui-admin.sliceDiscoveryApiKey | string | `"685be7dc-6ed3-46de-90da-bc21747568a1"` |  |
-| gui-admin.ledgerIdentity | string | `"CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB"` |  |
-| gui-admin.srsdUrl | string | `"https://admin-srsd.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.issmUrl | string | `"https://admin-issm.${HOSTED_ZONE_NAME}"` |  |
-| gui-admin.rappUrl | string | `"http://172.28.3.242:2626"` |  |
-| smart-resource-and-service-discovery-admin.enabled | bool | `true` |  |
-| smart-resource-and-service-discovery-admin.ingress.enabled | bool | `true` |  |
-| smart-resource-and-service-discovery-admin.ingress.className | string | `"nginx"` |  |
-| smart-resource-and-service-discovery-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| smart-resource-and-service-discovery-admin.ingress.hosts[0].host | string | `"admin-srsd.${HOSTED_ZONE_NAME}"` |  |
-| smart-resource-and-service-discovery-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| smart-resource-and-service-discovery-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| smart-resource-and-service-discovery-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| smart-resource-and-service-discovery-admin.ingress.tls[0].hosts[0] | string | `"admin-srsd.${HOSTED_ZONE_NAME}"` |  |
-| smart-resource-and-service-discovery-admin.mongo.uri | string | `"mongodb-admin-admin-srsd"` |  |
-| monitoring-data-aggregator-admin.enabled | bool | `true` |  |
-| monitoring-data-aggregator-admin.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| monitoring-data-aggregator-admin.postgres.port | int | `5432` |  |
-| monitoring-data-aggregator-admin.postgres.name | string | `"mdaadmin"` |  |
-| monitoring-data-aggregator-admin.postgres.existingSecret | string | `"mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| monitoring-data-aggregator-admin.postgres.userKey | string | `"username"` |  |
-| monitoring-data-aggregator-admin.postgres.passwordKey | string | `"password"` |  |
-| monitoring-data-aggregator-admin.ingress.enabled | bool | `false` |  |
+| resource-and-service-offer-catalog-admin.enable | bool | `true` | Enable 5GZORRO Resource and Service Offer Catalog |
+| resource-and-service-offer-catalog-admin.operatorName | string | `"operatora"` | Operator name |
+| resource-and-service-offer-catalog-admin.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| resource-and-service-offer-catalog-admin.postgres.port | int | `5432` | PostgreSQL port |
+| resource-and-service-offer-catalog-admin.postgres.name | string | `"rsocadmin"` | PostgreSQL database name |
+| resource-and-service-offer-catalog-admin.postgres.existingSecret | string | `"rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| resource-and-service-offer-catalog-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| resource-and-service-offer-catalog-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| resource-and-service-offer-catalog-admin.kafka.bootstrap | string | `"kafka-cluster-kafka-bootstrap:9092"` | Kafka URL |
+| resource-and-service-offer-catalog-admin.kafka.offeringsTopic | string | `"dlt-product-offerings"` | Kafka offerings topic |
+| resource-and-service-offer-catalog-admin.kafka.ordersTopic | string | `"dlt-product-orders"` | Kafka orders topic |
+| resource-and-service-offer-catalog-admin.ingress.enabled | bool | `true` | Expose the service outside the cluster using ingress |
+| resource-and-service-offer-catalog-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| resource-and-service-offer-catalog-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| resource-and-service-offer-catalog-admin.ingress.hosts[0] | object | `{"host":"admin-rsoc.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| resource-and-service-offer-catalog-admin.ingress.tls[0] | object | `{"hosts":["admin-rsoc.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate |
+| resource-and-service-offer-catalog-admin.role | string | `"admin"` | Define component role/profile |
+| resource-and-service-offer-catalog-admin.did.host | string | `"http://zorro5g-identity-and-permissions-manager-admin"` | Hostname of the Identity and Permissions Manager instance specific for this profile |
+| resource-and-service-offer-catalog-admin.did.port | string | `"8000"` | Port of the Identity and Permissions Manager instance specific for this profile |
+| resource-and-service-offer-catalog-admin.lcm.host | string | `"smart-contract-lifecycle-manager-admin"` | URL of the Resource and Service Offer Catalog instance specific for this profile |
+| resource-and-service-offer-catalog-admin.lcm.port | string | `"8087"` | Port of the Resource and Service Offer Catalog instance specific for this profile |
+| resource-and-service-offer-catalog-admin.lcm.offerPath | string | `"/product-offer/"` | Product offer API path |
+| resource-and-service-offer-catalog-admin.lcm.orderPath | string | `"/product_order/"` | Product order API path |
+| resource-and-service-offer-catalog-admin.lcm.issuePath | string | `"/spectoken/derivative/issue"` | Issue API path |
+| resource-and-service-offer-catalog-admin.lcm.slaPath | string | `"/api/v1/service-level-agreement/"` | Service level agreement path |
+| resource-and-service-offer-catalog-admin.lcm.skipPost | string | `"false"` | Skip post  |
+| resource-and-service-offer-catalog-admin.srsd.host | string | `"zorro5g-smart-resource-and-service-discovery-admin"` | Hostname of the Smart Resource and Service Discovery instance specific for this profile |
+| resource-and-service-offer-catalog-admin.srsd.port | string | `"5000"` | Port of the Smart Resource and Service Discovery instance specific for this profile |
+| resource-and-service-offer-catalog-admin.srsd.requestPath | string | `"/classifyOffer"` | Request API path |
+| resource-and-service-offer-catalog-admin.srsd.skipPost | string | `"false"` | Skip post  |
+| resource-and-service-offer-catalog-admin.hostname | string | `"resource-and-service-offer-catalog-admin"` | Resource and Service Offer Catalog exposed URL |
+| gui-admin.enabled | bool | `true` | Enable 5GZORRO GUI |
+| gui-admin.ingress.enabled | bool | `true` | Expose the service outside the cluster using ingress |
+| gui-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| gui-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| gui-admin.ingress.hosts[0] | object | `{"host":"admin-gui.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| gui-admin.ingress.tls[0] | object | `{"hosts":["admin-gui.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate |
+| gui-admin.role | string | `"admin"` | Define component role/profile |
+| gui-admin.marketPlaceUrl | string | `"https://admin-rsoc.${HOSTED_ZONE_NAME}/tmf-api"` | External URL of the Resource and Service Offer Catalog instance specific for this profile |
+| gui-admin.legalProseUrl | string | `"https://admin-lpr.${HOSTED_ZONE_NAME}"` | External URL of the Legal Prose Repository instance specific for this profile |
+| gui-admin.governanceUrl | string | `"https://admin-gm.${HOSTED_ZONE_NAME}"` | External URL of the Governance Manager instance specific for this profile |
+| gui-admin.identityPermissionsUrl | string | `"https://admin-idp.${HOSTED_ZONE_NAME}"` | External URL of the Identity and Permissions Manager instance specific for this profile |
+| gui-admin.smartContractUrl | string | `"https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/"` | External URL of the Smart Contract Lifecycle Manager instance specific for this profile |
+| gui-admin.resourceManagerEndpoint | string | `"https://admin-xrm.${HOSTED_ZONE_NAME}"` | External URL of the xRM instance specific for this profile  |
+| gui-admin.resourceManagerDiscoveryApiKey | string | `"ce0b0017-843c-4811-bb76-1005733cf3ec"` | xRM discovery API key |
+| gui-admin.resourceManagerTraslatorApiKey | string | `"fe6d588b-1d6b-4954-9e26-a334d0d09eed"` | xRM translator API key |
+| gui-admin.rappDiscoveryApiKey | string | `"fc7def3f-0490-4c17-931f-6f6e4c759890"` | RAPP discovery API key |
+| gui-admin.sliceDiscoveryApiKey | string | `"685be7dc-6ed3-46de-90da-bc21747568a1"` | Intelligent slice and service manager discovery API key |
+| gui-admin.ledgerIdentity | string | `"CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB"` | DLT ledger identity |
+| gui-admin.srsdUrl | string | `"https://admin-srsd.${HOSTED_ZONE_NAME}"` | URL of the Smart Resource and Service Discovery instance specific for this profile |
+| gui-admin.issmUrl | string | `"https://admin-issm.${HOSTED_ZONE_NAME}"` | URL of the Intelligent slice and service manager instance specific for this profile  |
+| gui-admin.rappUrl | string | `"http://172.28.3.242:2626"` | URL of the RAPP instance specific for this profile |
+| smart-resource-and-service-discovery-admin.enabled | bool | `true` | Enable 5GZORRO Smart Resource and Service Discovery |
+| smart-resource-and-service-discovery-admin.ingress.enabled | bool | `true` | Exposes the service outside the cluster using ingress |
+| smart-resource-and-service-discovery-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| smart-resource-and-service-discovery-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| smart-resource-and-service-discovery-admin.ingress.hosts[0] | object | `{"host":"admin-srsd.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| smart-resource-and-service-discovery-admin.ingress.tls[0] | object | `{"hosts":["admin-srsd.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate  |
+| smart-resource-and-service-discovery-admin.mongo.uri | string | `"mongodb-admin-admin-srsd"` | MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format) |
+| monitoring-data-aggregator-admin.enabled | bool | `true` | Enable 5GZORRO Monitoring Data Aggregator |
+| monitoring-data-aggregator-admin.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| monitoring-data-aggregator-admin.postgres.port | int | `5432` | PostgreSQL port |
+| monitoring-data-aggregator-admin.postgres.name | string | `"mdaadmin"` | PostgreSQL database name |
+| monitoring-data-aggregator-admin.postgres.existingSecret | string | `"mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| monitoring-data-aggregator-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| monitoring-data-aggregator-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| monitoring-data-aggregator-admin.ingress.enabled | bool | `false` | Expose the service outside the cluster using ingress |
 | monitoring-data-aggregator-admin.role | string | `"admin"` |  |
-| monitoring-data-aggregator-admin.kafka.host | string | `"kafka-cluster-kafka-bootstrap"` |  |
-| monitoring-data-aggregator-admin.kafka.port | int | `9092` |  |
-| xrm-admin.role | string | `"admin"` |  |
-| xrm-admin.catalogueapp.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| xrm-admin.catalogueapp.postgres.port | int | `5432` |  |
-| xrm-admin.catalogueapp.postgres.name | string | `"xrmcatalogueappadmin"` |  |
-| xrm-admin.catalogueapp.postgres.existingSecret | string | `"xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| xrm-admin.catalogueapp.postgres.userKey | string | `"username"` |  |
-| xrm-admin.catalogueapp.postgres.passwordKey | string | `"password"` |  |
-| xrm-admin.catalogueapp.mano.id | string | `"ZORRO_OSMR10"` |  |
-| xrm-admin.catalogueapp.mano.type | string | `"OSMR10"` |  |
-| xrm-admin.catalogueapp.mano.site | string | `"ZORRO_OSM"` |  |
-| xrm-admin.catalogueapp.mano.ip | string | `"osm.${HOSTED_ZONE_NAME}"` |  |
-| xrm-admin.catalogueapp.mano.port | string | `"80"` |  |
-| xrm-admin.catalogueapp.mano.username | string | `"admin"` |  |
-| xrm-admin.catalogueapp.mano.password | string | `"admin"` |  |
-| xrm-admin.catalogueapp.mano.project | string | `"admin"` |  |
-| xrm-admin.catalogueapp.catalogue.id | string | `"DEFAULT_CAT"` |  |
-| xrm-admin.catalogueapp.catalogue.url | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080"` |  |
-| xrm-admin.catalogueui.keycloak.enabled | bool | `false` |  |
-| xrm-admin.catalogueui.catalogue.port | string | `"80"` |  |
-| xrm-admin.catalogueui.catalogue.scope | string | `"PUBLIC"` |  |
-| xrm-admin.kafka.host | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
-| xrm-admin.gateway.mongo.uri | string | `"mongodb-admin-admin-xrm-admin"` |  |
-| xrm-admin.managementapi.mongo.uri | string | `"mongodb-admin-admin-xrm-admin"` |  |
-| xrm-admin.translator.postgres.host | string | `"zorro5g-psqldb-admin"` |  |
-| xrm-admin.translator.postgres.port | int | `5432` |  |
-| xrm-admin.translator.postgres.name | string | `"xrmtranslatoradmin"` |  |
-| xrm-admin.translator.postgres.existingSecret | string | `"xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| xrm-admin.translator.postgres.userKey | string | `"username"` |  |
-| xrm-admin.translator.postgres.passwordKey | string | `"password"` |  |
-| issm-admin.enabled | bool | `true` |  |
-| issm-admin.role | string | `"admin"` |  |
-| issm-admin.orchestrator | string | `"nsso"` |  |
-| issm-admin.operatorName | string | `"operatora"` |  |
-| issm-admin.kafka.url | string | `"kafka-cluster-kafka-bootstrap.default.svc.cluster.local"` |  |
-| issm-admin.kafka.port | string | `"9092"` |  |
-| issm-admin.ingress.enabled | bool | `true` |  |
-| issm-admin.ingress.className | string | `"nginx"` |  |
-| issm-admin.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
-| issm-admin.ingress.hosts[0].host | string | `"admin-issm.${HOSTED_ZONE_NAME}"` |  |
-| issm-admin.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| issm-admin.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| issm-admin.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
-| issm-admin.ingress.tls[0].hosts[0] | string | `"admin-issm.${HOSTED_ZONE_NAME}"` |  |
-| issm-admin.argo.internal | string | `"zorro5g-argo-workflows-server.default.svc.cluster.local:2746"` |  |
-| issm-admin.argo.external | string | `"https://argo.${HOSTED_ZONE_NAME}"` |  |
-| nsso-admin.enabled | bool | `true` |  |
-| nsso-admin.role | string | `"admin"` |  |
-| nsso-admin.postgres.url | string | `"jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require"` |  |
-| nsso-admin.postgres.existingSecret | string | `"nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` |  |
-| nsso-admin.postgres.userKey | string | `"username"` |  |
-| nsso-admin.postgres.passwordKey | string | `"password"` |  |
-| nsso-admin.nfvo.catalogue.type | string | `"OSM10"` |  |
-| nsso-admin.nfvo.catalogue.address | string | `"http://osm.${HOSTED_ZONE_NAME}"` |  |
-| nsso-admin.nfvo.lcm.type | string | `"OSM10"` |  |
-| nsso-admin.nfvo.lcm.address | string | `"http://osm.${HOSTED_ZONE_NAME}"` |  |
-| nsso-admin.nfvo.lcm.project | string | `"admin"` |  |
-| nsso-admin.nfvo.lcm.username | string | `"admin"` |  |
-| nsso-admin.nfvo.lcm.password | string | `"admin"` |  |
-| nsso-admin.rabbitmq.host | string | `"zorro5g-nsso-admin-rabbitmq"` |  |
-| trmf-admin.enabled | bool | `true` |  |
-| trmf-admin.role | string | `"admin"` |  |
-| trmf-admin.trmfdb.persistence.storageClassName | string | `"default"` |  |
-| trmf-admin.trmfdb.persistence.size | string | `"8Gi"` |  |
-| trmf-admin.catalogue.uri | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/"` |  |
-| trmf-admin.elk.uri | string | `"http://zorro5g-xrm-admin-elasticsearch:9200/"` |  |
-| trmf-admin.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
+| monitoring-data-aggregator-admin.kafka | object | `{"host":"kafka-cluster-kafka-bootstrap","port":9092}` | Define component role/profile |
+| monitoring-data-aggregator-admin.kafka.host | string | `"kafka-cluster-kafka-bootstrap"` | Kafka Hostname |
+| monitoring-data-aggregator-admin.kafka.port | int | `9092` | Kafka Port |
+| xrm-admin.enabled | bool | `true` | Enable 5GZORRO Any Resource Manager (xRM) |
+| xrm-admin.role | string | `"admin"` | Define component role/profile |
+| xrm-admin.ingress.enabled | bool | `true` | Expose the service outside the cluster using ingress |
+| xrm-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| xrm-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| xrm-admin.ingress.hosts[0] | object | `{"host":"admin-xrm.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| xrm-admin.ingress.tls[0] | object | `{"hosts":["admin-xrm.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate |
+| xrm-admin.catalogueapp.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| xrm-admin.catalogueapp.postgres.port | int | `5432` | PostgreSQL port |
+| xrm-admin.catalogueapp.postgres.name | string | `"xrmcatalogueappadmin"` | PostgreSQL database name |
+| xrm-admin.catalogueapp.postgres.existingSecret | string | `"xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| xrm-admin.catalogueapp.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| xrm-admin.catalogueapp.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| xrm-admin.catalogueapp.mano.id | string | `"ZORRO_OSMR10"` | Mano istance ID |
+| xrm-admin.catalogueapp.mano.type | string | `"OSMR10"` | Mano typr |
+| xrm-admin.catalogueapp.mano.site | string | `"ZORRO_OSM"` | Mano Site |
+| xrm-admin.catalogueapp.mano.ip | string | `"osm.${HOSTED_ZONE_NAME}"` | Mano exposed URL  |
+| xrm-admin.catalogueapp.mano.port | string | `"80"` | Mano port |
+| xrm-admin.catalogueapp.mano.username | string | `"admin"` | Mano account username |
+| xrm-admin.catalogueapp.mano.password | string | `"admin"` | Mano account password |
+| xrm-admin.catalogueapp.mano.project | string | `"admin"` | Mano project name |
+| xrm-admin.catalogueapp.catalogue.id | string | `"DEFAULT_CAT"` | Resource and Service Offer Catalog ID |
+| xrm-admin.catalogueapp.catalogue.url | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080"` | URL of the Resource and Service Offer Catalog instance specific for this profile |
+| xrm-admin.catalogueui.keycloak.enabled | bool | `false` | Enable keycloak for xRM catalogue GUI |
+| xrm-admin.catalogueui.catalogue.port | string | `"80"` | xRM catalogue GUI port |
+| xrm-admin.catalogueui.catalogue.scope | string | `"PUBLIC"` | xRM catalogue GUI scope |
+| xrm-admin.kafka.host | string | `"kafka-cluster-kafka-bootstrap:9092"` | Kafka URL |
+| xrm-admin.gateway.mongo.uri | string | `"mongodb-admin-admin-xrm-admin"` | MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format) |
+| xrm-admin.managementapi.mongo.uri | string | `"mongodb-admin-admin-xrm-admin"` | MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format) |
+| xrm-admin.translator.postgres.host | string | `"zorro5g-psqldb-admin"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| xrm-admin.translator.postgres.port | int | `5432` | PostgreSQL port |
+| xrm-admin.translator.postgres.name | string | `"xrmtranslatoradmin"` | PostgreSQL database name |
+| xrm-admin.translator.postgres.existingSecret | string | `"xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| xrm-admin.translator.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| xrm-admin.translator.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| issm-admin.enabled | bool | `true` | Enable 5GZORRO Intelligent Slice and Service Manager |
+| issm-admin.role | string | `"admin"` | Define component role/profile |
+| issm-admin.orchestrator | string | `"nsso"` | ISSM orchestrator type |
+| issm-admin.operatorName | string | `"operatora"` | Operator name |
+| issm-admin.kafka.url | string | `"kafka-cluster-kafka-bootstrap.default.svc.cluster.local"` | Kafka Hostname |
+| issm-admin.kafka.port | string | `"9092"` | Kafka Port |
+| issm-admin.ingress.enabled | bool | `true` | Expose the service outside the cluster using ingress |
+| issm-admin.ingress.className | string | `"nginx"` | Set ingress controller class |
+| issm-admin.ingress.annotations | object | `{"helm.sh/resource-policy":"keep"}` | Ingress annotation |
+| issm-admin.ingress.hosts[0] | object | `{"host":"admin-issm.${HOSTED_ZONE_NAME}","paths":[{"path":"/","pathType":"Prefix"}]}` | Domain used to expose the service outside the cluster |
+| issm-admin.ingress.tls[0] | object | `{"hosts":["admin-issm.${HOSTED_ZONE_NAME}"],"secretName":"5gzorro-wildcard-cert"}` | Secret name that contain wildcard certificate |
+| issm-admin.argo.internal | string | `"zorro5g-argo-workflows-server.default.svc.cluster.local:2746"` | Argo internal service URL |
+| issm-admin.argo.external | string | `"https://argo.${HOSTED_ZONE_NAME}"` | Argo external service URL |
+| nsso-admin.enabled | bool | `true` | Enable 5GZORRO Network Slice and Service Orchestrator |
+| nsso-admin.role | string | `"admin"` | Define component role/profile |
+| nsso-admin.postgres.url | string | `"jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require"` | PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT) |
+| nsso-admin.postgres.existingSecret | string | `"nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"` | PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials) |
+| nsso-admin.postgres.userKey | string | `"username"` | PostgreSQL secret username key |
+| nsso-admin.postgres.passwordKey | string | `"password"` | PostgreSQL secret password key |
+| nsso-admin.nfvo.catalogue.type | string | `"OSM10"` | Mano type |
+| nsso-admin.nfvo.catalogue.address | string | `"http://osm.${HOSTED_ZONE_NAME}"` | Mano exposed URL |
+| nsso-admin.nfvo.lcm.type | string | `"OSM10"` | Mano type |
+| nsso-admin.nfvo.lcm.address | string | `"http://osm.${HOSTED_ZONE_NAME}"` | Mano exposed URL |
+| nsso-admin.nfvo.lcm.project | string | `"admin"` | Mano project name |
+| nsso-admin.nfvo.lcm.username | string | `"admin"` | Mano account username |
+| nsso-admin.nfvo.lcm.password | string | `"admin"` | Mano account password |
+| nsso-admin.rabbitmq.host | string | `"zorro5g-nsso-admin-rabbitmq"` | Rabbitmq cluster hostname |
+| trmf-admin.enabled | bool | `true` | Enable 5GZORRO Trust and Reputation Management Framework |
+| trmf-admin.role | string | `"admin"` | Define component role/profile |
+| trmf-admin.trmfdb.persistence | object | `{"size":"8Gi","storageClassName":"default"}` | Persistence configuration for TRMF internal database |
+| trmf-admin.catalogue.uri | string | `"http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/"` | URL of the Resource and Service Offer Catalog instance specific for this profile |
+| trmf-admin.elk.uri | string | `"http://zorro5g-xrm-admin-elasticsearch:9200/"` | URL of the ElasticSearch instance specific for this profile |
+| trmf-admin.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` | Kafka Hostname |
 | elma-regulator.enabled | bool | `true` |  |
 | elma-regulator.role | string | `"regulator"` |  |
 | elma-regulator.domainId | string | `"regulator"` |  |
@@ -629,7 +622,16 @@ Kubernetes: `>=1.21.0-0`
 | monitoring-data-aggregator-regulator.role | string | `"regulator"` |  |
 | monitoring-data-aggregator-regulator.kafka.host | string | `"kafka-cluster-kafka-bootstrap"` |  |
 | monitoring-data-aggregator-regulator.kafka.port | int | `9092` |  |
+| xrm-regulator.enabled | bool | `true` |  |
 | xrm-regulator.role | string | `"regulator"` |  |
+| xrm-regulator.ingress.enabled | bool | `true` |  |
+| xrm-regulator.ingress.className | string | `"nginx"` |  |
+| xrm-regulator.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
+| xrm-regulator.ingress.hosts[0].host | string | `"regulator-xrm.${HOSTED_ZONE_NAME}"` |  |
+| xrm-regulator.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| xrm-regulator.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| xrm-regulator.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
+| xrm-regulator.ingress.tls[0].hosts[0] | string | `"regulator-xrm.${HOSTED_ZONE_NAME}"` |  |
 | xrm-regulator.catalogueapp.postgres.host | string | `"zorro5g-psqldb-regulator"` |  |
 | xrm-regulator.catalogueapp.postgres.port | int | `5432` |  |
 | xrm-regulator.catalogueapp.postgres.name | string | `"xrmcatalogueappregulator"` |  |
@@ -816,7 +818,16 @@ Kubernetes: `>=1.21.0-0`
 | monitoring-data-aggregator-trader.role | string | `"trader"` |  |
 | monitoring-data-aggregator-trader.kafka.host | string | `"kafka-cluster-kafka-bootstrap"` |  |
 | monitoring-data-aggregator-trader.kafka.port | int | `9092` |  |
+| xrm-trader.enabled | bool | `true` |  |
 | xrm-trader.role | string | `"trader"` |  |
+| xrm-trader.ingress.enabled | bool | `true` |  |
+| xrm-trader.ingress.className | string | `"nginx"` |  |
+| xrm-trader.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
+| xrm-trader.ingress.hosts[0].host | string | `"trader-xrm.${HOSTED_ZONE_NAME}"` |  |
+| xrm-trader.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| xrm-trader.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| xrm-trader.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
+| xrm-trader.ingress.tls[0].hosts[0] | string | `"trader-xrm.${HOSTED_ZONE_NAME}"` |  |
 | xrm-trader.catalogueapp.postgres.host | string | `"zorro5g-psqldb-trader"` |  |
 | xrm-trader.catalogueapp.postgres.port | int | `5432` |  |
 | xrm-trader.catalogueapp.postgres.name | string | `"xrmcatalogueapptrader"` |  |
@@ -1040,7 +1051,16 @@ Kubernetes: `>=1.21.0-0`
 | monitoring-data-aggregator-consumer.role | string | `"consumer"` |  |
 | monitoring-data-aggregator-consumer.kafka.host | string | `"kafka-cluster-kafka-bootstrap"` |  |
 | monitoring-data-aggregator-consumer.kafka.port | int | `9092` |  |
+| xrm-consumer.enabled | bool | `true` |  |
 | xrm-consumer.role | string | `"consumer"` |  |
+| xrm-consumer.ingress.enabled | bool | `true` |  |
+| xrm-consumer.ingress.className | string | `"nginx"` |  |
+| xrm-consumer.ingress.annotations."helm.sh/resource-policy" | string | `"keep"` |  |
+| xrm-consumer.ingress.hosts[0].host | string | `"consumer-xrm.${HOSTED_ZONE_NAME}"` |  |
+| xrm-consumer.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| xrm-consumer.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
+| xrm-consumer.ingress.tls[0].secretName | string | `"5gzorro-wildcard-cert"` |  |
+| xrm-consumer.ingress.tls[0].hosts[0] | string | `"consumer-xrm.${HOSTED_ZONE_NAME}"` |  |
 | xrm-consumer.catalogueapp.postgres.host | string | `"zorro5g-psqldb-consumer"` |  |
 | xrm-consumer.catalogueapp.postgres.port | int | `5432` |  |
 | xrm-consumer.catalogueapp.postgres.name | string | `"xrmcatalogueappconsumer"` |  |
