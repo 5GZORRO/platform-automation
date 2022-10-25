@@ -57,9 +57,9 @@ spec:
           imagePullPolicy: "{{ $imageValues.pullPolicy }}"
           name: elma-watcher-manager
           resources: {}
-      {{- if $imageValues.pullSecrets }}
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
-        - name: {{ $imageValues.pullSecrets }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       restartPolicy: Always
 
