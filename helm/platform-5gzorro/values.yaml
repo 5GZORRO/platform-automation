@@ -834,6 +834,14 @@ aries-cloudagent-admin:
 identity-and-permissions-manager-admin:
   # -- Enable 5GZORRO Identity and Permissions Manger
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/identity-and-permissions-manager
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "logs"
   database:
     # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     connectionString: "mongodb-admin-admin-idp-admin"
@@ -884,6 +892,11 @@ identity-and-permissions-manager-admin:
 governance-manager-api-admin:
   # -- Enable 5GZORRO Governance Manager
   enabled: true
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/governance-manager-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.1.23"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -930,6 +943,11 @@ governance-manager-api-admin:
 legal-prose-repository-admin:
   # -- Enable 5GZORRO Legal Prose Repository
   enabled: true
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/legal-prose-repository-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.0-pre-final"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -976,6 +994,11 @@ legal-prose-repository-admin:
 smart-contract-lifecycle-manager-admin:
   # -- Enable 5GZORRO Smart Contract Lifecycle Manager
   enabled: true
+  image:
+    repository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/lifecycle-manager-api"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.3-pre-final"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1036,6 +1059,11 @@ smart-contract-lifecycle-manager-admin:
 resource-and-service-offer-catalog-admin:
   # -- Enable 5GZORRO Resource and Service Offer Catalog
   enable: true
+  image:
+    repository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/resource-and-service-offer-catalog"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   # -- Operator name
   operatorName: operatora
   postgres:
@@ -1115,6 +1143,10 @@ resource-and-service-offer-catalog-admin:
 gui-admin:
   # -- Enable 5GZORRO GUI
   enabled: true
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/gui
+    tag: latest
+    pullPolicy: Always
   ingress:
     # -- Expose the service outside the cluster using ingress
     enabled: true
@@ -1169,6 +1201,11 @@ gui-admin:
 smart-resource-and-service-discovery-admin:
   # -- Enable 5GZORRO Smart Resource and Service Discovery
   enabled: true
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/srd-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   ingress:
     # -- Exposes the service outside the cluster using ingress
     enabled: true
@@ -1196,6 +1233,11 @@ smart-resource-and-service-discovery-admin:
 monitoring-data-aggregator-admin:
   # -- Enable 5GZORRO Monitoring Data Aggregator
   enabled: true
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/mda
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1246,6 +1288,10 @@ xrm-admin:
        hosts:
          - admin-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
@@ -1282,6 +1328,10 @@ xrm-admin:
       # -- URL of the Resource and Service Offer Catalog instance specific for this profile
       url: "http://zorro5g-resource-and-service-offer-catalog-admin:8080"
   catalogueui:
+    image:
+      repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-gui
+      pullPolicy: IfNotPresent
+      tag: "latest"
     keycloak:
       # -- Enable keycloak for xRM catalogue GUI
       enabled: false
@@ -1294,14 +1344,41 @@ xrm-admin:
     # -- Kafka URL
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
+    image:
+      repository: graviteeio/apim-gateway
+      pullPolicy: IfNotPresent
+      tag: "3"
     mongo:
       # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
   managementapi:
+    image:
+      repository: graviteeio/apim-management-api
+      pullPolicy: IfNotPresent
+      tag: "3"
     mongo:
       # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
+  managementui:
+    image:
+      repository: graviteeio/apim-management-ui
+      pullPolicy: IfNotPresent
+      tag: "3"
+  elasticsearch:
+    image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch
+      pullPolicy: IfNotPresent
+      tag: "7.7.0"
+  portalui:
+    image:
+      repository: graviteeio/apim-portal-ui
+      pullPolicy: IfNotPresent
+      tag: "3"
   translator:
+    image:
+      repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-resource-definition-translator
+      pullPolicy: IfNotPresent
+      tag: "latest"
     postgres:
       # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
@@ -1355,10 +1432,32 @@ issm-admin:
     internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
     # -- Argo external service URL
     external: "https://argo.${HOSTED_ZONE_NAME}"
+  api:
+    image:
+      repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-api
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "586364c"
+
+  optimizer:
+    image:
+      repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-optimizer
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "temp"
 
 nsso-admin:
   # -- Enable 5GZORRO Network Slice and Service Orchestrator
   enabled: true
+  uiimage:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nssoui
+    tag: fix
+    pullPolicy: Always
+
+  image:
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nsso
+    tag: latest
+    pullPolicy: Always
   # -- Define component role/profile
   role: admin
   postgres:
@@ -1394,6 +1493,12 @@ nsso-admin:
 trmf-admin:
   # -- Enable 5GZORRO Trust and Reputation Management Framework
   enabled: true
+  image:
+    tag: fix
+    app: trmf
+    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/trmf
+    pullPolicy: Always
+    pullSecrets: ""
   # -- Define component role/profile
   role: "admin"
   trmfdb:

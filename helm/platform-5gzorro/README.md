@@ -86,7 +86,7 @@ Kubernetes: `>=1.21.0-0`
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 36.0.* |
 | https://strimzi.io/charts/ | strimzi-kafka-operator | 0.29.* |
 
-## Values
+### Global parameters
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -100,6 +100,11 @@ Kubernetes: `>=1.21.0-0`
 | global.imageCredentials.registry | string | `""` | URL of the repository where all the images are stored |
 | global.imageCredentials.username | string | `""` | Username |
 | global.imageCredentials.password | string | `""` | Password |
+
+### Base profile parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | ingress-nginx.enabled | bool | `true` | Enable ingress-nginx controller. See [ingress-nginx](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx) documentation for more datails. |
 | ingress-nginx.controller | object | `{"service":{"annotations":{"external-dns.alpha.kubernetes.io/hostname":"*.${HOSTED_ZONE_NAME}"}}}` | Set it with your domain |
 | cert-manager.enabled | bool | `true` | Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails. |
@@ -180,6 +185,11 @@ Kubernetes: `>=1.21.0-0`
 | sla-breach-predictor.kafka.monTopic | string | `""` | Kafka monitoring Topic |
 | sla-breach-predictor.datalakeHost | string | `"zorro5g-datalake:8080"` | Datalake hostname and port (service name if it's in the same namespace, FQDN if NOT) |
 | sla-breach-predictor.lcmHost | string | `"smart-contract-lifecycle-manager-admin:8087"` | Smart Contract Lifecycle Manager hostname and port (service name if it's in the same namespace, FQDN if NOT) |
+
+### Admin profile parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | elma-admin.enabled | bool | `true` | Enable 5GZORRO e-License Manager |
 | elma-admin.image.tag | string | `"latest"` | Docker image tag |
 | elma-admin.image.app | string | `"elma"` |  |
