@@ -22,7 +22,7 @@ resource "helm_release" "platform-5gzorro" {
   name       = "zorro5g"
   repository = "../helm"
   chart      = "platform-5gzorro"
-  timeout    = 600
+  timeout    = 1800
   wait       = false
   values = [
     data.template_file.valuesfile.rendered
