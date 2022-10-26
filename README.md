@@ -11,13 +11,13 @@ Installs the [5GZORRO](https://www.5gzorro.eu/) platform with all modules depend
 
 ## Dependencies
 
-By default this chart require additional components:
+This chart require additional components:
 
 - [VON-Network](https://github.com/5GZORRO/identity#build-von-network)
 - [Corda-Network](https://github.com/5GZORRO/smart-contract-lifecycle-manager#running-corda-nodes-locally)
 - [OSM](https://github.com/5GZORRO/smart-contract-lifecycle-manager#running-corda-nodes-locally)
 
-_See [Azure Prerequisites](#Azure-Prerequisites) for automated installation of those components._
+_See [Azure](#Azure) for automated installation of those components._
 
 ## Install Helm Chart
 
@@ -27,11 +27,19 @@ Copy one of the template present in values-template folder and modify the values
 helm upgrade --install zorro5g helm/platform-5gzorro/ --values values.yaml
 ```
 
+## Configuration
+
+All the configurable parameters of the 5GZORRO chart and their default values, can be found at this link [README](/helm/platform-5gzorro/README.md "Helm Values").  See
+the documentation of each componet for more details.
+
 ## Custom Installation 
 
 Default 5GZORRO installation includes 4 operators, respectively with the roles of admin, regulator, trader and consumer.
 However, it is possible to customize the installation by adding or removing operators with their roles.
 To do this, simply clone the portion of code between `START ...... Profile Block` and `END ...... Profile Block` in both files Chart.yaml and 5gzorro-platform-values.yaml.tftpl and change all to properties according to your custom operator configurations.
+
+
+## Azure
 
 ## Azure Prerequisites
 
@@ -70,8 +78,3 @@ terraform apply
 ```
 
 _Make sure you are logged in and have the permissions to create the resources in the subscription_
-
-## Configuration
-
-All the configurable parameters of the 5GZORRO chart and their default values, can be found at this link [README](/helm/platform-5gzorro/README.md "Azure Infrastructure Diagram").  See
-the documentation of each componet for more details.
