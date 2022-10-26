@@ -1,17 +1,22 @@
 # 5GZORRO platform deployment
 
-Installs the [5GZORRO](https://www.5gzorro.eu/) platform with all modules dependencies with 4 provider (admin, regulator, trader, consumer).
+In this project we provide an automated way to install [5GZORRO](https://www.5gzorro.eu/) platform. We create different template that satisfy different scenario. Whit the default scenario a complete version of 5GZORRO will be deployed, with all modules dependencies (exluded VON-Network, Corda Network, OSM) and 4 operators that have different role (admin, regulator, trader, consumer).
+
+In the repository are also present some scripts that allow users to automate the deployment of the additional components that are required by the 5GZORRO platform like VON-Network, Corda-Network in the Azure Cloud Enviroment. See [Azure](#Azure) for more details.
 
 ![Alt text](/azure-infrastructure-diagram.png?raw=true "Azure Infrastructure Diagram")
 
 ## Prerequisites
 
+If you want to deploy 5GZORRO platform on bare-metal or in a cloud provider different from Azure, there're three main prerequisite, a Kubernetes cluster with an IP address that is reaceble from the clients, a domain name that point to this IP and a client with kubectl and helm installed to run the installation commands.
+
 - Kubernetes >=1.20 <1.22
 - Helm 3+
+- Domain Name 
 
 ## Dependencies
 
-This chart require additional components:
+This chart require additional components, those components needs to be installed separetely:
 
 - [VON-Network](https://github.com/5GZORRO/identity#build-von-network)
 - [Corda-Network](https://github.com/5GZORRO/smart-contract-lifecycle-manager#running-corda-nodes-locally)
@@ -21,16 +26,15 @@ _See [Azure](#Azure) for automated installation of those components._
 
 ## Install Helm Chart
 
-Copy one of the template present in values-template folder and modify the values according to your needs.
+Copy one of the template present in values-templates folder and modify the values according to your needs, make sure you have changed the variables ${...} present in the template.
 
 ```console
-helm upgrade --install zorro5g helm/platform-5gzorro/ --values values.yaml
+helm upgrade --install zorro5g helm/platform-5gzorro/ --values <custom-values-file>.yaml
 ```
 
 ## Configuration
 
-All the configurable parameters of the 5GZORRO chart and their default values, can be found at this link [README](/helm/platform-5gzorro/README.md "Helm Values").  See
-the documentation of each componet for more details.
+All the configurable parameters of the 5GZORRO chart and their default values, can be found at this link [README](/helm/platform-5gzorro/README.md "Helm Values").  See the documentation of each componet for more details.
 
 ## Custom Installation 
 
@@ -38,8 +42,9 @@ Default 5GZORRO installation includes 4 operators, respectively with the roles o
 However, it is possible to customize the installation by adding or removing operators with their roles.
 To do this, simply clone the portion of code between `START ...... Profile Block` and `END ...... Profile Block` in both files Chart.yaml and 5gzorro-platform-values.yaml.tftpl and change all to properties according to your custom operator configurations.
 
-
 ## Azure
+
+In this repository we provide a way to install 5GZORRO platform with all the componets in a dedicated cloud enviroment (Azure). With this installation method all the components of the 5GZORRO platform inclued the external one (VON-Network, Corda Network, OSM) will be installed in a fully automated way without manual operations. 
 
 ## Azure Prerequisites
 
