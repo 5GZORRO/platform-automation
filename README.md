@@ -73,6 +73,9 @@ Pay attention to these values: *subscription_id*, *ssh_public_key*, *domain_name
 ```console
 export TF_VAR_azure_tenant_id="<tenant id of your azure account>"
 export TF_VAR_registry="<path of config.json containing docker registry credentials>"
+export TF_VAR_registry_url="<registry URL>"
+export TF_VAR_registry_username="<registry username>"
+export TF_VAR_registry_password="<registry access token or password>"
 ## If you're planning to use zeroSSL uncomment this section.
 # export TF_VAR_zerossl_hmac="<zeroSSL hmac you can find it on the developer section>"
 # export TF_VAR_zerossl_kid="<zeroSSL kid you can find it on the developer section>"
@@ -83,3 +86,22 @@ terraform apply
 ```
 
 _Make sure you are logged in and have the permissions to create the resources in the subscription_
+
+## Migrate images to private registry
+
+If you need to migrate all the images to your private registry you can use *migrate-docker-images.sh script.
+
+Make sure you are logged into both registries.
+```console
+docker login <repository URL>
+```
+
+Command:
+```console
+bash migrate-docker-images.sh -o <githup project registry URL> -i <image name> -t <image tag> -n <your private registry url>
+```
+
+Example:
+```console
+bash migrate-docker-images.sh -o ghcr.io/5gzorro/platform-automation -i resource-and-service-offer-catalog -t latest -n gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro
+```

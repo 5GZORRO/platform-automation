@@ -1,6 +1,6 @@
 yaml/*
 .terraform*
-terraform.tfstate
+terraform.tfstate*
 debug.yaml
-**/5gzorro-platform-values*
+**/5gzorro-platform-values*.yaml
 terraform/.terraform
