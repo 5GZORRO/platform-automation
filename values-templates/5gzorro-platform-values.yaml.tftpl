@@ -1,39 +1,66 @@
 # This template will install all 5GZORRO base components plus 4 operator with different role (admin, regulator, trader, consumer)
+# -- Tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping)
 tags:
+  # -- Enable all compontens in basic profile 
   base: true
+  # -- Enable all compontens in admin profile
   admin: true 
-  aries: true
+  # -- Enable all compontens in trader profile
   trader: true
+  # -- Enable all compontens in regulator profile
   regulator: true
+  # -- Enable monitoring profile
   monitoring: true
 
 global:
   imagePullSecrets: 
+    # -- Name of the registry credentials secrets manually created
     - name: registry-credentials
   imageCredentials:
+    # -- URL of the repository where all the images are stored
     registry: ${REGISTRY_URL}
+    # -- Username
     username: ${REGISTRY_USERNAME}
+    # -- Password
     password: ${REGISTRY_PASSWORD}
+  # -- Image used by some jobs
+  miscTools:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/misc-tools
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
 
 ######################## START Base Profile Block ########################
 ingress-nginx:
+  # -- Enable ingress-nginx controller. See [ingress-nginx](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx) documentation for more datails.
   enabled: true
+  # -- Set it with your domain
   controller:
     service:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "*.${HOSTED_ZONE_NAME}"
 
 cert-manager: 
+  # -- Enable cert-manager operator. See [cert-manager](https://cert-manager.io/docs/installation/helm/) documentation for more datails.
   enabled: true
+  # -- Namespace name where cert-manager will be installed.
   namespace: cert-manager
 
 rabbitmq-cluster-operator:
+  # -- Enable rabbitmq operator. See [rabbitmq-cluster-operator](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator) documentation for more datails.
   enabled: true
 
 custom-resource-5gzorro:
+  # -- Enable 5GZORRO custom resource like rabbitmq, mongodb and postgresSQL clusters.
   enabled: true
   rabbitmq-cluster-operator:
+    # -- Enable custom resource for rabbitmq-cluster
     enabled: true
+    # -- RabbitMQ cluster configurations 
     rabbitmqClusters:
       - name: rabbitmq-elma-admin
         replicas: 1
@@ -47,25 +74,36 @@ custom-resource-5gzorro:
     # -- email address used for notifications about certificate status
     email: ""
     zerossl:
+      # -- Enable zerossl certficate provider account is needed.
       enabled: true
+      # -- EABK ID available in zeroSSL developer console 
       eabKid: ${EAB_KID} 
       eabHmac:
+        # -- HMAC secrets name 
         secretName: "zerossl-eabsecret"
+        # -- HMAC secrets name 
         secretKey: "secret"
     letsencrypt:
+      # -- Enable letsencrypt certificate provider
       enabled: false
+    # -- Azure DNS configurations 
     azureDns:
       subscriptionID: ${SUBSCRIPTION_ID} 
       resourceGroupName: ${RESOURCE_GROUP_NAME} 
       hostedZoneName: ${HOSTED_ZONE_NAME} 
       clientID: ${MANAGEND_IDENTITY_CLIENT_ID} 
   kube-prometheus-stack:
+    # -- Enable prometues to scrape some custom metrics
     enabled: true
   community-operator:
+    # -- Enable MongoDB custom resource
     enabled: true
     community-operator-crds:
       enabled: false
+    # -- MongoDB clusters list
+    # @notationType -- list
     mongodbClusters:
+      # -- MongoDB clusters configurations example
       - name: mongodb-admin
         replicas: 1
         version: "4.2.6"
@@ -183,8 +221,12 @@ custom-resource-5gzorro:
                 db: srsd
             scramCredentialsSecretName: 5gzorro-mongodb-srsd-consumer-scram 
   strimzi:
+    # -- Enable kafka custom resource
     enabled: true
+    # -- kafka clusters list
+    # @notationType -- list
     kafkaClusters:
+      # -- Kafka clusters configurations example
       - name: kafka-cluster
         replicas: 3
         version: 3.2.0
@@ -211,7 +253,10 @@ custom-resource-5gzorro:
           storage:
             type: persistent-claim
             size: 32Gi
+    # -- kafka topic list
+    # @notationType -- list
     kafkaTopics:
+      # -- Kafka topic configurations example
       - name: dlt-product-offerings
         clusterName: kafka-cluster
         spec:
@@ -223,8 +268,12 @@ custom-resource-5gzorro:
           partitions: 3
           replicas: 1
   postgres-operator:
+    # -- Enable PostgresSQL custom resource
     enabled: true
+    # -- PostgresSQL clusters list
+    # @notationType -- list
     postgresqlClusters:
+      # -- PostgresSQL clusters configurations example
       - name: zorro5g-psqldb-admin
         spec:
           teamId: zorro5g
@@ -390,32 +439,43 @@ custom-resource-5gzorro:
             version: "14"
 
 external-dns:
+  # -- Enable external-dns controller. See [external-dns](https://github.com/kubernetes-sigs/external-dns/tree/master/charts/external-dns) documentation for more datails.
   enabled: true
+  # -- Select DNS provider
   provider: azure
+  # -- Azure provider configuration
   azure:
     resourceGroup: ${RESOURCE_GROUP_NAME} 
     tenantId: ${AZURE_TENANT_ID}
     subscriptionId: ${SUBSCRIPTION_ID} 
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
+  # -- Set this filter according to your dns configuration
   domainFilters: ["*.${HOSTED_ZONE_NAME} "]
 
 kube-prometheus-stack:
+  # -- Enable kube-prometheus-stack. See [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) documentation for more datails.
   enabled: true
+  # @ignored
   defaultRules:
     etcd: false
     kubeScheduler: false
+  # @ignored
   grafana:
     defaultDashboardsTimezone: Europe/Rome
     adminPassword: 5gzorro-metrics
+  # @ignored
   kubeControllerManager:
     enabled: false
+  # @ignored
   kubeEtcd:
     enabled: false
+  # @ignored
   kubeScheduler:
     enabled: false
   # prometheusOperator:
   #   logLevel: debug
+  # @ignored
   prometheus:
     prometheusSpec:
       serviceMonitorSelectorNilUsesHelmValues: false
@@ -434,7 +494,9 @@ kube-prometheus-stack:
                 storage: 32Gi
 
 loki-stack:
+  # -- Enable loki-stack. See [loki-stack](https://github.com/grafana/helm-charts/tree/main/charts/loki-stack) documentation for more datails.
   enabled: true
+  # @ignored
   loki:
     enabled: true
     isDefault: true
@@ -484,6 +546,7 @@ loki-stack:
           annotations:
             summary: Loki request latency (instance {{ $labels.instance }})
             description: "The {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf \"%.2f\" $value }}s 99th percentile latency\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  # @ignored
   promtail:
     enabled: true
     config:
@@ -492,20 +555,28 @@ loki-stack:
       enabled: true
 
 minio:
+# -- Enable minio. See [minio](https://github.com/minio/operator/tree/master/helm/operator) documentation for more datails.
   enabled: true
+   # @ignored
   fullnameOverride: "minio"
+   # @ignored
   mode: standalone
+   # @ignored
   replicas: 1
+   # @ignored
   DeploymentUpdate:
     type: Recreate
+  # @ignored
   resources:
     requests:
       memory: 2Gi
+  # @ignored
   persistence:
     enabled: true
     storageClass: ""
     accessModes: "ReadWriteOnce"
     size: 32Gi
+  # @ignored
   ingress:
     enabled: true
     ingressClassName: "nginx"
@@ -522,6 +593,7 @@ minio:
   metrics:
     serviceMonitor:
       enabled: true
+  # @ignored
   users:
     - accessKey: zorro5g
       secretKey: zorro5g2022
@@ -529,12 +601,14 @@ minio:
     - accessKey: datalake
       secretKey: datalake2022
       policy: datalakereadwrite
+  # @ignored
   buckets:
     - name: datalake
       policy: none
       purge: false
       versioning: false
       objectlocking: false
+  # @ignored
   policies:
     - name: datalakereadwrite
       statements:
@@ -548,21 +622,29 @@ minio:
             - "s3:ListMultipartUploadParts"
 
 postgres-operator:
+  # -- Enable postgres-operator. See [postgres-operator](https://github.com/zalando/postgres-operator) documentation for more datails.
   enabled: true
 
 strimzi:
+  # -- Enable Kafka Strimzi Operator. See [kafka-strimzi](https://github.com/strimzi/strimzi-kafka-operator) documentation for more datails.
   enabled: true
+  # -- Watch for CR in all namespaces
   watchAnyNamespace: true
           
 community-operator:
+  # -- Enable MongoDB Community Operator. See [mongodb-community](https://github.com/mongodb/mongodb-kubernetes-operator) documentation for more datails.
   enabled: true
   community-operator-crds:
+  # -- Disable CRD creation that can cause problems with umbrella charts
     enabled: false
 
 argo-workflows:
+  # -- Enable Argo Workflow. See [argo-workflows](https://github.com/argoproj/argo-helm/tree/main/charts/argo-workflows) documentation for more datails.
   enabled: true
   crds:
+    # -- Disable CRD creation that can cause problems with umbrella charts
     install: false
+  # @ignored
   controller:
     metricsConfig:
       enabled: true
@@ -570,6 +652,7 @@ argo-workflows:
       enabled: true
     serviceMonitor:
       enabled: true
+  # @ignored
   server:
     extraArgs: 
       - --auth-mode=server
@@ -589,85 +672,177 @@ argo-workflows:
             - argo.${HOSTED_ZONE_NAME}
 
 argo-events:
+  # -- Enable Argo Events. See [argo-events](https://github.com/argoproj/argo-helm/tree/main/charts/argo-events) documentation for more datails.
   enabled: true
   crds:
+    # -- Disable CRD creation that can cause problems with umbrella charts
     install: false
 ######################## END Base Profile Block ########################
 ######################## START Admin Profile Block ########################
 datalake:
+  # -- Enable 5GZORRO datalake 
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/datalake
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "fix-psql1"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Namespace name where datalake will be deployed 
   namespace: default
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: "zorro5g-psqldb-datalake"
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: "datalake"
+    # -- PostgreSQL table name
     table: "datalake_metrics"
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "datalake.zorro5g-psqldb-datalake.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   kafka:
+    # -- Kafka hostname (service name if it's in the same namespace, FQDN if NOT)
     host: "kafka-cluster-kafka-bootstrap"
+    # -- Kafka port
     port: "9092"
   minio:
+    # -- Minio hostname (service name if it's in the same namespace, FQDN if NOT)
     host: "minio"
+    # -- Minio port
     port: "8080"
+    # -- Minio username
     username: "datalake"
+    # -- Minio password
     password: "datalake2022"
+    # -- Minio secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: ""
+    # -- Minio secret username key
     userKey: ""
+    # -- Minio secret password key
     passwordKey: ""
   datalake:
+    # -- Datalake Docker image tag
     imageVersion: "latest"
+    # -- Datalake docker image repository
     imageRepository: "ghcr.io/5gzorro/platform-automation"
 
 sla-breach-predictor:
+  # -- Enable 5GZORRO SLA Breach Predictor
   enabled: true
+  isbp:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/isbp
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
+  predictor:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/isbp-predictor
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
   persistence:
+    # -- Enable persistence
     enabled: true
+    # -- StorageClassName
     storageClassName: "azurefile"
+    # -- Persistent Volume Claim size
     size: 128Gi
   kafka:
+    # -- Kafka hostname (service name if it's in the same namespace, FQDN if NOT)
     host: kafka-cluster-kafka-bootstrap
+    # -- Kafka port
     port: 9092
+    # -- Kafka monitoring Topic
     monTopic: ""
+  # -- Datalake hostname and port (service name if it's in the same namespace, FQDN if NOT)
   datalakeHost: zorro5g-datalake:8080
+  # -- Smart Contract Lifecycle Manager hostname and port (service name if it's in the same namespace, FQDN if NOT)
   lcmHost: smart-contract-lifecycle-manager-admin:8087
 
 elma-admin:
+  # -- Enable 5GZORRO e-License Manager
   enabled: true
   image:
+    # -- Docker image tag
     tag: latest
+    app: elma
+    # -- Docker image repository
     image: ghcr.io/5gzorro/platform-automation/elma
+    # -- Image pull policy
     pullPolicy: Always
+  # -- Define component role/profile
   role: admin
+  # -- e-License Manager domainID
   domainId: "admin"
   catalog:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     url: "zorro5g-resource-and-service-offer-catalog-admin"
+    # -- Port of the Resource and Service Offer Catalog instance specific for this profile
     port: "8080"
     resources: "None"
   netSlice:
+    # -- Slice Manager API URL
     url: "172.28.3.15"
+    # -- Slice Manager API Port
     port: "31082"
+    # -- Slice Manager API endpoint
     endpoint: "portal/elicensing/"
   datalake:
+    # -- Datalake URL
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
+    # -- Datalake Auth
     auth: '{"userInfo": {"userId": "operator-a", "authToken": "blah"}}'
+    # -- Kafka URL
     kafka: "kafka-cluster-kafka-bootstrap:9092"
   rabbitmq:
+    # -- URL of the RabbitMQ instance specific for this profile
     url: "rabbitmq-elma-admin"
+    # -- RabbitMQ secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "rabbitmq-elma-admin-default-user"
+    # -- RabbitMQ secret username key
     userKey: "username"
+    # -- RabbitMQ secret password key
     passwordKey: "password"
 
 aries-cloudagent-admin:
+  # -- Enable Aries Cloud Agent 
   enable: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/aries-cloudagent
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.6.0"
   agent:
+    # -- Define component role/profile
     role: "admin"  # Admin, Regulator, Holder, Verifier
+    # -- Define agent label 
     label: "AgentAdmin" # AgentRegulator
+    # -- Define agent seed
     seed: "AgentAdmin0000000000000000000000" # AgentRegulator00000000000000000
+    # -- Define agent did
     did: "RGQ8DpoASL9rZZp69i7wJ8"
+    # -- Define agent wallet name 
     walletName: "AgentAdmin" # AgentRegulator
+    # -- Define agent wallet key
     walletKey: "AgentAdminKey" # secret
+  # -- VON network API URL 
   vonUrl: "http://10.241.0.10:9000" # http://10.241.0.4:9000
   persistence:
     enabled: true
@@ -677,13 +852,27 @@ aries-cloudagent-admin:
     size: 16Gi
 
 identity-and-permissions-manager-admin:
+  # -- Enable 5GZORRO Identity and Permissions Manger
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/identity-and-permissions-manager
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "logs"
   database:
+    # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     connectionString: "mongodb-admin-admin-idp-admin"
+    # -- MongoDB port
     port: "27017"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -694,34 +883,59 @@ identity-and-permissions-manager-admin:
           - path: /
             pathType: Prefix
     tls: 
+     # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
        hosts:
          - admin-idp.${HOSTED_ZONE_NAME}
   idp:
+    # -- Define component role/profile
     role: "admin"
+    # -- List of all IDP allowed 
     whitelist: '["*"]'
+    # -- Holder Agent URL
     holderAgent: "http://zorro5g-aries-cloudagent-admin:8001"
+    # -- Issuer Agent URL
     issuerAgentUrl: "http://zorro5g-aries-cloudagent-admin:8001"
+    # -- Trading Provider URL
     tradingProviderAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+    # -- Regualator Provider URL
     regulatorAgentControllerUrl: "http://zorro5g-identity-and-permissions-manager-regulator:8000"
+    # -- URLs of other IDP controllers
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
     key: ""
     vpnaasKey: ""
+    # -- Admin DID used for the VON registration
     adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
 
 governance-manager-api-admin:
+  # -- Enable 5GZORRO Governance Manager
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/governance-manager-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.1.23"
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: governancemanageradmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "governancemanageradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -732,29 +946,47 @@ governance-manager-api-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-gm-letsencrypt-tls
        hosts:
          - admin-gm.${HOSTED_ZONE_NAME}
   # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Legal Prose Repository instance specific for this profile
   legalProseRepositoryBaseUrl: "http://zorro5g-lagal-prose-repository-admin:8080/legal-prose-repository/api/v1"
   callbacks:
     # -- URL for Governace Manager callback
     updateProposal: "https://admin-gm.${HOSTED_ZONE_NAME}/api/v1/governance-actions/%s/identity"
 
 legal-prose-repository-admin:
+  # -- Enable 5GZORRO Legal Prose Repository
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/legal-prose-repository-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.0-pre-final"
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: legalproseadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "legalproseadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -765,29 +997,47 @@ legal-prose-repository-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-lpr-letsencrypt-tls
        hosts:
          - admin-lpr.${HOSTED_ZONE_NAME}
   # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Governance Manager instance specific for this profile
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
   callbacks:
     # -- URL for Legal Prose Template callback
     updateTemplateIdentity: "https://admin-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
 
 smart-contract-lifecycle-manager-admin:
+  # -- Enable 5GZORRO Smart Contract Lifecycle Manager
   enabled: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.3-pre-final"
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: sclmadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "sclmadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -798,41 +1048,70 @@ smart-contract-lifecycle-manager-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-sclm-letsencrypt-tls
        hosts:
          - admin-sclm.${HOSTED_ZONE_NAME}
   # -- Define component role/profile
   role: "admin"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
   identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-admin:8000"
+  # -- URL of the Governance Manager instance specific for this profile
   governanceBaseUrl: "http://zorro5g-governance-manager-api-admin:8080/api/v1"
+  # -- URL for Smart Contract Lifecycle Manager callback
   callbacks:
     updateSlaIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
+    # -- Corda username
+    username: user1    
+    # -- Corda password       
+    password: test     
+    # -- Corda hostname        
     host: 10.241.0.10
+    # -- Corda port
     port: "10012"
+  # -- Operator name 
   operatorName: operatora
+  # -- Smart Contract Lifecycle Manager exposed URL
   hostname: "smart-contract-lifecycle-manager-admin:8087"
 
 resource-and-service-offer-catalog-admin:
+  # -- Enable 5GZORRO Resource and Service Offer Catalog
   enable: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  # -- Operator name
   operatorName: operatora
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: rsocadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "rsocadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   kafka:
+    # -- Kafka URL
     bootstrap: "kafka-cluster-kafka-bootstrap:9092"
+    # -- Kafka offerings topic
     offeringsTopic: dlt-product-offerings
+    # -- Kafka orders topic
     ordersTopic: dlt-product-orders
   ingress:
+  # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -843,34 +1122,57 @@ resource-and-service-offer-catalog-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #admin-rsoc-letsencrypt-tls
        hosts:
          - admin-rsoc.${HOSTED_ZONE_NAME}
   # -- Define component role/profile
   role: "admin"
   did:
+    # -- Hostname of the Identity and Permissions Manager instance specific for this profile
     host: "http://zorro5g-identity-and-permissions-manager-admin"
+    # -- Port of the Identity and Permissions Manager instance specific for this profile
     port: "8000"
   lcm:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     host: "smart-contract-lifecycle-manager-admin"
+    # -- Port of the Resource and Service Offer Catalog instance specific for this profile
     port: "8087"
+    # -- Product offer API path
     offerPath: "/product-offer/"
+    # -- Product order API path
     orderPath: "/product_order/"
+    # -- Issue API path
     issuePath: "/spectoken/derivative/issue"
+    # -- Service level agreement path
     slaPath: "/api/v1/service-level-agreement/"
+    # -- Skip post 
     skipPost: "false"
   srsd:
+    # -- Hostname of the Smart Resource and Service Discovery instance specific for this profile
     host: "zorro5g-smart-resource-and-service-discovery-admin"
+    # -- Port of the Smart Resource and Service Discovery instance specific for this profile
     port: "5000"
+    # -- Request API path
     requestPath: "/classifyOffer"
+    # -- Skip post 
     skipPost: "false"
+  # -- Resource and Service Offer Catalog exposed URL
   hostname: "resource-and-service-offer-catalog-admin"
 
 gui-admin:
+  # -- Enable 5GZORRO GUI
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/gui
+    tag: latest
+    pullPolicy: Always
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -881,6 +1183,7 @@ gui-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #admin-gui-letsencrypt-tls
        hosts:
          - admin-gui.${HOSTED_ZONE_NAME}
@@ -900,9 +1203,13 @@ gui-admin:
   resourceManagerEndpoint: 'https://admin-xrm.${HOSTED_ZONE_NAME}'
   # -- xRM discovery API key
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
+  # -- xRM translator API key
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
+  # -- RAPP discovery API key
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
+  # -- Intelligent slice and service manager discovery API key
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
+  # -- DLT ledger identity
   ledgerIdentity: 'CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB'
   # -- URL of the Smart Resource and Service Discovery instance specific for this profile
   srsdUrl: 'https://admin-srsd.${HOSTED_ZONE_NAME}'
@@ -912,10 +1219,19 @@ gui-admin:
   rappUrl: 'http://172.28.3.242:2626'
 
 smart-resource-and-service-discovery-admin:
+  # -- Enable 5GZORRO Smart Resource and Service Discovery
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/srd-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   ingress:
+    # -- Exposes the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -926,33 +1242,57 @@ smart-resource-and-service-discovery-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate 
      - secretName: 5gzorro-wildcard-cert #admin-srsd-letsencrypt-tls
        hosts:
          - admin-srsd.${HOSTED_ZONE_NAME}
   mongo:
+    # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     uri: "mongodb-admin-admin-srsd"
     
 monitoring-data-aggregator-admin:
+  # -- Enable 5GZORRO Monitoring Data Aggregator
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/mda
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
+    # -- PostgreSQL port
     port: 5432
+    # -- PostgreSQL database name
     name: mdaadmin
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "mdaadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: false
   role: "admin"
+  # -- Define component role/profile
   kafka:
+    # -- Kafka Hostname
     host: kafka-cluster-kafka-bootstrap
+    # -- Kafka Port
     port: 9092
 
 xrm-admin:
+  # -- Enable 5GZORRO Any Resource Manager (xRM)
+  enabled: true
+  # -- Define component role/profile
   role: "admin"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -963,63 +1303,136 @@ xrm-admin:
           - path: /
             pathType: Prefix
     tls: 
+    # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
        hosts:
          - admin-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
+      # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
+      # -- PostgreSQL port
       port: 5432
+      # -- PostgreSQL database name
       name: xrmcatalogueappadmin
+      # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
       existingSecret: "xrmcatalogueappadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      # -- PostgreSQL secret username key
       userKey: "username"
+      # -- PostgreSQL secret password key
       passwordKey: "password"
     mano:
+      # -- Mano istance ID
       id: "ZORRO_OSMR10"
+      # -- Mano typr
       type: "OSMR10"
+      # -- Mano Site
       site: "ZORRO_OSM"
-      ip: "osm.5gzorro.smartcommunitylab.it"
+      # -- Mano exposed URL 
+      ip: "osm.${HOSTED_ZONE_NAME}"
+      # -- Mano port
       port: "80"
+      # -- Mano account username
       username: "admin"
+      # -- Mano account password
       password: "admin"
+      # -- Mano project name
       project: "admin"
     catalogue:
+      # -- Resource and Service Offer Catalog ID
       id: "DEFAULT_CAT"
+      # -- URL of the Resource and Service Offer Catalog instance specific for this profile
       url: "http://zorro5g-resource-and-service-offer-catalog-admin:8080"
   catalogueui:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-gui
+      pullPolicy: IfNotPresent
+      tag: "latest"
     keycloak:
+      # -- Enable keycloak for xRM catalogue GUI
       enabled: false
     catalogue:
+      # -- xRM catalogue GUI port
       port: "80"
+      # -- xRM catalogue GUI scope
       scope: "PUBLIC" 
   kafka:
+    # -- Kafka URL
     host: "kafka-cluster-kafka-bootstrap:9092"
   gateway:
+    image:
+      repository: graviteeio/apim-gateway
+      pullPolicy: IfNotPresent
+      tag: "3"
     mongo:
+      # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
   managementapi:
+    image:
+      repository: graviteeio/apim-management-api
+      pullPolicy: IfNotPresent
+      tag: "3"
     mongo:
+      # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
       uri: "mongodb-admin-admin-xrm-admin"
+  managementui:
+    image:
+      repository: graviteeio/apim-management-ui
+      pullPolicy: IfNotPresent
+      tag: "3"
+  elasticsearch:
+    image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch
+      pullPolicy: IfNotPresent
+      tag: "7.7.0"
+  portalui:
+    image:
+      repository: graviteeio/apim-portal-ui
+      pullPolicy: IfNotPresent
+      tag: "3"
   translator:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-resource-definition-translator
+      pullPolicy: IfNotPresent
+      tag: "latest"
     postgres:
+      # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
       host: zorro5g-psqldb-admin
+      # -- PostgreSQL port
       port: 5432
+      # -- PostgreSQL database name
       name: xrmtranslatoradmin
+      # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
       existingSecret: "xrmtranslatoradmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+      # -- PostgreSQL secret username key
       userKey: "username"
+      # -- PostgreSQL secret password key
       passwordKey: "password"
 
 issm-admin:
+  # -- Enable 5GZORRO Intelligent Slice and Service Manager
   enabled: true 
+  # -- Define component role/profile
   role: "admin"
+  # -- ISSM orchestrator type
   orchestrator: "nsso"
+  # -- Operator name
   operatorName: operatora
   kafka:
+    # -- Kafka Hostname
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
+    # -- Kafka Port
     port: "9092"
   ingress:
+    # -- Expose the service outside the cluster using ingress
     enabled: true
+    # -- Set ingress controller class
     className: "nginx"
+    # -- Ingress annotation
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
@@ -1030,10 +1443,12 @@ issm-admin:
           - path: /
             pathType: Prefix
     tls: 
+      # -- Secret name that contain wildcard certificate
      - secretName: 5gzorro-wildcard-cert #consumer-idp-letsencrypt-tls
        hosts:
          - admin-issm.${HOSTED_ZONE_NAME}
   argo:
+    # -- Argo internal service URL
     internal: "zorro5g-argo-workflows-server.default.svc.cluster.local:2746"
     # -- Argo external service URL
     external: "https://argo.${HOSTED_ZONE_NAME}"
@@ -1051,46 +1466,85 @@ issm-admin:
       tag: "temp"
 
 nsso-admin:
+  # -- Enable 5GZORRO Network Slice and Service Orchestrator
   enabled: true
+  uiimage:
+    repository: ghcr.io/5gzorro/platform-automation/nssoui
+    tag: fix
+    pullPolicy: Always
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/nsso
+    tag: latest
+    pullPolicy: Always
+  # -- Define component role/profile
   role: admin
   postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     url: jdbc:postgresql://zorro5g-psqldb-admin:5432/nssoadmin?sslmode=require
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
     existingSecret: "nssoadmin.zorro5g-psqldb-admin.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
     userKey: "username"
+    # -- PostgreSQL secret password key
     passwordKey: "password"
   nfvo:
     catalogue:
+      # -- Mano type
       type: OSM10
       # -- Mano exposed URL
       address: http://osm.${HOSTED_ZONE_NAME}
     lcm:
+      # -- Mano type
       type: OSM10
       # -- Mano exposed URL
       address: http://osm.${HOSTED_ZONE_NAME}
       # -- Mano project name
       project: admin
+      # -- Mano account username
       username: "admin"
+      # -- Mano account password
       password: "admin"
   rabbitmq:
+    # -- Rabbitmq cluster hostname
     host: zorro5g-nsso-admin-rabbitmq
 
 trmf-admin:
+  # -- Enable 5GZORRO Trust and Reputation Management Framework
   enabled: true
+  image:
+    tag: fix
+    app: trmf
+    repository: ghcr.io/5gzorro/platform-automation/trmf
+    pullPolicy: Always
+    pullSecrets: ""
+  # -- Define component role/profile
   role: "admin"
   trmfdb:
+    # -- Persistence configuration for TRMF internal database
     persistence:
       storageClassName: "default"
       size: 8Gi
   catalogue:
+    # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     uri: http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/
   elk:
+    # -- URL of the ElasticSearch instance specific for this profile
     uri: http://zorro5g-xrm-admin-elasticsearch:9200/
   datalake:
+    # -- Kafka Hostname
     kafka: kafka-cluster-kafka-bootstrap:9092
 ######################## END Admin Profile Block ########################
 ######################## START Regulator Profile Block ########################
 elma-regulator:
   enabled: true
+  image:
+    # -- Docker image tag
+    tag: latest
+    app: elma
+    # -- Docker image repository
+    image: ghcr.io/5gzorro/platform-automation/elma
+    # -- Image pull policy
+    pullPolicy: Always
   role: regulator
   domainId: "regulator"
   catalog:
@@ -1105,12 +1559,6 @@ elma-regulator:
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
     auth: '{"userInfo": {"userId": "operator-b", "authToken": "blah"}}'
     kafka: "kafka-cluster-kafka-bootstrap:9092"
-  image:
-    tag: latest
-    app: elma
-    image: ghcr.io/5gzorro/platform-automation/elma
-    pullPolicy: Always
-    pullSecrets: registry-credentials
   rabbitmq:
     url: "rabbitmq-elma-regulator"
     existingSecret: "rabbitmq-elma-regulator-default-user"
@@ -1119,6 +1567,14 @@ elma-regulator:
 
 aries-cloudagent-regulator:
   enable: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/aries-cloudagent
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.6.0"
   agent:
     role: "regulator"  # Admin, Regulator, Holder, Verifier
     label: "AgentRegualtor" # AgentRegulator
@@ -1136,6 +1592,14 @@ aries-cloudagent-regulator:
 
 identity-and-permissions-manager-regulator:
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/identity-and-permissions-manager
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "logs"
   database:
     connectionString: "mongodb-regulator-admin-idp-regulator"
     port: ""
@@ -1167,6 +1631,11 @@ identity-and-permissions-manager-regulator:
 
 governance-manager-api-regulator:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/governance-manager-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.1.23"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1197,6 +1666,11 @@ governance-manager-api-regulator:
 
 legal-prose-repository-regulator:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/legal-prose-repository-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.0-pre-final"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1227,6 +1701,11 @@ legal-prose-repository-regulator:
 
 smart-contract-lifecycle-manager-regulator:
   enabled: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.3-pre-final"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1265,6 +1744,11 @@ smart-contract-lifecycle-manager-regulator:
 
 resource-and-service-offer-catalog-regulator:
   enable: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   operatorName: regulatora
   postgres:
     host: zorro5g-psqldb-regulator
@@ -1313,6 +1797,10 @@ resource-and-service-offer-catalog-regulator:
 
 gui-regulator:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/gui
+    tag: latest
+    pullPolicy: Always
   ingress:
     enabled: true
     className: "nginx"
@@ -1346,6 +1834,11 @@ gui-regulator:
 
 smart-resource-and-service-discovery-regulator:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/srd-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   ingress:
     enabled: true
     className: "nginx"
@@ -1366,6 +1859,11 @@ smart-resource-and-service-discovery-regulator:
 
 monitoring-data-aggregator-regulator:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/mda
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1381,6 +1879,7 @@ monitoring-data-aggregator-regulator:
     port: 9092
 
 xrm-regulator:
+  enabled: true
   role: "regulator"
   ingress:
     enabled: true
@@ -1398,6 +1897,10 @@ xrm-regulator:
        hosts:
          - regulator-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-regulator
       port: 5432
@@ -1418,6 +1921,10 @@ xrm-regulator:
       id: "DEFAULT_CAT"
       url: "http://zorro5g-resource-and-service-offer-catalog-regulator:8080"
   catalogueui:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-gui
+      pullPolicy: IfNotPresent
+      tag: "latest"
     keycloak:
       enabled: false
     catalogue:
@@ -1432,6 +1939,10 @@ xrm-regulator:
     mongo:
       uri: "mongodb-regulator-admin-xrm-regulator"
   translator:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-resource-definition-translator
+      pullPolicy: IfNotPresent
+      tag: "latest"
     postgres:
       host: zorro5g-psqldb-regulator
       port: 5432
@@ -1443,6 +1954,14 @@ xrm-regulator:
 ######################## START Trader Profile Block ########################
 elma-trader:
   enabled: true
+  image:
+    # -- Docker image tag
+    tag: latest
+    app: elma
+    # -- Docker image repository
+    image: ghcr.io/5gzorro/platform-automation/elma
+    # -- Image pull policy
+    pullPolicy: Always
   role: trader
   domainId: "trader"
   catalog:
@@ -1457,12 +1976,6 @@ elma-trader:
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
     auth: '{"userInfo": {"userId": "operator-c", "authToken": "blah"}}'
     kafka: "kafka-cluster-kafka-bootstrap:9092"
-  image:
-    tag: latest
-    app: elma
-    image: ghcr.io/5gzorro/platform-automation/elma
-    pullPolicy: Always
-    pullSecrets: registry-credentials
   rabbitmq:
     url: "rabbitmq-elma-trader"
     existingSecret: "rabbitmq-elma-trader-default-user"
@@ -1471,6 +1984,14 @@ elma-trader:
 
 aries-cloudagent-trader:
   enable: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/aries-cloudagent
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.6.0"
   agent:
     role: "trader"  # Admin, Regulator, Holder, Verifier
     label: "AgentHolder" # AgentRegulator
@@ -1488,6 +2009,14 @@ aries-cloudagent-trader:
 
 identity-and-permissions-manager-trader: # holder
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/identity-and-permissions-manager
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "logs"
   database:
     connectionString: "mongodb-trader-admin-idp-trader"
     port: ""
@@ -1520,6 +2049,11 @@ identity-and-permissions-manager-trader: # holder
 
 smart-contract-lifecycle-manager-trader:
   enabled: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.3-pre-final"
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -1558,6 +2092,11 @@ smart-contract-lifecycle-manager-trader:
 
 resource-and-service-offer-catalog-trader:
   enable: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   operatorName: operatorb
   postgres:
     host: zorro5g-psqldb-trader
@@ -1606,6 +2145,10 @@ resource-and-service-offer-catalog-trader:
 
 gui-trader:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/gui
+    tag: latest
+    pullPolicy: Always
   ingress:
     enabled: true
     className: "nginx"
@@ -1639,6 +2182,11 @@ gui-trader:
 
 smart-resource-and-service-discovery-trader:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/srd-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   ingress:
     enabled: true
     className: "nginx"
@@ -1659,6 +2207,11 @@ smart-resource-and-service-discovery-trader:
 
 monitoring-data-aggregator-trader:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/mda
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -1674,6 +2227,7 @@ monitoring-data-aggregator-trader:
     port: 9092
 
 xrm-trader:
+  enabled: true
   role: "trader"
   ingress:
     enabled: true
@@ -1691,6 +2245,10 @@ xrm-trader:
        hosts:
          - trader-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-trader
       port: 5432
@@ -1711,6 +2269,10 @@ xrm-trader:
       id: "DEFAULT_CAT"
       url: "http://zorro5g-resource-and-service-offer-catalog-trader:8080"
   catalogueui:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-gui
+      pullPolicy: IfNotPresent
+      tag: "latest"
     keycloak:
       enabled: false
     catalogue:
@@ -1725,6 +2287,10 @@ xrm-trader:
     mongo:
       uri: "mongodb-trader-admin-xrm-trader"
   translator:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-resource-definition-translator
+      pullPolicy: IfNotPresent
+      tag: "latest"
     postgres:
       host: zorro5g-psqldb-xrm-trader
       port: 5432
@@ -1735,6 +2301,14 @@ xrm-trader:
 
 nsso-trader:
   enabled: true
+  uiimage:
+    repository: ghcr.io/5gzorro/platform-automation/nssoui
+    tag: fix
+    pullPolicy: Always
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/nsso
+    tag: latest
+    pullPolicy: Always
   role: trader
   postgres:
     url: jdbc:postgresql://zorro5g-psqldb-trader:5432/nssotrader?sslmode=require
@@ -1756,6 +2330,12 @@ nsso-trader:
 
 trmf-trader:
   enabled: true
+  image:
+    tag: fix
+    app: trmf
+    repository: ghcr.io/5gzorro/platform-automation/trmf
+    pullPolicy: Always
+    pullSecrets: ""
   role: "trader"
   trmfdb:
     persistence:
@@ -1810,6 +2390,14 @@ issm-trader:
 ######################## START Consumer Profile Block ########################
 elma-consumer:
   enabled: true
+  image:
+    # -- Docker image tag
+    tag: latest
+    app: elma
+    # -- Docker image repository
+    image: ghcr.io/5gzorro/platform-automation/elma
+    # -- Image pull policy
+    pullPolicy: Always
   role: consumer
   domainId: "consumer"
   catalog:
@@ -1824,12 +2412,6 @@ elma-consumer:
     url: "http://zorro5g-datalake:8080/datalake/v1/catalog/instance/{instance_id}"
     auth: '{"userInfo": {"userId": "operator-d", "authToken": "blah"}}'
     kafka: "kafka-cluster-kafka-bootstrap:9092"
-  image:
-    tag: latest
-    app: elma
-    image: ghcr.io/5gzorro/platform-automation/elma
-    pullPolicy: Always
-    pullSecrets: registry-credentials
   rabbitmq:
     url: "rabbitmq-elma-consumer"
     existingSecret: "rabbitmq-elma-consumer-default-user"
@@ -1838,6 +2420,14 @@ elma-consumer:
 
 aries-cloudagent-consumer:
   enable: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/aries-cloudagent
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.6.0"
   agent:
     role: "consumer"  # Admin, Regulator, Holder, Verifier
     label: "AgentVerifier" # AgentRegulator
@@ -1855,6 +2445,14 @@ aries-cloudagent-consumer:
 
 identity-and-permissions-manager-consumer:  # verifier
   enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/identity-and-permissions-manager
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "logs"
   database:
     connectionString: "mongodb-consumer-admin-idp-consumer"
     port: ""
@@ -1887,6 +2485,11 @@ identity-and-permissions-manager-consumer:  # verifier
 
 smart-contract-lifecycle-manager-consumer:
   enabled: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.3-pre-final"
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -1925,6 +2528,11 @@ smart-contract-lifecycle-manager-consumer:
 
 resource-and-service-offer-catalog-consumer:
   enable: true
+  image:
+    repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   operatorName: operatorc
   postgres:
     host: zorro5g-psqldb-consumer
@@ -1973,6 +2581,10 @@ resource-and-service-offer-catalog-consumer:
 
 gui-consumer:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/gui
+    tag: latest
+    pullPolicy: Always
   ingress:
     enabled: true
     className: "nginx"
@@ -2006,6 +2618,11 @@ gui-consumer:
 
 smart-resource-and-service-discovery-consumer:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/srd-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   ingress:
     enabled: true
     className: "nginx"
@@ -2026,6 +2643,11 @@ smart-resource-and-service-discovery-consumer:
 
 monitoring-data-aggregator-consumer:
   enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/mda
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -2041,6 +2663,7 @@ monitoring-data-aggregator-consumer:
     port: 9092
 
 xrm-consumer:
+  enabled: true
   role: "consumer"
   ingress:
     enabled: true
@@ -2058,6 +2681,10 @@ xrm-consumer:
        hosts:
          - consumer-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-consumer
       port: 5432
@@ -2078,6 +2705,10 @@ xrm-consumer:
       id: "DEFAULT_CAT"
       url: "http://zorro5g-resource-and-service-offer-catalog-consumer:8080"
   catalogueui:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-gui
+      pullPolicy: IfNotPresent
+      tag: "latest"
     keycloak:
       enabled: false
     catalogue:
@@ -2092,6 +2723,10 @@ xrm-consumer:
     mongo:
       uri: "mongodb-consumer-admin-xrm-consumer"
   translator:
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-resource-definition-translator
+      pullPolicy: IfNotPresent
+      tag: "latest"
     postgres:
       host: zorro5g-psqldb-consumer
       port: 5432
@@ -2141,6 +2776,12 @@ issm-consumer:
 
 trmf-consumer:
   enabled: true
+  image:
+    tag: fix
+    app: trmf
+    repository: ghcr.io/5gzorro/platform-automation/trmf
+    pullPolicy: Always
+    pullSecrets: ""
   role: "consumer"
   trmfdb:
     persistence:

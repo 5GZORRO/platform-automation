@@ -172,7 +172,7 @@ Kubernetes: `>=1.21.0-0`
 | datalake.minio.userKey | string | `""` | Minio secret username key |
 | datalake.minio.passwordKey | string | `""` | Minio secret password key |
 | datalake.datalake.imageVersion | string | `"latest"` | Datalake Docker image tag |
-| datalake.datalake.imageRepository | string | `"ghcr.io/5gzorro/platform-automation"` | Datalake dicker image repository |
+| datalake.datalake.imageRepository | string | `"ghcr.io/5gzorro/platform-automation"` | Datalake docker image repository |
 | sla-breach-predictor.enabled | bool | `true` | Enable 5GZORRO SLA Breach Predictor |
 | sla-breach-predictor.image.repository | string | `"ghcr.io/5gzorro/platform-automation/isbp"` | Docker image repository |
 | sla-breach-predictor.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
