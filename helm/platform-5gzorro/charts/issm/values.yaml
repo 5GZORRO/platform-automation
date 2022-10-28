@@ -6,14 +6,14 @@ replicaCount: 1
 
 api:
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-api
+    repository: ghcr.io/5gzorro/platform-automation/issm-api
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "586364c"
 
 optimizer:
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/issm-optimizer
+    repository: ghcr.io/5gzorro/platform-automation/issm-optimizer
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "temp"

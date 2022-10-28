@@ -88,7 +88,7 @@ spec:
       serviceAccountName: stakeholder-registration-{{ .Values.idp.role }}
       initContainers:
       - name: wait-for-aries-cloudagent
-        image: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/misc-tools"
+        image: "{{ .Values.global.miscTools.image.repository }}:{{ .Values.global.miscTools.image.tag | default .Chart.AppVersion }}"
         args:
           - /bin/sh
           - -c
@@ -99,7 +99,7 @@ spec:
             done
       containers:
         - name: create-did
-          image: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/misc-tools"
+          image: "{{ .Values.global.miscTools.image.repository }}:{{ .Values.global.miscTools.image.tag | default .Chart.AppVersion }}"
           command: ["/bin/sh"]
           args: ["-c", "kubectl create secret generic {{ .Values.idp.role }}-identity-did --from-literal=did=$(curl -X POST -s http://{{ .Release.Name }}-aries-cloudagent-{{ .Values.idp.role }}:8001/wallet/did/create | jq -r .result.did)"]
       restartPolicy: OnFailure

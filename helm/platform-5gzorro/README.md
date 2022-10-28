@@ -151,7 +151,7 @@ Kubernetes: `>=1.21.0-0`
 | argo-events.enabled | bool | `true` | Enable Argo Events. See [argo-events](https://github.com/argoproj/argo-helm/tree/main/charts/argo-events) documentation for more datails. |
 | argo-events.crds.install | bool | `false` | Disable CRD creation that can cause problems with umbrella charts |
 | datalake.enabled | bool | `true` | Enable 5GZORRO datalake  |
-| datalake.image.repository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/datalake"` | Docker image repository |
+| datalake.image.repository | string | `"ghcr.io/5gzorro/platform-automation/datalake"` | Docker image repository |
 | datalake.image.tag | string | `"fix-psql1"` | Docker image tag Overrides the image tag whose default is the chart appVersion. |
 | datalake.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | datalake.namespace | string | `"default"` | Namespace name where datalake will be deployed  |
@@ -172,9 +172,9 @@ Kubernetes: `>=1.21.0-0`
 | datalake.minio.userKey | string | `""` | Minio secret username key |
 | datalake.minio.passwordKey | string | `""` | Minio secret password key |
 | datalake.datalake.imageVersion | string | `"latest"` | Datalake Docker image tag |
-| datalake.datalake.imageRepository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro"` | Datalake dicker image repository |
+| datalake.datalake.imageRepository | string | `"ghcr.io/5gzorro/platform-automation"` | Datalake dicker image repository |
 | sla-breach-predictor.enabled | bool | `true` | Enable 5GZORRO SLA Breach Predictor |
-| sla-breach-predictor.image.repository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/isbp"` | Docker image repository |
+| sla-breach-predictor.image.repository | string | `"ghcr.io/5gzorro/platform-automation/isbp"` | Docker image repository |
 | sla-breach-predictor.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | sla-breach-predictor.image.tag | string | `"latest"` | Docker image tag Overrides the image tag whose default is the chart appVersion. |
 | sla-breach-predictor.persistence.enabled | bool | `true` | Enable persistence |
@@ -193,7 +193,7 @@ Kubernetes: `>=1.21.0-0`
 | elma-admin.enabled | bool | `true` | Enable 5GZORRO e-License Manager |
 | elma-admin.image.tag | string | `"latest"` | Docker image tag |
 | elma-admin.image.app | string | `"elma"` |  |
-| elma-admin.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` | Docker image repository |
+| elma-admin.image.image | string | `"ghcr.io/5gzorro/platform-automation/elma"` | Docker image repository |
 | elma-admin.image.pullPolicy | string | `"Always"` | Image pull policy |
 | elma-admin.role | string | `"admin"` | Define component role/profile |
 | elma-admin.domainId | string | `"admin"` | e-License Manager domainID |
@@ -211,7 +211,7 @@ Kubernetes: `>=1.21.0-0`
 | elma-admin.rabbitmq.userKey | string | `"username"` | RabbitMQ secret username key |
 | elma-admin.rabbitmq.passwordKey | string | `"password"` | RabbitMQ secret password key |
 | aries-cloudagent-admin.enable | bool | `true` | Enable Aries Cloud Agent  |
-| aries-cloudagent-admin.image.repository | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/aries-cloudagent"` | Docker image repository |
+| aries-cloudagent-admin.image.repository | string | `"ghcr.io/5gzorro/platform-automation/aries-cloudagent"` | Docker image repository |
 | aries-cloudagent-admin.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | aries-cloudagent-admin.image.tag | string | `"0.6.0"` | Docker image tag Overrides the image tag whose default is the chart appVersion. |
 | aries-cloudagent-admin.agent.role | string | `"admin"` | Define component role/profile |
@@ -451,7 +451,7 @@ Kubernetes: `>=1.21.0-0`
 | elma-regulator.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
 | elma-regulator.image.tag | string | `"latest"` |  |
 | elma-regulator.image.app | string | `"elma"` |  |
-| elma-regulator.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` |  |
+| elma-regulator.image.image | string | `"ghcr.io/5gzorro/platform-automation/elma"` |  |
 | elma-regulator.image.pullPolicy | string | `"Always"` |  |
 | elma-regulator.image.pullSecrets | string | `"registry-credentials"` |  |
 | elma-regulator.rabbitmq.url | string | `"rabbitmq-elma-regulator"` |  |
@@ -684,7 +684,7 @@ Kubernetes: `>=1.21.0-0`
 | elma-trader.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
 | elma-trader.image.tag | string | `"latest"` |  |
 | elma-trader.image.app | string | `"elma"` |  |
-| elma-trader.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` |  |
+| elma-trader.image.image | string | `"ghcr.io/5gzorro/platform-automation/elma"` |  |
 | elma-trader.image.pullPolicy | string | `"Always"` |  |
 | elma-trader.image.pullSecrets | string | `"registry-credentials"` |  |
 | elma-trader.rabbitmq.url | string | `"rabbitmq-elma-trader"` |  |
@@ -917,7 +917,7 @@ Kubernetes: `>=1.21.0-0`
 | elma-consumer.datalake.kafka | string | `"kafka-cluster-kafka-bootstrap:9092"` |  |
 | elma-consumer.image.tag | string | `"latest"` |  |
 | elma-consumer.image.app | string | `"elma"` |  |
-| elma-consumer.image.image | string | `"gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/elma"` |  |
+| elma-consumer.image.image | string | `"ghcr.io/5gzorro/platform-automation/elma"` |  |
 | elma-consumer.image.pullPolicy | string | `"Always"` |  |
 | elma-consumer.image.pullSecrets | string | `"registry-credentials"` |  |
 | elma-consumer.rabbitmq.url | string | `"rabbitmq-elma-consumer"` |  |

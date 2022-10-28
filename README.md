@@ -103,5 +103,5 @@ bash migrate-docker-images.sh -o <githup project registry URL> -i <image name> -
 
 Example:
 ```console
-bash migrate-docker-images.sh -o ghcr.io/5gzorro/platform-automation -i resource-and-service-offer-catalog -t latest -n gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro
+bash migrate-docker-images.sh -o ghcr.io/5gzorro/platform-automation -i resource-and-service-offer-catalog -t latest -n ghcr.io/5gzorro/platform-automation
 ```

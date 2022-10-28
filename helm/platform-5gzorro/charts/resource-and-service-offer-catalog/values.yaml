@@ -12,7 +12,7 @@ service:
 role: ""
 
 image:
-  repository: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/resource-and-service-offer-catalog"
+  repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

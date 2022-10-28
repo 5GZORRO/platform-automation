@@ -101,7 +101,7 @@ spec:
       serviceAccountName: delete-databases
       containers:
         - name: delete-databases
-          image: "gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/misc-tools:1.25.1"
+          image: "{{ .Values.global.miscTools.image.repository }}:{{ .Values.global.miscTools.image.tag | default .Chart.AppVersion }}"
           command: ["/bin/sh"]
           args: ["-c", "kubectl delete --force --grace-period=0 eventbus,eventsources,sensors --all --all-namespaces && kubectl delete postgresql --all && kubectl delete rabbitmqcluster --all && kubectl delete statefulsets.apps --all && sleep 3m"]
       restartPolicy: OnFailure

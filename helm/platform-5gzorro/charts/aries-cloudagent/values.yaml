@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/aries-cloudagent
+  repository: ghcr.io/5gzorro/platform-automation/aries-cloudagent
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.6.0"

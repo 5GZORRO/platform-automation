@@ -14,7 +14,7 @@ service:
   extAppPort: 5556
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/srd-api
+  repository: ghcr.io/5gzorro/platform-automation/srd-api
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

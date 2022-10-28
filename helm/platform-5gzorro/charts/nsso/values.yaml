@@ -5,12 +5,12 @@
 replicaCount: 1
 
 uiimage:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nssoui
+  repository: ghcr.io/5gzorro/platform-automation/nssoui
   tag: fix
   pullPolicy: Always
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/nsso
+  repository: ghcr.io/5gzorro/platform-automation/nsso
   tag: latest
   pullPolicy: Always
 

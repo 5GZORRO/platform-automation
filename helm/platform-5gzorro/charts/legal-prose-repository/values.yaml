@@ -14,7 +14,7 @@ service:
   extAppPort: 31084
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/legal-prose-repository-api
+  repository: ghcr.io/5gzorro/platform-automation/legal-prose-repository-api
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "5gzorro-full-1.0-pre-final"

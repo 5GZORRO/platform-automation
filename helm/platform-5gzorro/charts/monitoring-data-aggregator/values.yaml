@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/mda
+  repository: ghcr.io/5gzorro/platform-automation/mda
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

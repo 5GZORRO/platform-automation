@@ -1,7 +1,7 @@
 image:
   tag: fix
   app: trmf
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/trmf
+  repository: ghcr.io/5gzorro/platform-automation/trmf
   pullPolicy: Always
   pullSecrets: ""
 

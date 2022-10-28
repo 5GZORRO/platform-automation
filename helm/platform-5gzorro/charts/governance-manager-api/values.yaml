@@ -14,7 +14,7 @@ service:
     extAppPort: 80
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/governance-manager-api
+  repository: ghcr.io/5gzorro/platform-automation/governance-manager-api
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v0.1.23"

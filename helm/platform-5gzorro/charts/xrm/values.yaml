@@ -14,7 +14,7 @@ persistence:
   size: 100Gi
 catalogueapp: 
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-app
+    repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
     pullPolicy: IfNotPresent
     tag: "fix3"
   service:
@@ -40,7 +40,7 @@ catalogueapp:
     url: ""
 catalogueui:
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-catalogue-gui
+    repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-gui
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
@@ -103,7 +103,7 @@ portalui:
     port: 8080
 translator:
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/xrm-resource-definition-translator
+    repository: ghcr.io/5gzorro/platform-automation/xrm-resource-definition-translator
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

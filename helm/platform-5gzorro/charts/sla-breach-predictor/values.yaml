@@ -8,7 +8,7 @@ isbp:
     type: ClusterIP
     port: 8000
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/isbp
+    repository: ghcr.io/5gzorro/platform-automation/isbp
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
@@ -18,7 +18,7 @@ predictor:
     type: ClusterIP
     port: 8001
   image:
-    repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/isbp-predictor
+    repository: ghcr.io/5gzorro/platform-automation/isbp-predictor
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"

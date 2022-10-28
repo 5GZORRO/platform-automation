@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: gitlab-registry.fbk.eu/kubernetes-deploy/5g-zorro/gui
+  repository: ghcr.io/5gzorro/platform-automation/gui
   tag: latest
   pullPolicy: Always
 

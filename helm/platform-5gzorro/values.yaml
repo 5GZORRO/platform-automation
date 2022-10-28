@@ -22,6 +22,16 @@ global:
     username: ""
     # -- Password
     password: ""
+  # -- Image used by some jobs
+  miscTools:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/misc-tools
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
 
 ######################## START Base Profile Block ########################
 ingress-nginx:
@@ -725,14 +735,24 @@ datalake:
 sla-breach-predictor:
   # -- Enable 5GZORRO SLA Breach Predictor
   enabled: true
-  image:
-    # -- Docker image repository
-    repository: ghcr.io/5gzorro/platform-automation/isbp
-    # -- Image pull policy
-    pullPolicy: IfNotPresent
-    # -- Docker image tag
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+  isbp:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/isbp
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
+  predictor:
+    image:
+      # -- Docker image repository
+      repository: ghcr.io/5gzorro/platform-automation/isbp-predictor
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Docker image tag
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest"
   persistence:
     # -- Enable persistence
     enabled: true
@@ -1876,6 +1896,10 @@ xrm-regulator:
        hosts:
          - regulator-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-regulator
       port: 5432
@@ -2220,6 +2244,10 @@ xrm-trader:
        hosts:
          - trader-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-trader
       port: 5432
@@ -2652,6 +2680,10 @@ xrm-consumer:
        hosts:
          - consumer-xrm.${HOSTED_ZONE_NAME}
   catalogueapp: 
+    image:
+      repository: ghcr.io/5gzorro/platform-automation/xrm-catalogue-app
+      pullPolicy: IfNotPresent
+      tag: "fix3"
     postgres:
       host: zorro5g-psqldb-consumer
       port: 5432
