@@ -10,6 +10,12 @@ data "template_file" "valuesfile" {
     REGISTRY_URL                = var.registry_url
     REGISTRY_PASSWORD           = var.registry_password
     REGISTRY_USERNAME           = var.registry_username
+    BEVEL_GIT_URL               = var.bevel_git_url
+    BEVEL_REPO_URL              = var.bevel_repo_url
+    BEVEL_REPO_USERNAME         = var.bevel_repo_username
+    BEVEL_REPO_PASSWORD         = var.bevel_repo_password
+    BEVEL_REPO_EMAIL            = var.bevel_repo_email
+    BEVEL_URL_SUFFIX            = vasr.bevel_url_suffix
   }
 }
 

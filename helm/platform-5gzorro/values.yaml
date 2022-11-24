@@ -68,7 +68,7 @@ cordaBevel:
     password: ${BEVEL_REPO_PASSWORD}
     # -- Email to use in git config
     email: ${BEVEL_REPO_EMAIL}
-  urlSuffix: ${HOSTED_ZONE_NAME}
+  urlSuffix: ${BEVEL_URL_SUFFIX}
   vault:
     # -- Hashicorp Vault server address and root-token. Vault should be unsealed.
     url: http://vault.5gzorro.smartcommunitylab.it:8200

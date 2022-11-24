@@ -140,3 +140,33 @@ variable "registry_password" {
   type    = string
   default = ""
 }
+
+variable "bevel_git_url" {
+  type    = string
+  default = ""
+}
+
+variable "bevel_repo_url" {
+  type    = string
+  default = ""
+}
+
+variable "bevel_repo_username" {
+  type    = string
+  default = ""
+}
+
+variable "bevel_repo_password" {
+  type    = string
+  default = ""
+}
+
+variable "bevel_repo_email" {
+  type    = string
+  default = ""
+}
+
+variable "bevel_url_suffix" {
+  type    = string
+  default = ""
+}
