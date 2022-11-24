@@ -15,7 +15,7 @@ data "template_file" "valuesfile" {
     BEVEL_REPO_USERNAME         = var.bevel_repo_username
     BEVEL_REPO_PASSWORD         = var.bevel_repo_password
     BEVEL_REPO_EMAIL            = var.bevel_repo_email
-    BEVEL_URL_SUFFIX            = vasr.bevel_url_suffix
+    BEVEL_URL_SUFFIX            = var.bevel_url_suffix
   }
 }
 
