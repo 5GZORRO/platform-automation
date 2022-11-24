@@ -54,6 +54,31 @@ rabbitmq-cluster-operator:
   # -- Enable rabbitmq operator. See [rabbitmq-cluster-operator](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator) documentation for more datails.
   enabled: true
 
+
+cordaBevel:
+  # -- Deploy corda network using hyperledger bevel
+  enabled: true
+  git:
+    # -- Git Repo details which will be used by GitOps/Flux. Gitops https or ssh url for flux value files 
+    url: ${BEVEL_GIT_URL}
+    # -- Gitops git repository URL for git push 
+    repo_url: ${BEVEL_REPO_URL}
+    # -- Git Service user who has rights to check-in in all branches
+    username: ${BEVEL_REPO_USERNAME}
+    # -- Git Server user password/token (Optional for ssh; Required for https)
+    password: ${BEVEL_REPO_PASSWORD}
+    # -- Email to use in git config
+    email: ${BEVEL_REPO_EMAIL}
+  url_suffix: ${HOSTED_ZONE_NAME}
+  vault:
+    # -- Hashicorp Vault server address and root-token. Vault should be unsealed.
+    url: http://vault.5gzorro.smartcommunitylab.it:8200
+    # --  Hashicorp Vault root-token. Vault should be unsealed.
+    root_token: root
+  k8s:
+    # -- Kubernetes context
+    context: 5gzorro
+
 custom-resource-5gzorro:
   # -- Enable 5GZORRO custom resource like rabbitmq, mongodb and postgresSQL clusters.
   enabled: true
@@ -451,7 +476,7 @@ external-dns:
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
   # -- Set this filter according to your dns configuration
-  domainFilters: ["*.${HOSTED_ZONE_NAME} "]
+  domainFilters: ["${HOSTED_ZONE_NAME}"]
 
 kube-prometheus-stack:
   # -- Enable kube-prometheus-stack. See [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) documentation for more datails.
@@ -677,6 +702,39 @@ argo-events:
   crds:
     # -- Disable CRD creation that can cause problems with umbrella charts
     install: false
+
+vault:
+  enabled: true
+  ui:
+    enabled: true
+    serviceType: "LoadBalancer"
+    serviceNodePort: null
+    externalPort: 8200
+    annotations: 
+      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it'
+  server:
+    standalone:
+      enabled: true
+    extraArgs: "-dev-kv-v1"
+    dev:
+      enabled: true
+      devRootToken: "root"
+    # ingress:
+    #   enabled: true
+    #   ingressClassName: "nginx"
+    #   pathType: Prefix
+    #   activeService: true
+    #   hosts:
+    #     - host: 'vault.5gzorro.smartcommunitylab.it'
+    #       paths: 
+    #         - path: /
+    #           pathType: Prefix
+    #   tls:
+    #     - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
+    #       hosts:
+    #         - vault.5gzorro.smartcommunitylab.it'
+  injector:
+    enabled: false
 ######################## END Base Profile Block ########################
 ######################## START Admin Profile Block ########################
 datalake:
@@ -1064,13 +1122,13 @@ smart-contract-lifecycle-manager-admin:
     updateAgreementIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     # -- Corda username
-    username: user1    
+    username: adminoperations    
     # -- Corda password       
-    password: test     
+    password: usera     
     # -- Corda hostname        
-    host: 10.241.0.10
+    host: admin.admin-ns.svc.cluster.local
     # -- Corda port
-    port: "10012"
+    port: "10003"
   # -- Operator name 
   operatorName: operatora
   # -- Smart Contract Lifecycle Manager exposed URL
@@ -1735,10 +1793,10 @@ smart-contract-lifecycle-manager-regulator:
     updateSlaIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10015"
+    username: regulatoroperations           
+    password: usera             
+    host: regulator.regulator-ns.svc.cluster.local
+    port: "10003"
   operatorName: regualtora
   hostname: "smart-contract-lifecycle-manager-regulator:8087"
 
@@ -2083,10 +2141,10 @@ smart-contract-lifecycle-manager-trader:
     updateSlaIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10009"
+    username: traderoperations           
+    password: usera             
+    host: trader.trader-ns.svc.cluster.local
+    port: "10003"
   operatorName: operatorb
   hostname: "smart-contract-lifecycle-manager-trader:8087"
 
@@ -2519,10 +2577,10 @@ smart-contract-lifecycle-manager-consumer:
     updateSlaIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10006"
+    username: consumeroperations           
+    password: usera             
+    host: consumer.consumer-ns.svc.cluster.local
+    port: "10003"
   operatorName: operatorc
   hostname: "smart-contract-lifecycle-manager-consumer:8087"
 

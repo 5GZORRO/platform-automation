@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: corda-network
+data:
+  network.yaml: |-
+{{ tpl (.Files.Get "confs/corda-network.yaml.tpl") . | indent 4 }}

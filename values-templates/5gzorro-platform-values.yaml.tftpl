@@ -451,7 +451,7 @@ external-dns:
     useManagedIdentityExtension: true
   txtOwnerId: "external-dns"
   # -- Set this filter according to your dns configuration
-  domainFilters: ["*.${HOSTED_ZONE_NAME} "]
+  domainFilters: ["${HOSTED_ZONE_NAME}"]
 
 kube-prometheus-stack:
   # -- Enable kube-prometheus-stack. See [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) documentation for more datails.
@@ -677,6 +677,39 @@ argo-events:
   crds:
     # -- Disable CRD creation that can cause problems with umbrella charts
     install: false
+
+vault:
+  enabled: true
+  ui:
+    enabled: true
+    serviceType: "LoadBalancer"
+    serviceNodePort: null
+    externalPort: 8200
+    annotations: 
+      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it'
+  server:
+    standalone:
+      enabled: true
+    extraArgs: "-dev-kv-v1"
+    dev:
+      enabled: true
+      devRootToken: "root"
+    # ingress:
+    #   enabled: true
+    #   ingressClassName: "nginx"
+    #   pathType: Prefix
+    #   activeService: true
+    #   hosts:
+    #     - host: 'vault.5gzorro.smartcommunitylab.it'
+    #       paths: 
+    #         - path: /
+    #           pathType: Prefix
+    #   tls:
+    #     - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
+    #       hosts:
+    #         - vault.5gzorro.smartcommunitylab.it'
+  injector:
+    enabled: false
 ######################## END Base Profile Block ########################
 ######################## START Admin Profile Block ########################
 datalake:
@@ -1064,13 +1097,13 @@ smart-contract-lifecycle-manager-admin:
     updateAgreementIdentity: "https://admin-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
     # -- Corda username
-    username: user1    
+    username: adminoperations    
     # -- Corda password       
-    password: test     
+    password: usera     
     # -- Corda hostname        
-    host: 10.241.0.10
+    host: admin.admin-ns.svc.cluster.local
     # -- Corda port
-    port: "10012"
+    port: "10003"
   # -- Operator name 
   operatorName: operatora
   # -- Smart Contract Lifecycle Manager exposed URL
@@ -1735,10 +1768,10 @@ smart-contract-lifecycle-manager-regulator:
     updateSlaIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10015"
+    username: regulatoroperations           
+    password: usera             
+    host: regulator.regulator-ns.svc.cluster.local
+    port: "10003"
   operatorName: regualtora
   hostname: "smart-contract-lifecycle-manager-regulator:8087"
 
@@ -2083,10 +2116,10 @@ smart-contract-lifecycle-manager-trader:
     updateSlaIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10009"
+    username: traderoperations           
+    password: usera             
+    host: trader.trader-ns.svc.cluster.local
+    port: "10003"
   operatorName: operatorb
   hostname: "smart-contract-lifecycle-manager-trader:8087"
 
@@ -2519,10 +2552,10 @@ smart-contract-lifecycle-manager-consumer:
     updateSlaIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/service-level-agreement/%s/identity"
     updateAgreementIdentity: "https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/api/v1/agreement/%s/identity"
   corda:
-    username: user1           
-    password: test             
-    host: 10.241.0.10
-    port: "10006"
+    username: consumeroperations           
+    password: usera             
+    host: consumer.consumer-ns.svc.cluster.local
+    port: "10003"
   operatorName: operatorc
   hostname: "smart-contract-lifecycle-manager-consumer:8087"
 

@@ -53,6 +53,31 @@ rabbitmq-cluster-operator:
   # -- Enable rabbitmq operator. See [rabbitmq-cluster-operator](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator) documentation for more datails.
   enabled: true
 
+
+cordaBevel:
+  # -- Deploy corda network using hyperledger bevel
+  enabled: true
+  git:
+    # -- Git Repo details which will be used by GitOps/Flux. Gitops https or ssh url for flux value files 
+    url: ${BEVEL_GIT_URL}
+    # -- Gitops git repository URL for git push 
+    repo_url: ${BEVEL_REPO_URL}
+    # -- Git Service user who has rights to check-in in all branches
+    username: ${BEVEL_REPO_USERNAME}
+    # -- Git Server user password/token (Optional for ssh; Required for https)
+    password: ${BEVEL_REPO_PASSWORD}
+    # -- Email to use in git config
+    email: ${BEVEL_REPO_EMAIL}
+  urlSuffix: ${HOSTED_ZONE_NAME}
+  vault:
+    # -- Hashicorp Vault server address and root-token. Vault should be unsealed.
+    url: http://vault.5gzorro.smartcommunitylab.it:8200
+    # --  Hashicorp Vault root-token. Vault should be unsealed.
+    root_token: root
+  k8s:
+    # -- Kubernetes context
+    context: 5gzorro
+
 custom-resource-5gzorro:
   # -- Enable 5GZORRO custom resource like rabbitmq, mongodb and postgresSQL clusters.
   enabled: true
@@ -676,6 +701,39 @@ argo-events:
   crds:
     # -- Disable CRD creation that can cause problems with umbrella charts
     install: false
+
+vault:
+  enabled: true
+  ui:
+    enabled: true
+    serviceType: "LoadBalancer"
+    serviceNodePort: null
+    externalPort: 8200
+    annotations: 
+      external-dns.alpha.kubernetes.io/hostname: 'vault.5gzorro.smartcommunitylab.it'
+  server:
+    standalone:
+      enabled: true
+    extraArgs: "-dev-kv-v1"
+    dev:
+      enabled: true
+      devRootToken: "root"
+    # ingress:
+    #   enabled: true
+    #   ingressClassName: "nginx"
+    #   pathType: Prefix
+    #   activeService: true
+    #   hosts:
+    #     - host: 'vault.5gzorro.smartcommunitylab.it'
+    #       paths: 
+    #         - path: /
+    #           pathType: Prefix
+    #   tls:
+    #     - secretName: 5gzorro-wildcard-cert #admin-idp-letsencrypt-tls
+    #       hosts:
+    #         - vault.5gzorro.smartcommunitylab.it'
+  injector:
+    enabled: false
 ######################## END Base Profile Block ########################
 ######################## START Admin Profile Block ########################
 datalake:

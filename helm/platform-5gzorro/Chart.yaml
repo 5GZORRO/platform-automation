@@ -102,6 +102,13 @@ dependencies:
     condition: argo-events.enabled
     tags:
       - base
+  - name: vault
+    version: "0.18.0"
+    repository: https://helm.releases.hashicorp.com
+    condition: vault.enabled
+    tags:
+      - base
+
 ######################## END Base Profile Block ########################
 ######################## START Admin Profile Block ########################
   - name: elma
