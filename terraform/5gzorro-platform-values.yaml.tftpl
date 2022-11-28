@@ -60,16 +60,16 @@ cordaBevel:
   enabled: true
   git:
     # -- Git Repo details which will be used by GitOps/Flux. Gitops https or ssh url for flux value files 
-    url: ${BEVEL_GIT_URL}
+    url: "${BEVEL_GIT_URL}"
     # -- Gitops git repository URL for git push 
-    repo_url: ${BEVEL_REPO_URL}
+    repo_url: "${BEVEL_REPO_URL}"
     # -- Git Service user who has rights to check-in in all branches
-    username: ${BEVEL_REPO_USERNAME}
+    username: "${BEVEL_REPO_USERNAME}"
     # -- Git Server user password/token (Optional for ssh; Required for https)
-    password: ${BEVEL_REPO_PASSWORD}
+    password: "${BEVEL_REPO_PASSWORD}"
     # -- Email to use in git config
-    email: ${BEVEL_REPO_EMAIL}
-  url_suffix: ${HOSTED_ZONE_NAME}
+    email: "${BEVEL_REPO_EMAIL}"
+  url_suffix: "${BEVEL_URL_SUFFIX}"
   vault:
     # -- Hashicorp Vault server address and root-token. Vault should be unsealed.
     url: http://vault.5gzorro.smartcommunitylab.it:8200

@@ -133,6 +133,12 @@ module "helm" {
   registry_password   = var.registry_password
   registry_url        = var.registry_url
   registry_username   = var.registry_username
+  bevel_git_url       = var.bevel_git_url
+  bevel_repo_url      = var.bevel_repo_url
+  bevel_repo_username = var.bevel_repo_username
+  bevel_repo_password = var.bevel_repo_password
+  bevel_repo_email    = var.bevel_repo_email
+  bevel_url_suffix    = var.bevel_url_suffix
   depends_on          = [module.aks, kubernetes_secret.registry, kubernetes_secret.kube_config, null_resource.install_osm]
 }
 
@@ -166,7 +172,7 @@ resource "null_resource" "install_osm" {
     private_key = file(var.ssh_private_key)
     agent       = "false"
   }
-  depends_on = [null_resource.upload-kube-config]
+  depends_on = [null_resource.upload-kube-config, module.aks]
 }
 
 resource "null_resource" "patch-ingress" {

@@ -98,22 +98,22 @@ network:
         jars: 
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-supply-chain/4.9/cordapp-supply-chain-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-contracts-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-contracts-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-workflows-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-workflows-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/ci-workflows-1.0.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/ci-workflows-1.0.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-contracts-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-contracts-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-selection-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-selection-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-workflows-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-workflows-1.1.jar
         username: {{ .Values.cordaBevel.git.username }}
         password: {{ .Values.cordaBevel.git.password }}
 
@@ -208,22 +208,22 @@ network:
         jars: 
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-supply-chain/4.9/cordapp-supply-chain-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-contracts-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-contracts-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-workflows-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-workflows-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/ci-workflows-1.0.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/ci-workflows-1.0.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-contracts-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-contracts-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-selection-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-selection-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-workflows-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-workflows-1.1.jar
         username: {{ .Values.cordaBevel.git.username }}
         password: {{ .Values.cordaBevel.git.password }}
 
@@ -302,22 +302,22 @@ network:
         jars: 
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-supply-chain/4.9/cordapp-supply-chain-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-contracts-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-contracts-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-workflows-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-workflows-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/ci-workflows-1.0.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/ci-workflows-1.0.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-contracts-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-contracts-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-selection-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-selection-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-workflows-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-workflows-1.1.jar
         username: {{ .Values.cordaBevel.git.username }}
         password: {{ .Values.cordaBevel.git.password }}
       
@@ -395,22 +395,22 @@ network:
         jars: 
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-supply-chain/4.9/cordapp-supply-chain-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-contracts-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-contracts-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-workflows-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-workflows-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/ci-workflows-1.0.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/ci-workflows-1.0.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-contracts-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-contracts-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-selection-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-selection-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-workflows-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-workflows-1.1.jar
         username: {{ .Values.cordaBevel.git.username }}
         password: {{ .Values.cordaBevel.git.password }}
 
@@ -489,22 +489,22 @@ network:
         jars: 
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-supply-chain/4.9/cordapp-supply-chain-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-contracts-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-contracts-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/5gzorro-workflows-0.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/5gzorro-workflows-0.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/ci-workflows-1.0.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/ci-workflows-1.0.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-contracts-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-contracts-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-selection-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-selection-1.1.jar
         - jar:
             # e.g https://maven.pkg.github.com/hyperledger/bevel/com.supplychain.bcc.cordapp-contracts-states/4.9/cordapp-contracts-states-4.9.jar
-            url: {{ .Values.cordaBevel.git.url }}/raw/develop/cordapps/tokens-workflows-1.1.jar
+            url: https://raw.githubusercontent.com/5GZORRO/bevel/develop/cordapps/tokens-workflows-1.1.jar
         username: {{ .Values.cordaBevel.git.username }}
         password: {{ .Values.cordaBevel.git.password }}
         
