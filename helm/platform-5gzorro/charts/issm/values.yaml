@@ -9,7 +9,7 @@ api:
     repository: ghcr.io/5gzorro/platform-automation/issm-api
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "586364c"
+    tag: "ffaf212"
 
 optimizer:
   image:

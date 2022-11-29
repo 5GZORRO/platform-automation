@@ -1075,7 +1075,7 @@ smart-contract-lifecycle-manager-admin:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.3-pre-final"
+    tag: "5gzorro-full-1.11-pre-final"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1514,7 +1514,7 @@ issm-admin:
       repository: ghcr.io/5gzorro/platform-automation/issm-api
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "586364c"
+      tag: "ffaf212"
   optimizer:
     image:
       repository: ghcr.io/5gzorro/platform-automation/issm-optimizer
@@ -1762,7 +1762,7 @@ smart-contract-lifecycle-manager-regulator:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.3-pre-final"
+    tag: "5gzorro-full-1.11-pre-final"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -2110,7 +2110,7 @@ smart-contract-lifecycle-manager-trader:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.3-pre-final"
+    tag: "5gzorro-full-1.11-pre-final"
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -2436,7 +2436,7 @@ issm-trader:
       repository: ghcr.io/5gzorro/platform-automation/issm-api
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "586364c"
+      tag: "ffaf212"
   optimizer:
     image:
       repository: ghcr.io/5gzorro/platform-automation/issm-optimizer
@@ -2546,7 +2546,7 @@ smart-contract-lifecycle-manager-consumer:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.3-pre-final"
+    tag: "5gzorro-full-1.11-pre-final"
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -2823,7 +2823,7 @@ issm-consumer:
       repository: ghcr.io/5gzorro/platform-automation/issm-api
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "586364c"
+      tag: "ffaf212"
   optimizer:
     image:
       repository: ghcr.io/5gzorro/platform-automation/issm-optimizer
