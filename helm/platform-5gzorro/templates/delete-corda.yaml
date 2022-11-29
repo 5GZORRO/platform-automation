@@ -49,4 +49,4 @@ spec:
         - name: kube-config
           secret:
             secretName: kubeconfig
-      restartPolicy: OnFailure
+      restartPolicy: Never
