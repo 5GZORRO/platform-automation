@@ -36,8 +36,8 @@ spec:
           - containerPort:  {{ .Values.service.appPort }}
             protocol: TCP
         env:
-          - name: OFFER_CATALOG_HOSTNAME
-            value: {{ .Values.hostname }}
+          - name: SERVER_INGRES
+            value: {{ (index .Values.ingress.hosts 0).host }}
           - name: SERVER_PORT
             value: {{ .Values.service.appPort | quote }}
           - name: POSTGRES_HOSTNAME

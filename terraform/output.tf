@@ -30,3 +30,15 @@ output "vms_default_id" {
 output "dns_name_servers" {
   value = module.commons.dns_name_servers
 }
+
+output "client_key" {
+  value = module.aks.client_key
+}
+
+output "client_certificate" {
+  value = module.aks.client_certificate
+}
+
+output "cluster_ca_certificate" {
+  value = module.aks.cluster_ca_certificate
+}

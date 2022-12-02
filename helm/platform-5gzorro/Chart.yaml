@@ -131,6 +131,12 @@ dependencies:
     tags:
       - admin
       - idp
+  - name: rapp-api
+    alias: rapp-api-admin
+    version: "0.1.*"
+    condition: rapp-api-admin.enabled
+    tags:
+      - admin
   - name: governance-manager-api
     alias: governance-manager-api-admin
     version: "0.1.*"
@@ -270,6 +276,12 @@ dependencies:
     tags:
       - trader
       - idp
+  - name: rapp-api
+    alias: rapp-api-trader
+    version: "0.1.*"
+    condition: rapp-api-trader.enabled
+    tags:
+      - trader
 ######################## END Trader Profile Block ########################
 ######################## START Regulator Profile Block ########################
   - name: elma
@@ -292,6 +304,12 @@ dependencies:
     tags:
       - regulator
       - idp
+  - name: rapp-api
+    alias: rapp-api-regulator
+    version: "0.1.*"
+    condition: rapp-api-regulator.enabled
+    tags:
+      - regulator
   - name: governance-manager-api
     alias: governance-manager-api-regulator
     version: "0.1.*"
@@ -361,6 +379,12 @@ dependencies:
     tags:
       - consumer
       - idp
+  - name: rapp-api
+    alias: rapp-api-consumer
+    version: "0.1.*"
+    condition: rapp-api-consumer.enabled
+    tags:
+      - consumer
   - name: smart-contract-lifecycle-manager
     alias: smart-contract-lifecycle-manager-consumer
     version: "0.1.*"

@@ -162,6 +162,7 @@ resource "null_resource" "install_osm" {
     inline = [
       "wget https://osm-download.etsi.org/ftp/osm-10.0-ten/install_osm.sh",
       "chmod +x install_osm.sh",
+      "sleep 120",
       "./install_osm.sh --charmed --k8s /home/zorro/config"
     ]
   }
@@ -172,7 +173,7 @@ resource "null_resource" "install_osm" {
     private_key = file(var.ssh_private_key)
     agent       = "false"
   }
-  depends_on = [null_resource.upload-kube-config, module.aks]
+  depends_on = [null_resource.upload-kube-config, module.aks, module.vms]
 }
 
 resource "null_resource" "patch-ingress" {
