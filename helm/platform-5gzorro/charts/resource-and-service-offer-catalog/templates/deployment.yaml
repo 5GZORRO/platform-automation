@@ -37,7 +37,9 @@ spec:
             protocol: TCP
         env:
           - name: SERVER_INGRES
-            value: {{ (index .Values.ingress.hosts 0).host }}
+            value: https://{{ (index .Values.ingress.hosts 0).host }}
+          - name: OFFER_CATALOG_HOSTNAME
+            value: {{ .Values.hostname }}
           - name: SERVER_PORT
             value: {{ .Values.service.appPort | quote }}
           - name: POSTGRES_HOSTNAME
