@@ -28,30 +28,34 @@ spec:
       {{- end }}
       containers:
         - name: xrm-init-db
-          image: ghcr.io/5gzorro/platform-automation/gravitee_db_init
+          image: ghcr.io/5gzorro/platform-automation/gravitee_db_init:latest
           command: ["/bin/bash"]
-          args: ["run.sh"]
+          args: ["/home/import.sh"]
           env:
             - name: CONN_STR
-              value: "Hello from the environment"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gateway.mongo.uri }}
+                  key: "connectionString.standard"
+                  optional: false
             - name: CATALOGUE_BE
-              value: "Such a sweet sorrow"
+              value: zorro5g-resource-and-service-offer-catalog-{{ .Values.role }}
             - name: RAPP_BE
-              value: "Hello from the environment"
+              value: zorro5g-rapp-api-{{ .Values.role }}
             - name: TRANSLATOR_BE
-              value: "Such a sweet sorrow"
+              value: zorro5g-xrm-{{ .Values.role }}-translator
             - name: SM_BE
-              value: "Hello from the environment"
+              value: "http://172.28.3.15:32135"
             - name: OSM_BE
-              value: "Such a sweet sorrow"
+              value: {{ .Values.catalogueapp.mano.ip }}
             - name: XRM_DISCOVERY_API_KEY
-              value: "Hello from the environment"
+              value: "ce0b0017-843c-4811-bb76-1005733cf3ec"
             - name: XRM_TRANSLATOR_API_KEY
-              value: "Such a sweet sorrow"
+              value: "fe6d588b-1d6b-4954-9e26-a334d0d09eed"
             - name: RAPP_DISCOVERY_API_KEY
-              value: "Hello from the environment"
+              value: "fc7def3f-0490-4c17-931f-6f6e4c759890"
             - name: SLICE_DISCOVERY_API_KEY
-              value: "Such a sweet sorrow"
+              value: "685be7dc-6ed3-46de-90da-bc21747568a1"
             - name: OSM_API_KEY
-              value: "Hello from the environment"
+              value: "admin"
       restartPolicy: Never

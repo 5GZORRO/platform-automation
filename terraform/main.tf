@@ -86,19 +86,6 @@ resource "kubernetes_secret" "kube_config" {
   depends_on = [module.aks]
 }
 
-resource "kubernetes_secret" "zerossl-secret" {
-  count = var.zerossl_hmac != "" ? 1 : 0
-  metadata {
-    name      = "zerossl-eabsecret"
-    namespace = "cert-manager"
-  }
-  data = {
-    "secret" = var.zerossl_hmac
-  }
-  type       = "Opaque"
-  depends_on = [module.aks, module.helm]
-}
-
 resource "kubernetes_secret" "registry" {
   metadata {
     name = "registry-credentials"
@@ -188,4 +175,17 @@ resource "null_resource" "patch-ingress" {
     agent       = "false"
   }
   depends_on = [module.helm]
+}
+
+resource "kubernetes_secret" "zerossl-secret" {
+  count = var.zerossl_hmac != "" ? 1 : 0
+  metadata {
+    name      = "zerossl-eabsecret"
+    namespace = "cert-manager"
+  }
+  data = {
+    "secret" = var.zerossl_hmac
+  }
+  type       = "Opaque"
+  depends_on = [module.aks, module.helm]
 }
