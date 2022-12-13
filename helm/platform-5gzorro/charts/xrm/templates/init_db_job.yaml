@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: xrm-init-db
+  name: {{ include "xrm.fullname" . }}-init-db
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "3"
@@ -14,7 +14,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: xrm-init-db
+      name: {{ include "xrm.fullname" . }}-init-db
       labels:
         app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
         app.kubernetes.io/part-of: {{ .Release.Name }}
@@ -27,8 +27,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: xrm-init-db
-          image: ghcr.io/5gzorro/platform-automation/gravitee_db_init:latest
+        - name: {{ include "xrm.fullname" . }}-init-db
+          image: ghcr.io/5gzorro/platform-automation/gravitee_db_init:3.6
           command: ["/bin/bash"]
           args: ["/home/import.sh"]
           env:
@@ -39,11 +39,11 @@ spec:
                   key: "connectionString.standard"
                   optional: false
             - name: CATALOGUE_BE
-              value: zorro5g-resource-and-service-offer-catalog-{{ .Values.role }}
+              value: http://zorro5g-resource-and-service-offer-catalog-{{ .Values.role }}:8080
             - name: RAPP_BE
-              value: zorro5g-rapp-api-{{ .Values.role }}
+              value: http://zorro5g-rapp-api-{{ .Values.role }}:2626
             - name: TRANSLATOR_BE
-              value: zorro5g-xrm-{{ .Values.role }}-translator
+              value: http://zorro5g-xrm-{{ .Values.role }}-translator:8080
             - name: SM_BE
               value: "http://172.28.3.15:32135"
             - name: OSM_BE

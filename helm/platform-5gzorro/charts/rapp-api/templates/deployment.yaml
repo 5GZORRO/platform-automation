@@ -44,7 +44,7 @@ spec:
               value: "{{ .Values.radioControllerEndpoint }}"
             - name: IDENTITY_PERMISSIONS_MANAGER_ENDPOINT
               value: "{{ .Values.identityPermissionsManagerEndpoint }}"
-            - name: MONGODB_HOST
+            - name: MONGO_IP
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.database.connectionString }}

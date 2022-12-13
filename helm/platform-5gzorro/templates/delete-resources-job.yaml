@@ -1,13 +1,13 @@
-# Delete all databases (mongo and postgress) this prevent terraform destroy to fail
+# Delete all resources (mongo and postgress) this prevent terraform destroy to fail
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: delete-databases
+  name: delete-resources
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "3"
   labels:
     app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
@@ -18,11 +18,11 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: delete-databases
+  name: delete-resources
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "3"
   labels:
     app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
@@ -45,15 +45,24 @@ rules:
   - apiGroups: ["argoproj.io"]
     resources: ['*']
     verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["source.toolkit.fluxcd.io"]
+    resources: ['*']
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+    resources: ['*']
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ['*']
+    verbs: ["get", "list", "watch", "create", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: delete-databases
+  name: delete-resources
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "3"
   labels:
     app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
@@ -63,16 +72,16 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: delete-databases
+  name: delete-resources
 subjects:
-  - name: delete-databases
+  - name: delete-resources
     namespace: {{ .Release.Namespace }}
     kind: ServiceAccount
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: delete-databases
+  name: delete-resources
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
@@ -86,7 +95,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: delete-databases
+      name: delete-resources
       labels:
         app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
         app.kubernetes.io/part-of: {{ .Release.Name }}
@@ -98,10 +107,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: delete-databases
+      serviceAccountName: delete-resources
       containers:
-        - name: delete-databases
+        - name: delete-resources
           image: "{{ .Values.global.miscTools.image.repository }}:{{ .Values.global.miscTools.image.tag | default .Chart.AppVersion }}"
           command: ["/bin/sh"]
-          args: ["-c", "kubectl delete --force --grace-period=0 eventbus,eventsources,sensors --all --all-namespaces && kubectl delete postgresql --all && kubectl delete rabbitmqcluster --all && kubectl delete statefulsets.apps --all && sleep 3m"]
+          args: ["-c", "kubectl delete kustomizations,helmcharts,helmreleases,helmrepositories,gitrepositories --all --all-namespaces && kubectl delete --force --grace-period=0 eventbus,eventsources,sensors --all --all-namespaces && kubectl delete postgresql --all && kubectl delete rabbitmqcluster --all && kubectl delete statefulsets.apps --all && sleep 3m"]
       restartPolicy: OnFailure

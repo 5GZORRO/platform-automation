@@ -42,7 +42,7 @@ spec:
               protocol: TCP
           env:
             - name: gravitee_analytics_elasticsearch_endpoints_0
-              value: http://elasticsearch:9200
+              value: http://{{ include "xrm.fullname" . }}-elasticsearch:9200
             - name: gravitee_management_mongodb_uri
               valueFrom:
                 secretKeyRef:

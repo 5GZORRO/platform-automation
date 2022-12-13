@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xrm.fullname" . }}-mongodb
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "mongodb"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "xrm.selectorLabels" . | nindent 6 }}
+      xrm/component: "mongodb"
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "mongodb"
+    spec:
+      containers:
+        - image: mongo:3.6
+          name: gio-apim-mongodb
+          ports:
+            - containerPort: 27017
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/db
+              name: data-mongo
+            - mountPath: /var/log/mongodb
+              name: mongodb-hostpath1
+      restartPolicy: Always
+      volumes:
+        - emptyDir:
+            sizeLimit: 500Mi
+          name: data-mongo
+        - emptyDir:
+            sizeLimit: 500Mi
+          name: mongodb-hostpath1

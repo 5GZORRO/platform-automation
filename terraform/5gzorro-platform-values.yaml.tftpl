@@ -1032,6 +1032,13 @@ rapp-api-admin:
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://admin-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
     hosts:
       # -- Domain used to expose the service outside the cluster
       - host: admin-rapp-api.${HOSTED_ZONE_NAME}
@@ -1789,6 +1796,13 @@ rapp-api-regulator:
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://regulator-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
     hosts:
       - host: regulator-rapp-api.${HOSTED_ZONE_NAME}
         paths:
@@ -1995,7 +2009,7 @@ gui-regulator:
   governanceUrl: 'https://regulator-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://regulator-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://regulator-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
@@ -2239,6 +2253,13 @@ rapp-api-trader:
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://trader-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
     hosts:
       - host: trader-rapp-api.${HOSTED_ZONE_NAME}
         paths:
@@ -2426,7 +2447,7 @@ gui-trader:
   governanceUrl: 'https://trader-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://trader-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://trader-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
@@ -2758,6 +2779,13 @@ rapp-api-consumer:
     annotations: 
       #cert-manager.io/cluster-issuer: letsencrypt-prod
       helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://consumer-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
     hosts:
       - host: consumer-rapp-api.${HOSTED_ZONE_NAME}
         paths:
@@ -2894,7 +2922,7 @@ gui-consumer:
   governanceUrl: 'https://consumer-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://consumer-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://consumer-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'

@@ -37,7 +37,7 @@ spec:
             protocol: TCP
         env:
           - name: SERVER_INGRES
-            value: https://{{ (index .Values.ingress.hosts 0).host }}
+            value: https://{{ (index .Values.ingress.hosts 0).host }}/tmf-api
           - name: OFFER_CATALOG_HOSTNAME
             value: {{ .Values.hostname }}
           - name: SERVER_PORT
