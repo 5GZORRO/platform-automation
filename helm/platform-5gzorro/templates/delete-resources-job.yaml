@@ -112,5 +112,5 @@ spec:
         - name: delete-resources
           image: "{{ .Values.global.miscTools.image.repository }}:{{ .Values.global.miscTools.image.tag | default .Chart.AppVersion }}"
           command: ["/bin/sh"]
-          args: ["-c", "kubectl delete --force --grace-period=0 kustomizations,helmcharts,helmreleases,helmrepositories,gitrepositories --all --all-namespaces && kubectl delete --force --grace-period=0 eventbus,eventsources,sensors --all --all-namespaces && kubectl delete postgresql --all && kubectl delete rabbitmqcluster --all && kubectl delete statefulsets.apps --all && sleep 3m"]
+          args: ["-c", "kubectl delete --force --grace-period=0 eventbus,eventsources,sensors --all --all-namespaces && kubectl delete postgresql --all && kubectl delete rabbitmqcluster --all && kubectl delete statefulsets.apps --all && sleep 3m"]
       restartPolicy: OnFailure
