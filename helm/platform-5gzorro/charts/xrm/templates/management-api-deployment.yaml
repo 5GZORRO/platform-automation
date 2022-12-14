@@ -30,6 +30,38 @@ spec:
       serviceAccountName: {{ include "xrm.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: {{ include "xrm.fullname" . }}-init-db
+          image: ghcr.io/5gzorro/platform-automation/gravitee_db_init:3.6
+          command: ["/bin/bash"]
+          args: ["/home/import.sh"]
+          env:
+            - name: CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gateway.mongo.uri }}
+                  key: "connectionString.standard"
+                  optional: false
+            - name: CATALOGUE_BE
+              value: http://zorro5g-xrm-{{ .Values.role }}-catalogueapp:8080
+            - name: RAPP_BE
+              value: http://zorro5g-rapp-api-{{ .Values.role }}:2626
+            - name: TRANSLATOR_BE
+              value: http://zorro5g-xrm-{{ .Values.role }}-translator:8080
+            - name: SM_BE
+              value: "http://172.28.3.15:32135"
+            - name: OSM_BE
+              value: {{ .Values.catalogueapp.mano.ip }}
+            - name: XRM_DISCOVERY_API_KEY
+              value: "ce0b0017-843c-4811-bb76-1005733cf3ec"
+            - name: XRM_TRANSLATOR_API_KEY
+              value: "fe6d588b-1d6b-4954-9e26-a334d0d09eed"
+            - name: RAPP_DISCOVERY_API_KEY
+              value: "fc7def3f-0490-4c17-931f-6f6e4c759890"
+            - name: SLICE_DISCOVERY_API_KEY
+              value: "685be7dc-6ed3-46de-90da-bc21747568a1"
+            - name: OSM_API_KEY
+              value: "admin"
       containers:
         - name: {{ .Chart.Name }}-management-api
           securityContext:

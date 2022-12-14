@@ -4,6 +4,7 @@ metadata:
   name: {{ include "rapp-api.fullname" . }}
   labels:
     {{- include "rapp-api.labels" . | nindent 4 }}
+    rapp-api/component: "api"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +12,7 @@ spec:
   selector:
     matchLabels:
       {{- include "rapp-api.selectorLabels" . | nindent 6 }}
+      rapp-api/component: "api"
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,6 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "rapp-api.selectorLabels" . | nindent 8 }}
+        rapp-api/component: "api"
     spec:
       {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
       imagePullSecrets:
@@ -42,7 +45,9 @@ spec:
               value: "{{ .Values.database.name}}"
             - name: RADIO_CONTROLLER_ENDPOINT
               value: "{{ .Values.radioControllerEndpoint }}"
-            - name: IDENTITY_PERMISSIONS_MANAGER_ENDPOINT
+            - name: RADIO_CONTROLLER_PATH
+              value: "{{ .Values.radioControllerEndpoint }}"
+            - name: IDENTITY_PERMISSIONS_MANAGER_PATH
               value: "{{ .Values.identityPermissionsManagerEndpoint }}"
             - name: MONGO_IP
               valueFrom:
