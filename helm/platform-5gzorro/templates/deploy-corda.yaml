@@ -4,7 +4,7 @@ metadata:
   name: deploy-corda
   annotations:
     "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-weight": "1"
   labels:
     app.kubernetes.io/name: {{ include "platform-5gzorro.name" . }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
