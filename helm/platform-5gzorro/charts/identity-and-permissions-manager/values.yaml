@@ -45,6 +45,8 @@ idp:
   regulatorAgentControllerUrl: ""
   adminAgentControllerUrl: ""
   adminCatalogueUrl: ""
+  adminLedgerIdentity: ""
+  adminLedgerName: ""
   key: ""
   vpnaasKey: ""
   adminDid: ""

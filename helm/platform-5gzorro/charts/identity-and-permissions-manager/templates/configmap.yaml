@@ -19,6 +19,8 @@ data:
   {{- end }}
   {{- if (eq .Values.idp.role "admin") }}
   ADMIN_CATALOGUE_URL: {{ .Values.idp.adminCatalogueUrl }}
+  STAKEHOLDER_IDENTITY: {{ .Values.idp.adminLedgerIdentity }}
+  STAKEHOLDER_NAME: {{ .Values.idp.adminLedgerName }}
   {{- end }}
   KEY: 5gzorroidportalnsmm
   # VPNAAS_KEY: {{ .Values.idp.vpnaasKey }}
