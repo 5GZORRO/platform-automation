@@ -959,7 +959,7 @@ identity-and-permissions-manager-admin:
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     connectionString: "mongodb-admin-admin-idp-admin"
@@ -1747,7 +1747,7 @@ identity-and-permissions-manager-regulator:
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-regulator-admin-idp-regulator"
     port: ""
@@ -2203,7 +2203,7 @@ identity-and-permissions-manager-trader: # holder
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-trader-admin-idp-trader"
     port: ""
@@ -2729,7 +2729,7 @@ identity-and-permissions-manager-consumer:  # verifier
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-consumer-admin-idp-consumer"
     port: ""
