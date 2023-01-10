@@ -60,16 +60,16 @@ cordaBevel:
   enabled: true
   git:
     # -- Git Repo details which will be used by GitOps/Flux. Gitops https or ssh url for flux value files 
-    url: ${BEVEL_GIT_URL}
+    url: "${BEVEL_GIT_URL}"
     # -- Gitops git repository URL for git push 
-    repo_url: ${BEVEL_REPO_URL}
+    repo_url: "${BEVEL_REPO_URL}"
     # -- Git Service user who has rights to check-in in all branches
-    username: ${BEVEL_REPO_USERNAME}
+    username: "${BEVEL_REPO_USERNAME}"
     # -- Git Server user password/token (Optional for ssh; Required for https)
-    password: ${BEVEL_REPO_PASSWORD}
+    password: "${BEVEL_REPO_PASSWORD}"
     # -- Email to use in git config
-    email: ${BEVEL_REPO_EMAIL}
-  url_suffix: ${HOSTED_ZONE_NAME}
+    email: "${BEVEL_REPO_EMAIL}"
+  url_suffix: "${BEVEL_URL_SUFFIX}"
   vault:
     # -- Hashicorp Vault server address and root-token. Vault should be unsealed.
     url: http://vault.5gzorro.smartcommunitylab.it:8200
@@ -143,14 +143,6 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-admin-scram
-          - name: xrm-admin
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-admin-password
-            roles:
-              - name: readWrite
-                db: gravitee
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-admin-scram
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -171,14 +163,6 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-trader-scram
-          - name: xrm-trader
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-trader-password
-            roles:
-              - name: readWrite
-                db: gravitee
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-trader-scram
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -201,14 +185,6 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-regulator-scram
-          - name: xrm-regulator
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-regulator-password
-            roles:
-              - name: readWrite
-                db: gravitee
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-regulator-scram
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -229,14 +205,6 @@ custom-resource-5gzorro:
               - name: readWrite
                 db: provider
             scramCredentialsSecretName: 5gzorro-mongodb-idp-consumer-scram
-          - name: xrm-consumer
-            db: admin
-            passwordSecretRef: 
-              name: 5gzorro-mongodb-xrm-consumer-password
-            roles:
-              - name: readWrite
-                db: gravitee
-            scramCredentialsSecretName: 5gzorro-mongodb-xrm-consumer-scram  
           - name: srsd
             db: admin
             passwordSecretRef: 
@@ -410,6 +378,9 @@ custom-resource-5gzorro:
             xrmcatalogueappconsumer:
               - superuser
               - createdb
+            legalproseconsumer:
+              - superuser
+              - createdb
             xrmtranslatorconsumer:
               - superuser
               - createdb
@@ -423,6 +394,7 @@ custom-resource-5gzorro:
             sclmconsumer: sclmconsumer
             xrmcatalogueappconsumer: xrmcatalogueappconsumer
             xrmtranslatorconsumer: xrmtranslatorconsumer
+            legalproseconsumer: legalproseconsumer
             mdaconsumer: mdaconsumer
             rsocconsumer: rsocconsumer
           postgresql:
@@ -447,6 +419,9 @@ custom-resource-5gzorro:
             xrmtranslatortrader:
               - superuser
               - createdb
+            legalprosetrader:
+              - superuser
+              - createdb
             mdatrader:
               - superuser
               - createdb
@@ -458,6 +433,7 @@ custom-resource-5gzorro:
             nssotrader: nssotrader
             xrmcatalogueapptrader: xrmcatalogueapptrader
             xrmtranslatortrader: xrmtranslatortrader
+            legalprosetrader: legalprosetrader
             mdatrader: mdatrader
             rsoctrader: rsoctrader
           postgresql:
@@ -919,7 +895,7 @@ identity-and-permissions-manager-admin:
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
     connectionString: "mongodb-admin-admin-idp-admin"
@@ -962,10 +938,62 @@ identity-and-permissions-manager-admin:
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-regulator:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000"]'
     # -- URL of the Resource and Service Offer Catalog instance specific for this profile
     adminCatalogueUrl: "http://zorro5g-resource-and-service-offer-catalog-admin:8080/tmf-api/onboardHandler"
+    adminLedgerIdentity: "O=Admin,OU=Admin,L=Zurich,C=CH"
+    adminLedgerName: "admin"
     key: ""
     vpnaasKey: ""
     # -- Admin DID used for the VON registration
     adminDid: "OD1ndI3xw0Pi6Sl4rgoa6F"
+
+rapp-api-admin:
+  # -- Enable 5GZORRO RADIO APPLICATION (rAPP) API
+  enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/rapp-api
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  database:
+    # -- MongoDB secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials using connection string format)
+    connectionString: "mongodb-admin-admin-rapp-api-admin"
+    # -- MongoDB port
+    port: "27017"
+  ingress:
+    # -- Expose the service outside the cluster using ingress
+    enabled: true
+    # -- Set ingress controller class
+    className: "nginx"
+    # -- Ingress annotation
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://admin-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+    hosts:
+      # -- Domain used to expose the service outside the cluster
+      - host: admin-rapp-api.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     # -- Secret name that contain wildcard certificate 
+     - secretName: 5gzorro-wildcard-cert 
+       hosts:
+         - admin-rapp-api.${HOSTED_ZONE_NAME}
+  # -- Identity and Permissions Manager Endpoint
+  identityPermissionsManagerEndpoint: "http://zorro5g-identity-and-permissions-manager-admin:8000/"
+  # -- Radio Controller Endpoint
+  radioControllerEndpoint: ""
+  # -- Role
+  role: admin
 
 governance-manager-api-admin:
   # -- Enable 5GZORRO Governance Manager
@@ -1076,7 +1104,7 @@ smart-contract-lifecycle-manager-admin:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.11-pre-final"
+    tag: "5gzorro-full-1.12-pre-final"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1141,7 +1169,7 @@ resource-and-service-offer-catalog-admin:
     repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "107e6cd"
+    tag: "automation"
   # -- Operator name
   operatorName: operatora
   postgres:
@@ -1268,13 +1296,13 @@ gui-admin:
   # -- Intelligent slice and service manager discovery API key
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
   # -- DLT ledger identity
-  ledgerIdentity: 'CN=OperatorA,OU=DLT,O=DLT,L=London,C=GB'
+  ledgerIdentity: 'O=Admin,OU=Admin,L=Zurich,C=CH'
   # -- URL of the Smart Resource and Service Discovery instance specific for this profile
   srsdUrl: 'https://admin-srsd.${HOSTED_ZONE_NAME}'
   # -- URL of the Intelligent slice and service manager instance specific for this profile 
   issmUrl: 'https://admin-issm.${HOSTED_ZONE_NAME}'
   # -- URL of the RAPP instance specific for this profile
-  rappUrl: 'http://172.28.3.242:2626'
+  rappUrl: 'https://admin-rapp-api.${HOSTED_ZONE_NAME}'
 
 smart-resource-and-service-discovery-admin:
   # -- Enable 5GZORRO Smart Resource and Service Discovery
@@ -1657,7 +1685,7 @@ identity-and-permissions-manager-regulator:
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-regulator-admin-idp-regulator"
     port: ""
@@ -1686,6 +1714,45 @@ identity-and-permissions-manager-regulator:
     otherIdpControllers: '["http://zorro5g-identity-and-permissions-manager-trader:8000", "http://zorro5g-identity-and-permissions-manager-admin:8000", "http://zorro5g-identity-and-permissions-manager-consumer:8000" ]'
     key: ""
     vpnaasKey: ""
+
+rapp-api-regulator:
+  enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/rapp-api
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  database:
+    connectionString: "mongodb-regulator-admin-rapp-api-regulator"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://regulator-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+    hosts:
+      - host: regulator-rapp-api.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert 
+       hosts:
+         - regulator-rapp-api.${HOSTED_ZONE_NAME}
+  identityPermissionsManagerEndpoint: "http://zorro5g-identity-and-permissions-manager-regulator:8000/"
+  radioControllerEndpoint: ""
+  role: regulator
 
 governance-manager-api-regulator:
   enabled: true
@@ -1763,7 +1830,7 @@ smart-contract-lifecycle-manager-regulator:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.11-pre-final"
+    tag: "5gzorro-full-1.12-pre-final"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1806,7 +1873,7 @@ resource-and-service-offer-catalog-regulator:
     repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "107e6cd"
+    tag: "automation"
   operatorName: regulatora
   postgres:
     host: zorro5g-psqldb-regulator
@@ -1880,15 +1947,15 @@ gui-regulator:
   governanceUrl: 'https://regulator-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://regulator-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://regulator-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://regulator-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
-  ledgerIdentity: 'O=Regulator,L=New York,C=US'
+  ledgerIdentity: 'O=Regulator,OU=Regulator,L=Boston,C=US'
   srsdUrl: 'https://regulator-srsd.${HOSTED_ZONE_NAME}'
   issmUrl: 'https://regulator-issm.${HOSTED_ZONE_NAME}'
-  rappUrl: 'http://172.28.3.242:2626'
+  rappUrl: 'https://regulator-rapp-api.${HOSTED_ZONE_NAME}'
 
 smart-resource-and-service-discovery-regulator:
   enabled: true
@@ -2074,7 +2141,7 @@ identity-and-permissions-manager-trader: # holder
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-trader-admin-idp-trader"
     port: ""
@@ -2105,13 +2172,103 @@ identity-and-permissions-manager-trader: # holder
     key: ""
     vpnaasKey: ""
 
+rapp-api-trader:
+  enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/rapp-api
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  database:
+    connectionString: "mongodb-trader-admin-rapp-api-trader"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://trader-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+    hosts:
+      - host: trader-rapp-api.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert 
+       hosts:
+         - trader-rapp-api.${HOSTED_ZONE_NAME}
+  identityPermissionsManagerEndpoint: "http://zorro5g-identity-and-permissions-manager-trader:8000/"
+  radioControllerEndpoint: ""
+  role: trader
+
+legal-prose-repository-trader:
+  # -- Enable 5GZORRO Legal Prose Repository
+  enabled: true
+  image:
+    repository: ghcr.io/5gzorro/platform-automation/legal-prose-repository-api
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "5gzorro-full-1.0-pre-final"
+  postgres:
+    # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
+    host: zorro5g-psqldb-trader
+    # -- PostgreSQL port
+    port: 5432
+    # -- PostgreSQL database name
+    name: legalprosetrader
+    # -- PostgreSQL secrets name (created manually or by custom-resource-5gzorro helm-chart, containing user credentials)
+    existingSecret: "legalprosetrader.zorro5g-psqldb-trader.credentials.postgresql.acid.zalan.do"
+    # -- PostgreSQL secret username key
+    userKey: "username"
+    # -- PostgreSQL secret password key
+    passwordKey: "password"
+  ingress:
+    # -- Exposes the service outside the cluster using ingress
+    enabled: true
+    # -- Set ingress controller class
+    className: "nginx"
+    # -- Ingress annotation
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+    hosts:
+      # -- Domain used to expose the service outside the cluster
+      - host: trader-lpr.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+    # -- Secret name that contain wildcard certificate 
+     - secretName: 5gzorro-wildcard-cert #trader-lpr-letsencrypt-tls
+       hosts:
+         - trader-lpr.${HOSTED_ZONE_NAME}
+  # -- Define component role/profile
+  role: "trader"
+  # -- URL of the Identity and Permissions Manager instance specific for this profile
+  identityBaseUrl: "http://zorro5g-identity-and-permissions-manager-trader:8000"
+  # -- URL of the Governance Manager instance specific for this profile
+  governanceBaseUrl: "http://zorro5g-governance-manager-api-trader:8080/api/v1"
+  callbacks:
+    # -- URL for Legal Prose Template callback
+    updateTemplateIdentity: "https://trader-lpr.${HOSTED_ZONE_NAME}/legal-prose-repository/api/v1/legal-prose-templates/%s/identity"
+
 smart-contract-lifecycle-manager-trader:
   enabled: true
   image:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.11-pre-final"
+    tag: "5gzorro-full-1.12-pre-final"
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -2154,7 +2311,7 @@ resource-and-service-offer-catalog-trader:
     repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "107e6cd"
+    tag: "automation"
   operatorName: operatorb
   postgres:
     host: zorro5g-psqldb-trader
@@ -2228,15 +2385,15 @@ gui-trader:
   governanceUrl: 'https://trader-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://trader-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://trader-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://trader-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
-  ledgerIdentity: 'CN=OperatorC,OU=DLT,O=DLT2,L=London,C=GB'
+  ledgerIdentity: 'O=Trader,OU=Trader,L=London,C=GB'
   srsdUrl: 'https://trader-srsd.${HOSTED_ZONE_NAME}'
   issmUrl: 'https://trader-issm.${HOSTED_ZONE_NAME}'
-  rappUrl: 'http://172.28.3.242:2626'
+  rappUrl: 'https://trader-rapp-api.${HOSTED_ZONE_NAME}'
 
 smart-resource-and-service-discovery-trader:
   enabled: true
@@ -2510,7 +2667,7 @@ identity-and-permissions-manager-consumer:  # verifier
     pullPolicy: IfNotPresent
     # -- Docker image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5e7da8e"
+    tag: "latest"
   database:
     connectionString: "mongodb-consumer-admin-idp-consumer"
     port: ""
@@ -2541,13 +2698,52 @@ identity-and-permissions-manager-consumer:  # verifier
     key: ""
     vpnaasKey: ""
 
+rapp-api-consumer:
+  enabled: true
+  image:
+    # -- Docker image repository
+    repository: ghcr.io/5gzorro/platform-automation/rapp-api
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Docker image tag
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  database:
+    connectionString: "mongodb-consumer-admin-rapp-api-consumer"
+    port: ""
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: 
+      #cert-manager.io/cluster-issuer: letsencrypt-prod
+      helm.sh/resource-policy: keep
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://consumer-gui.${HOSTED_ZONE_NAME}"
+      nginx.ingress.kubernetes.io/cors-allow-headers: "DNT, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, Authorization, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+      nginx.ingress.kubernetes.io/cors-expose-headers: "*, X-Project-Key"
+      nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+    hosts:
+      - host: consumer-rapp-api.${HOSTED_ZONE_NAME}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: 
+     - secretName: 5gzorro-wildcard-cert 
+       hosts:
+         - consumer-rapp-api.${HOSTED_ZONE_NAME}
+  identityPermissionsManagerEndpoint: "http://zorro5g-identity-and-permissions-manager-consumer:8000/"
+  radioControllerEndpoint: ""
+  role: consumer
+
 smart-contract-lifecycle-manager-consumer:
   enabled: true
   image:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.11-pre-final"
+    tag: "5gzorro-full-1.12-pre-final"
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -2590,7 +2786,7 @@ resource-and-service-offer-catalog-consumer:
     repository: "ghcr.io/5gzorro/platform-automation/resource-and-service-offer-catalog"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "107e6cd"
+    tag: "automation"
   operatorName: operatorc
   postgres:
     host: zorro5g-psqldb-consumer
@@ -2664,15 +2860,15 @@ gui-consumer:
   governanceUrl: 'https://consumer-gm.${HOSTED_ZONE_NAME}'
   identityPermissionsUrl: 'https://consumer-idp.${HOSTED_ZONE_NAME}'
   smartContractUrl: 'https://consumer-sclm.${HOSTED_ZONE_NAME}/smart-contract-lifecycle-manager/'
-  resourceManagerEndpoint: 'http://172.28.3.15:31081'
+  resourceManagerEndpoint: 'https://consumer-xrm.${HOSTED_ZONE_NAME}'
   resourceManagerDiscoveryApiKey: 'ce0b0017-843c-4811-bb76-1005733cf3ec'
   resourceManagerTraslatorApiKey: 'fe6d588b-1d6b-4954-9e26-a334d0d09eed'
   rappDiscoveryApiKey: 'fc7def3f-0490-4c17-931f-6f6e4c759890'
   sliceDiscoveryApiKey: '685be7dc-6ed3-46de-90da-bc21747568a1'
-  ledgerIdentity: 'CN=OperatorB,OU=DLT,O=DLT2,L=London,C=GB'
+  ledgerIdentity: 'O=Consumer,OU=Consumer,L=New York,C=US'
   srsdUrl: 'https://consumer-srsd.${HOSTED_ZONE_NAME}'
   issmUrl: 'https://consumer-issm.${HOSTED_ZONE_NAME}'
-  rappUrl: 'http://172.28.3.242:2626'
+  rappUrl: 'https://consumer-rapp-api.${HOSTED_ZONE_NAME}'
 
 smart-resource-and-service-discovery-consumer:
   enabled: true

@@ -81,7 +81,7 @@ dependencies:
   - name: postgres-operator
     version: "1.8.*"
     repository: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
-    condition: postgresOperator.enabled
+    condition: postgres-operator.enabled
     tags:
       - base
   - name: strimzi-kafka-operator
@@ -130,7 +130,6 @@ dependencies:
     condition: identity-and-permissions-manager-admin.enabled
     tags:
       - admin
-      - idp
   - name: rapp-api
     alias: rapp-api-admin
     version: "0.1.*"
@@ -275,7 +274,6 @@ dependencies:
     condition: identity-and-permissions-manager-trader.enabled
     tags:
       - trader
-      - idp
   - name: rapp-api
     alias: rapp-api-trader
     version: "0.1.*"
@@ -303,7 +301,6 @@ dependencies:
     condition: identity-and-permissions-manager-regulator.enabled
     tags:
       - regulator
-      - idp
   - name: rapp-api
     alias: rapp-api-regulator
     version: "0.1.*"
@@ -378,7 +375,6 @@ dependencies:
     condition: identity-and-permissions-manager-consumer.enabled
     tags:
       - consumer
-      - idp
   - name: rapp-api
     alias: rapp-api-consumer
     version: "0.1.*"

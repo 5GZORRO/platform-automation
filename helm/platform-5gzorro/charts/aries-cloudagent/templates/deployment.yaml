@@ -57,7 +57,7 @@ spec:
             - --outbound-transport
             - http
             - --endpoint 
-            - http://{{ include "aries-cloudagent.fullname" . }}:{{ .Values.agent.port }}
+            - http://{{ include "aries-cloudagent.fullname" . }}.{{ $.Release.Namespace }}:{{ .Values.agent.port }}
             - --label 
             - {{ .Values.agent.label }}
             - --seed 

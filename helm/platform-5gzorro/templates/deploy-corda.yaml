@@ -38,6 +38,10 @@ spec:
             - name: kube-config
               mountPath: /home/build/config
               subPath: config
+            {{- if .Values.global.singleOperator.enabled }}
+            - name: ambassador-certificate
+              mountPath: /home/certs
+            {{- end }}
       volumes:
         - name: corda-config
           configMap:
@@ -48,4 +52,14 @@ spec:
         - name: kube-config
           secret:
             secretName: kubeconfig
+        {{- if .Values.global.singleOperator.enabled }}
+        - name: ambassador-certificate
+          secret:
+            secretName: ambassador-certs
+            items:
+              - key: ambassador-doorman.crt
+                path: doorman/tls/ambassador.crt
+              - key: ambassador-networkmap.crt
+                path: networkmap/tls/ambassador.crt
+        {{- end }}
       restartPolicy: Never

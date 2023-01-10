@@ -1,3 +1,4 @@
+{{- if or .Values.certmanager.letsencrypt.enabled .Values.certmanager.zerossl.enabled }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -16,3 +17,4 @@ spec:
   dnsNames:
     - "*.osm.{{ .Values.certmanager.azureDns.hostedZoneName }}"
     - "osm.{{ .Values.certmanager.azureDns.hostedZoneName }}"
+{{- end }}

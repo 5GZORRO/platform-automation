@@ -1,15 +1,15 @@
 # -- Tags can be used to disable/enable specific profiles (check in the Chart.yaml to see tags -> component mapping)
 tags:
   # -- Enable all compontens in basic profile 
-  base: true
+  base: false
   # -- Enable all compontens in admin profile
-  admin: true 
+  admin: false
   # -- Enable all compontens in trader profile
-  trader: true
+  trader: false
   # -- Enable all compontens in regulator profile
-  regulator: true
+  regulator: false
   # -- Enable monitoring profile
-  monitoring: true
+  monitoring: false
 
 global:
   imagePullSecrets: 

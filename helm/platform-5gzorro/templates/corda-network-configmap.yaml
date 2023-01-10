@@ -4,4 +4,8 @@ metadata:
   name: corda-network
 data:
   network.yaml: |-
+{{- if .Values.global.singleOperator.enabled }}
+{{ tpl (.Files.Get "confs/corda-network-single-op.yaml.tpl") . | indent 4 }}
+{{- else }}
 {{ tpl (.Files.Get "confs/corda-network.yaml.tpl") . | indent 4 }}
+{{- end }}

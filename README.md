@@ -79,6 +79,13 @@ export TF_VAR_registry_password="<registry access token or password>"
 ## If you're planning to use zeroSSL uncomment this section.
 # export TF_VAR_zerossl_hmac="<zeroSSL hmac you can find it on the developer section>"
 # export TF_VAR_zerossl_kid="<zeroSSL kid you can find it on the developer section>"
+export TF_VAR_registry="<docker registry config in json format>"
+export TF_VAR_bevel_git_url="<fork of bevel repository where all the manifest will be published for gitops>"
+export TF_VAR_bevel_repo_email="<git user email>"
+export TF_VAR_bevel_repo_password="<git user password/token>"
+export TF_VAR_bevel_repo_url="<fork of bevel repository where all the manifest will be published for gitops>"
+export TF_VAR_bevel_repo_username="<git username>"
+export TF_VAR_bevel_url_suffix="<bevel external URL>"
 cd terraform/
 terraform init
 terraform plan

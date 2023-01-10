@@ -84,7 +84,7 @@ network:
       gitops:
         git_protocol: "https" # Option for git over https or ssh
         git_url: {{ .Values.cordaBevel.git.url }}        # Gitops https or ssh url for flux value files 
-        branch: "develop"           # Git branch where release is being made
+        branch: {{ .Values.cordaBevel.git.branch }}           # Git branch where release is being made
         release_dir: "platforms/r3-corda/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/r3-corda/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: {{ .Values.cordaBevel.git.repo_url }}   # Gitops git repository URL for git push 
@@ -194,7 +194,7 @@ network:
       gitops:
         git_protocol: "https" # Option for git over https or ssh
         git_url: {{ .Values.cordaBevel.git.url }}         # Gitops https or ssh url for flux value files 
-        branch: "develop"           # Git branch where release is being made
+        branch: {{ .Values.cordaBevel.git.branch }}           # Git branch where release is being made
         release_dir: "platforms/r3-corda/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/r3-corda/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: {{ .Values.cordaBevel.git.repo_url }}   # Gitops git repository URL for git push 
@@ -288,7 +288,7 @@ network:
       gitops:
         git_protocol: "https" # Option for git over https or ssh
         git_url: {{ .Values.cordaBevel.git.url }}         # Gitops https or ssh url for flux value files 
-        branch: "develop"           # Git branch where release is being made
+        branch: {{ .Values.cordaBevel.git.branch }}           # Git branch where release is being made
         release_dir: "platforms/r3-corda/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/r3-corda/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: {{ .Values.cordaBevel.git.repo_url }}   # Gitops git repository URL for git push 
@@ -381,7 +381,7 @@ network:
       gitops:
         git_protocol: "https" # Option for git over https or ssh
         git_url: {{ .Values.cordaBevel.git.url }}         # Gitops https or ssh url for flux value files 
-        branch: "develop"           # Git branch where release is being made
+        branch: {{ .Values.cordaBevel.git.branch }}           # Git branch where release is being made
         release_dir: "platforms/r3-corda/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/r3-corda/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: {{ .Values.cordaBevel.git.repo_url }}   # Gitops git repository URL for git push 
@@ -475,7 +475,7 @@ network:
       gitops:
         git_protocol: "https" # Option for git over https or ssh
         git_url: {{ .Values.cordaBevel.git.url }}         # Gitops https or ssh url for flux value files 
-        branch: "develop"           # Git branch where release is being made
+        branch: {{ .Values.cordaBevel.git.branch }}           # Git branch where release is being made
         release_dir: "platforms/r3-corda/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/r3-corda/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: {{ .Values.cordaBevel.git.repo_url }}   # Gitops git repository URL for git push 
