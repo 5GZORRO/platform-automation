@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "xrm.fullname" . }}-api-deployment-job
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "3"
+  labels:
+    {{- include "xrm.labels" . | nindent 4 }}
+    xrm/component: "api-deployment-job"
+spec:
+  template:
+    metadata:
+      name: {{ include "xrm.fullname" . }}-api-deployment-job
+      labels:
+        {{- include "xrm.selectorLabels" . | nindent 8 }}
+        xrm/component: "api-deployment-job"
+    spec:
+      {{- with (default .Values.global.imagePullSecrets .Values.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "xrm.serviceAccountName" . }}
+      containers:
+        - name: {{ include "xrm.fullname" . }}-api-deployment
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+          args:
+            - -c 
+            - |
+             curl -H 'authorization: Basic YWRtaW46YWRtaW4=' -X POST http://{{ include "xrm.fullname" . }}-management-api:8083/management/organizations/DEFAULT/environments/DEFAULT/apis/d85af6bf-4448-3539-a32e-3e19d9e33cda/deploy
+             curl -H 'authorization: Basic YWRtaW46YWRtaW4=' -X POST http://{{ include "xrm.fullname" . }}-management-api:8083/management/organizations/DEFAULT/environments/DEFAULT/apis/da2c04ed-de18-3651-8ac7-10b5db03f567/deploy
+             curl -H 'authorization: Basic YWRtaW46YWRtaW4=' -X POST http://{{ include "xrm.fullname" . }}-management-api:8083/management/organizations/DEFAULT/environments/DEFAULT/apis/43257979-1a3e-3e15-9a6b-fc266b6a4a07/deploy
+             curl -H 'authorization: Basic YWRtaW46YWRtaW4=' -X POST http://{{ include "xrm.fullname" . }}-management-api:8083/management/organizations/DEFAULT/environments/DEFAULT/apis/95fbb26d-0371-324d-b900-8d9e6190b5f2/deploy
+      restartPolicy: OnFailure

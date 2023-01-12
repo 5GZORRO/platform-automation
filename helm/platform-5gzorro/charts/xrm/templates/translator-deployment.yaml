@@ -46,7 +46,7 @@ spec:
             - name: DESCRIPTOR_SOURCE_PORT
               value: {{ .Values.catalogueapp.service.port | quote }}
             - name: OFFER_CATALOG_HOSTNAME
-              value: zorro5g-resource-and-service-offer-catalog-{{ .Values.role }}
+              value: {{ .Release.Name }}-resource-and-service-offer-catalog-{{ .Values.role }}
             - name: OFFER_CATALOG_PORT
               value: "8080"
             - name: POSTGRES_HOSTNAME
