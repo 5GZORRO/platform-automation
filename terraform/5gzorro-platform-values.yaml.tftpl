@@ -1112,7 +1112,7 @@ smart-contract-lifecycle-manager-admin:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.12-pre-final"
+    tag: "5gzorro-full-1.0-final"
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1166,7 +1166,7 @@ smart-contract-lifecycle-manager-admin:
     # -- Corda port
     port: "10003"
   # -- Operator name 
-  operatorName: operatora
+  operatorName: admin
   # -- Smart Contract Lifecycle Manager exposed URL
   hostname: "smart-contract-lifecycle-manager-admin:8087"
 
@@ -1179,7 +1179,7 @@ resource-and-service-offer-catalog-admin:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "automation"
   # -- Operator name
-  operatorName: operatora
+  operatorName: admin
   postgres:
     # -- PostgreSQL hostname (service name if it's in the same namespace, FQDN if NOT)
     host: zorro5g-psqldb-admin
@@ -1515,7 +1515,7 @@ issm-admin:
   # -- ISSM orchestrator type
   orchestrator: "nsso"
   # -- Operator name
-  operatorName: operatora
+  operatorName: admin
   kafka:
     # -- Kafka Hostname
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
@@ -1838,7 +1838,7 @@ smart-contract-lifecycle-manager-regulator:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.12-pre-final"
+    tag: "5gzorro-full-1.0-final"
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -1872,7 +1872,7 @@ smart-contract-lifecycle-manager-regulator:
     password: usera             
     host: regulator.regulator-ns.svc.cluster.local
     port: "10003"
-  operatorName: regualtora
+  operatorName: regualtor
   hostname: "smart-contract-lifecycle-manager-regulator:8087"
 
 resource-and-service-offer-catalog-regulator:
@@ -1882,7 +1882,7 @@ resource-and-service-offer-catalog-regulator:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "automation"
-  operatorName: regulatora
+  operatorName: regulator
   postgres:
     host: zorro5g-psqldb-regulator
     port: 5432
@@ -2276,7 +2276,7 @@ smart-contract-lifecycle-manager-trader:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.12-pre-final"
+    tag: "5gzorro-full-1.0-final"
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -2310,7 +2310,7 @@ smart-contract-lifecycle-manager-trader:
     password: usera             
     host: trader.trader-ns.svc.cluster.local
     port: "10003"
-  operatorName: operatorb
+  operatorName: trader
   hostname: "smart-contract-lifecycle-manager-trader:8087"
 
 resource-and-service-offer-catalog-trader:
@@ -2320,7 +2320,7 @@ resource-and-service-offer-catalog-trader:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "automation"
-  operatorName: operatorb
+  operatorName: trader
   postgres:
     host: zorro5g-psqldb-trader
     port: 5432
@@ -2575,7 +2575,7 @@ issm-trader:
   enabled: true 
   role: "trader"
   orchestrator: "nsso"
-  operatorName: operatorc
+  operatorName: trader
   kafka:
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
     port: "9092"
@@ -2751,7 +2751,7 @@ smart-contract-lifecycle-manager-consumer:
     repository: "ghcr.io/5gzorro/platform-automation/lifecycle-manager-api"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "5gzorro-full-1.12-pre-final"
+    tag: "5gzorro-full-1.0-final"
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -2785,7 +2785,7 @@ smart-contract-lifecycle-manager-consumer:
     password: usera             
     host: consumer.consumer-ns.svc.cluster.local
     port: "10003"
-  operatorName: operatorc
+  operatorName: consumer
   hostname: "smart-contract-lifecycle-manager-consumer:8087"
 
 resource-and-service-offer-catalog-consumer:
@@ -2795,7 +2795,7 @@ resource-and-service-offer-catalog-consumer:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "automation"
-  operatorName: operatorc
+  operatorName: consumer
   postgres:
     host: zorro5g-psqldb-consumer
     port: 5432
@@ -3001,7 +3001,7 @@ issm-consumer:
   enabled: true 
   role: "consumer"
   orchestrator: "nsso"
-  operatorName: operatorb
+  operatorName: consumer
   kafka:
     url: "kafka-cluster-kafka-bootstrap.default.svc.cluster.local"
     port: "9092"

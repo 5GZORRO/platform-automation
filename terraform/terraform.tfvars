@@ -31,7 +31,7 @@ scale_node_pool_size = "Standard_D8s_v5"
 scale_node_pool_count = 3
 
 # Kubernetes Version 
-kubernetes_version = "1.22.15"
+kubernetes_version = "1.23.12"
 # Max pod numeber per node 
 max_pods = 250
 # Domain name user for azure dns zone and for all kubernetes ingresses
